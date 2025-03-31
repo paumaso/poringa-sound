@@ -1,4 +1,10 @@
 {
-    "welcome": "Bienvenido a mi aplicación",
-    "language": "Idioma"
+    "Poringa Sound": "Poringa Sound",
+    "en": "Inglés",
+    "es": "Español",
+    "Sing in": "Iniciar sesión",
+    "Sing up": "Registrarse",
+    "Sing out": "desconectar",
+    "About us": "Sobre nosotros",
+    "welcome": "Bienvenido a mi aplicación"
 }

@@ -2,45 +2,56 @@ import { useTranslation } from "react-i18next";
 import TranslateIcon from "@mui/icons-material/Translate";
 import IconButton from '@mui/material/IconButton';
 import React, { useState } from "react";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 
 const LanguageSwitcher = () => {
   const { t, i18n } = useTranslation();
-  const [open, setOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
 
+  const handleOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
-    setOpen(false); 
+    handleClose();
   };
 
   return (
     <div className="relative inline-block">
-      <IconButton size="large" aria-label="search" color="inherit"
-        onClick={() => setOpen(!open)}
-        className="p-2 rounded-full hover:bg-gray-200 transition"
+      <IconButton
+        size="large"
+        aria-label="language switcher"
+        color="inherit"
+        onClick={handleOpen}
       >
         <TranslateIcon className="text-gray-700" />
       </IconButton>
 
-      {open && (
-        <ul className="absolute left-0 top-12 bg-white shadow-lg border rounded-md py-2 w-32 z-10 transition-opacity duration-200">
-          <li>
-            <button
-              onClick={() => changeLanguage("es")}
-              className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 w-full"
-            >
-              🇪🇸 {t("es")}
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => changeLanguage("en")}
-              className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 w-full"
-            >
-              🇺🇸 {t("en")}
-            </button>
-          </li>
-        </ul>
-      )}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+      >
+        <MenuItem onClick={() => changeLanguage("es")}>
+          🇪🇸 {t("es")}
+        </MenuItem>
+        <MenuItem onClick={() => changeLanguage("en")}>
+          🇺🇸 {t("en")}
+        </MenuItem>
+      </Menu>
     </div>
   );
 };
