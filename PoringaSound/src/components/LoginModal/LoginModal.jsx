@@ -1,26 +1,30 @@
-import React from 'react';
 import { useState } from "react";
-import { TextField, Button, Container, Typography, Paper, Box } from "@mui/material";
-import LockIcon from "@mui/icons-material/Lock";
+import { Dialog, DialogTitle, DialogContent, TextField, Button, IconButton } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
-const Login = () => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+function LoginModal({ open, handleClose }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Email:", email, "Password:", password);
+    handleClose(); // Tancar el modal després de fer login
   };
 
   return (
-    <Container maxWidth="xs">
-      <Paper elevation={3} sx={{ padding: 4, textAlign: "center", mt: 5 }}>
-        <Box display="flex" justifyContent="center" mb={2}>
-          <LockIcon fontSize="large" color="primary" />
-        </Box>
-        <Typography variant="h5" gutterBottom>
-          Sign In
-        </Typography>
+    <Dialog open={open} onClose={handleClose}>
+      <DialogTitle>
+        Sign In
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={{ position: "absolute", right: 8, top: 8 }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent>
         <form onSubmit={handleSubmit}>
           <TextField
             fullWidth
@@ -50,9 +54,9 @@ const Login = () => {
             Sign In
           </Button>
         </form>
-      </Paper>
-    </Container>
+      </DialogContent>
+    </Dialog>
   );
-};
+}
 
-export default Login;
+export default LoginModal;

@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import TranslateIcon from "@mui/icons-material/Translate";
+import IconButton from '@mui/material/IconButton';
 import React, { useState } from "react";
 
 const LanguageSwitcher = () => {
@@ -13,12 +14,12 @@ const LanguageSwitcher = () => {
 
   return (
     <div className="relative inline-block">
-      <button
+      <IconButton size="large" aria-label="search" color="inherit"
         onClick={() => setOpen(!open)}
         className="p-2 rounded-full hover:bg-gray-200 transition"
       >
         <TranslateIcon className="text-gray-700" />
-      </button>
+      </IconButton>
 
       {open && (
         <ul className="absolute left-0 top-12 bg-white shadow-lg border rounded-md py-2 w-32 z-10 transition-opacity duration-200">

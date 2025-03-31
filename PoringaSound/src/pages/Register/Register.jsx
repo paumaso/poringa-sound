@@ -1,10 +1,13 @@
 import React from 'react';
+import NavRegister from '../../components/Register/NavRegister';
+import { useTranslation } from 'react-i18next';
+import Main from '../../components/Register/Main';
 
 const Register = () => {
     return (
-        <div style={{ textAlign: 'center', marginTop: '50px' }}>
-            <h1>Register Page</h1>
-            <p>TODO: Add content to this page.</p>
+        <div>
+            <NavRegister />
+            <Main />
         </div>
     );
 };
