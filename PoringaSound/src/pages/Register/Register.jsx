@@ -1,13 +1,13 @@
 import React from 'react';
-import NavRegister from '../../components/Register/NavRegister';
 import { useTranslation } from 'react-i18next';
-import Main from '../../components/Register/Main';
+import SingUpNav from '../../components/SingUp/SingUpNav';
+import SingUp from '../../components/SingUp/SingUp';
 
 const Register = () => {
     return (
         <div>
-            <NavRegister />
-            <Main />
+            <SingUpNav />
+            <SingUp />
         </div>
     );
 };

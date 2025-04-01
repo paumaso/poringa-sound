@@ -1,5 +1,5 @@
 import Navbar from "../../components/Navbar/Navbar";
-import  LanguageSwitcher  from "../../components/LanguageSwitcher/LanguageSwitcher";
+import  LanguageSwitcher  from "../../components/Navbar/LanguageSwitcher";
 import React, { Component } from "react";
 import { useTranslation } from "react-i18next";
 

@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { Google } from "@mui/icons-material";
 
-const Login = () => {
+const SingUp = () => {
   return (
     <Container maxWidth="xs">
       <Box
@@ -45,4 +45,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default SingUp;

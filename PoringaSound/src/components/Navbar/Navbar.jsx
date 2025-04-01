@@ -4,9 +4,10 @@ import React from "react";
 import MenuIcon from '@mui/icons-material/Menu';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
-import LanguageSwitcher from "../LanguageSwitcher/LanguageSwitcher";
+import LanguageSwitcher from "./LanguageSwitcher";
 import InfoDropDown from "./InfoDropDown";
 import SearchBar from "./SearchBar";
+import MenuDrawer from "./MenuDrawer";
 import LoginModal from "../LoginModal/LoginModal";
 import { Button } from "@mui/material";
 
@@ -18,27 +19,21 @@ const Navbar = () => {
             <ul className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     <li>
-                        <IconButton size="large" aria-label="search" color="inherit">
-                            <MenuIcon />
-                        </IconButton>
+                        <MenuDrawer />
                     </li>
-                    <InfoDropDown />
+                    <li>
+                        <InfoDropDown />
+                    </li>
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <div><IconButton size="large" aria-label="search" color="inherit">
-                        <SearchIcon />
-                    </IconButton></div>
-                    <div className="cursor-pointer"> 
-                        <li>
-                            <LanguageSwitcher />
-                        </li>
-                    </div>
                     <li>
-                        <Button variant="outlined" onClick={() => setOpen(true)}>
-                            {t('Sing In')}
-                        </Button>
-                        <LoginModal open={open} handleClose={() => setOpen(false)} />
+                        <LanguageSwitcher />
+                    </li>
+                    <li>
+                        <a href="/login">
+                            <Button variant="outlined">{t('Sing In')}</Button>
+                        </a>
                     </li>
                     <li>
                         <a href="/register"><Button variant="contained">

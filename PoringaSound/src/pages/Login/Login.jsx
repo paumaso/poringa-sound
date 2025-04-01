@@ -1,57 +1,13 @@
 import React from 'react';
-import { useState } from "react";
-import { TextField, Button, Container, Typography, Paper, Box } from "@mui/material";
-import LockIcon from "@mui/icons-material/Lock";
+import SingInNav from '../../components/SingIn/SingInNav';
+import SingIn from '../../components/SingIn/SingIn';
 
 const Login = () => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Email:", email, "Password:", password);
-  };
-
   return (
-    <Container maxWidth="xs">
-      <Paper elevation={3} sx={{ padding: 4, textAlign: "center", mt: 5 }}>
-        <Box display="flex" justifyContent="center" mb={2}>
-          <LockIcon fontSize="large" color="primary" />
-        </Box>
-        <Typography variant="h5" gutterBottom>
-          Sign In
-        </Typography>
-        <form onSubmit={handleSubmit}>
-          <TextField
-            fullWidth
-            label="Email"
-            type="email"
-            margin="normal"
-            variant="outlined"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <TextField
-            fullWidth
-            label="Password"
-            type="password"
-            margin="normal"
-            variant="outlined"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            sx={{ mt: 2 }}
-          >
-            Sign In
-          </Button>
-        </form>
-      </Paper>
-    </Container>
+    <div>
+      <SingInNav />
+      <SingIn />
+    </div>
   );
 };
 
