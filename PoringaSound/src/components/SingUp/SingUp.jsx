@@ -55,7 +55,7 @@ const SignUp = () => {
           <Grid container spacing={2}>
             <Grid item xs={10}>
               {/* Nombre */}
-              <TextField label="Nombre" fullWidth margin="normal" required sx={{ mr: 5 }} />
+              <TextField label="Nombre" fullWidth margin="normal" required sx={{ mr: 4 }} />
             </Grid>
 
             <Grid item xs={2}>
@@ -68,35 +68,50 @@ const SignUp = () => {
                 onChange={handleImageChange}
               />
               <label htmlFor="upload-button-file">
-                <IconButton
-                  color="primary"
-                  component="span"
-                  sx={{
-                    width: "100%",
-                    height: "57px",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    borderRadius: "8px",
-                    backgroundColor: "#f1f1f1",
+                <div
+                  style={{
+                    display: "flex",          // Usamos flexbox para alinear horizontalmente
+                    alignItems: "center",     // Alineamos verticalmente al centro
+                    justifyContent: "center", // Alineamos el contenido al centro horizontalmente
+                    height: "100%",           // Aseguramos que ocupe toda la altura del contenedor
                   }}
                 >
-                  {imagePreview ? (
-                    <img
-                      src={imagePreview}
-                      alt="Foto de perfil"
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        borderRadius: "8px",
-                        objectFit: "cover",
-                      }}
-                    />
-                  ) : (
-                    <PhotoCamera sx={{ fontSize: 30 }} />
-                  )}
-                </IconButton>
+                  <IconButton
+                    color="primary"
+                    component="span"
+                    sx={{
+                      width: "58px", // Tamaño adecuado para el icono de foto de perfil
+                      height: "58px", // Aseguramos que la altura sea la misma
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      borderRadius: "50%", // Aseguramos que sea circular
+                      backgroundColor: "#f1f1f1", // Fondo similar al TextField
+                      overflow: "hidden", // Para asegurarnos que la imagen no se desborde del círculo
+                      transition: "background-color 0.3s ease", // Transición suave al cambiar la imagen
+                      "&:hover": {
+                        backgroundColor: "#e0e0e0", // Cambio de color al pasar el ratón por encima
+                      },
+                    }}
+                  >
+                    {imagePreview ? (
+                      <img
+                        src={imagePreview}
+                        alt="Foto de perfil"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover", // Aseguramos que la imagen se ajuste bien al círculo
+                          borderRadius: "50%", // Para mantener la forma circular
+                        }}
+                      />
+                    ) : (
+                      <PhotoCamera sx={{ fontSize: 30 }} />
+                    )}
+                  </IconButton>
+                </div>
               </label>
+
             </Grid>
           </Grid>
 
