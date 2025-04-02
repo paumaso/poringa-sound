@@ -37,8 +37,9 @@ class AuthController extends Controller
     {
         $imagePath = null;
         if ($request->hasFile('imagen_perfil')) {
-            $userEmail = $request->email; 
-            $imageName = str_replace(['@', '.'], '-', $userEmail) . '.jpg';
+            $timestamp = time();
+            $imageExtension = $request->file('imagen_perfil')->getClientOriginalExtension();
+            $imageName = $timestamp . '.' . $imageExtension; 
             $imagePath = $request->file('imagen_perfil')->storeAs('profile_images', $imageName, 'public');
         }
         return $imagePath ? 'storage/' . $imagePath : null;

@@ -1,6 +1,6 @@
 import { AppBar, Toolbar, IconButton, Box } from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import InfoIcon from "@mui/icons-material/Info";
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import HelpIcon from '@mui/icons-material/Help';
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logoAzul.png";
 
@@ -11,7 +11,7 @@ function SingUpNav() {
         <AppBar position="static" sx={{ backgroundColor: "white", boxShadow: "none" }}>
             <Toolbar>
                 <IconButton edge="start" sx={{ color: "gray" }} onClick={() => navigate(-1)}>
-                    <ArrowBackIcon />
+                    <ArrowBackIosIcon fontSize="medium"/>
                 </IconButton>
 
                 <Box sx={{ position: "absolute", left: "50%", transform: "translateX(-50%)" }}>
@@ -19,7 +19,7 @@ function SingUpNav() {
                 </Box>
 
                 <IconButton edge="end" sx={{ color: "gray", marginLeft: "auto" }} onClick={() => alert("Info sobre el registre")}>
-                    <InfoIcon />
+                    <HelpIcon fontSize="medium"/>
                 </IconButton>
             </Toolbar>
         </AppBar>

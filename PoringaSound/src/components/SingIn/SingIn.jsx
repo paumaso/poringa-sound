@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     Container,
     Box,
@@ -9,13 +9,41 @@ import {
     Link
 } from "@mui/material";
 import { Google } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 const SingIn = () => {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState(null);
+    const navigate = useNavigate();
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError(null);
+
+        try {
+            const data = await loginUser(email, password);
+            console.log(data);
+            if (data.token) {
+                navigate("/home"); 
+            }
+        } catch (error) {
+            setError("Correo electrónico o contraseña incorrectos.");
+        }
+    };
+
     return (
-        <Container maxWidth="xs">
+        <Container
+            maxWidth="xs"
+            sx={{
+                minHeight: "80vh",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+            }}
+        >
             <Box
                 sx={{
-                    mt: 10,
                     p: 4,
                     display: "flex",
                     flexDirection: "column",
@@ -29,10 +57,32 @@ const SingIn = () => {
                     Iniciar Sesión
                 </Typography>
 
-                <TextField label="Correo electrónico" type="email" fullWidth margin="normal" />
-                <TextField label="Contraseña" type="password" fullWidth margin="normal" />
+                {error && (
+                    <Typography color="error" sx={{ mb: 2 }}>
+                        {error}
+                    </Typography>
+                )}
 
-                <Button variant="contained" fullWidth sx={{ mt: 2 }}>
+                <TextField
+                    label="Correo electrónico"
+                    type="email"
+                    fullWidth
+                    margin="normal"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                />
+                <TextField
+                    label="Contraseña"
+                    type="password"
+                    fullWidth
+                    margin="normal"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                />
+
+                <Button variant="contained" fullWidth sx={{ mt: 2 }} onClick={handleSubmit}>
                     Iniciar Sesión
                 </Button>
 
@@ -43,9 +93,9 @@ const SingIn = () => {
                 </Button>
 
                 <Typography sx={{ mt: 2 }}>
-                    ¿Ya tienes cuenta?{" "}
+                    ¿No tienes cuenta?{" "}
                     <Link to="/register" style={{ textDecoration: "none", color: "#1976d2" }}>
-                        Inicia sesión aquí
+                        Regístrate aquí
                     </Link>
                 </Typography>
             </Box>
