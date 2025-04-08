@@ -1,4 +1,4 @@
-import "./i18n"; 
+import "./i18n";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AuthProvider } from './context/AuthContext'
@@ -8,9 +8,12 @@ import { Button } from '@mui/material';
 
 function App() {
   return (
-    <AuthProvider>
-      <AppRoutes />
-    </AuthProvider>
+    <React.StrictMode>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </React.StrictMode>
+
   );
 }
 

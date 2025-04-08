@@ -1,16 +1,20 @@
-import { Navigate } from "react-router-dom";
-import { useContext } from "react";
-import DefaultPage from "../pages/DefaultPage/Default";
-import { AuthContext }  from "../context/AuthContext";
+import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 
-const ProtectedRoute = ({ children }) => {
-    const { isAuthenticated } = useContext(AuthContext); // Verifica si el usuario está autenticado
+const ProtectedRoute = () => {
+  const { isAuthenticated, loading } = useAuth();
 
-    if (!isAuthenticated) {
-        return <Navigate to="/default" />;
-    } 
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
-    return children;
+  return isAuthenticated ? <Outlet /> : <Navigate to="/default" />;
 };
 
 export default ProtectedRoute;
