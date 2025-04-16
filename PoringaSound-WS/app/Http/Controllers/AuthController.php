@@ -16,7 +16,7 @@ class AuthController extends Controller
             'nombre' => 'required|string|max:255',
             'email' => 'required|string|email|unique:users',
             'password' => 'required|string|min:6',
-            'tipo' => 'in:usuario,artista',
+            'tipo' => 'in:usuario',
             'imagen_perfil' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 

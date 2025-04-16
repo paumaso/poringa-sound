@@ -37,8 +37,9 @@ class AlbumController extends Controller
 
         $album = Album::create([
             'titulo' => $request->titulo,
-            'artista_id' => $request->artista_id,
+            'user_id' => auth()->user()->id,
             'fecha_lanzamiento' => $request->fecha_lanzamiento,
+            'active' => $request->active ?? false,
             'portada' => $portada,
         ]);
 
@@ -55,7 +56,7 @@ class AlbumController extends Controller
             return response()->json(['message' => 'No autorizado'], 401);
         }
 
-        if($album->portada && $request->hasFile('portada')) {
+        if ($album->portada && $request->hasFile('portada')) {
             if (Storage::disk('public')->exists($album->portada)) {
                 Storage::disk('public')->delete($album->portada);
             }
@@ -65,6 +66,7 @@ class AlbumController extends Controller
         $album->update([
             'titulo' => $request->titulo,
             'artista_id' => $request->artista_id,
+            'active' => $request->active ?? false,
             'fecha_lanzamiento' => $request->fecha_lanzamiento ?? new Date(),
             'portada' => $portada,
         ]);
@@ -104,13 +106,13 @@ class AlbumController extends Controller
         $album->delete();
         return response()->json(['message' => 'Album eliminado'], 200);
     }
-    
+
     private function validateAlbum(Request $request)
     {
         $request->validate([
             'titulo' => 'required|string|max:255',
-            'artista_id' => 'required|exists:artistas,id',
             'fecha_lanzamiento' => 'date',
+            'active' => 'boolean',
             'portada' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
     }

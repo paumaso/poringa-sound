@@ -117,7 +117,6 @@ class AdminController extends Controller
     {
         $request->validate([
             'titulo' => 'required|string|max:255',
-            'artista_id' => 'required|exists:artistas,id',
             'fecha_lanzamiento' => 'required|date',
             'portada' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);

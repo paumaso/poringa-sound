@@ -15,7 +15,7 @@ class CreateAlbumesTable extends Migration
     {
         Schema::create('albumes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('artista_id')->constrained('artistas')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('titulo', 255);
             $table->json('canciones')->nullable();
             $table->string('portada')->nullable();

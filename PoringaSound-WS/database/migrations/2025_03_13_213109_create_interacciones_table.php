@@ -15,7 +15,7 @@ class CreateInteraccionesTable extends Migration
     {
         Schema::create('interacciones', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('users_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('cancion_id')->constrained('canciones')->onDelete('cascade');
             $table->enum('tipo', ['like', 'comentario', 'puntuacion']);
             $table->text('comentario')->nullable();

@@ -44,6 +44,8 @@ class CancionController extends Controller
             'duracion' => $request->duracion,
             'archivo' => $archivo,
             'genero' => $request->genero,
+            'active' => $request->active ?? false,
+            'portada' => $request->portada,
         ]);
 
         return response()->json($cancion, 201);
@@ -54,7 +56,7 @@ class CancionController extends Controller
         $this->validateCancion($request);
         $cancion = Cancion::find($id);
 
-        if ($cancion->album->artista->user_id != auth()->user()->id) {
+        if ($cancion->user_id != auth()->user()->id) { // Cambiado de artista a user
             return response()->json(['message' => 'No autorizado'], 401);
         }
 
@@ -71,6 +73,8 @@ class CancionController extends Controller
             'duracion' => $request->duracion,
             'archivo' => $archivo,
             'genero' => $request->genero,
+            'active' => $request->active ?? false,
+            'portada' => $request->portada,
         ]);
 
         return response()->json($cancion, 200);
@@ -102,6 +106,8 @@ class CancionController extends Controller
             'duracion' => 'integer',
             'archivo' => 'required|file|mimes:mp3,wav,ogg|max:10240',
             'genero' => 'required|string|max:255',
+            'active' => $request->active ?? false,
+            'portada' => $request->portada,
         ]);
     }
 

@@ -16,8 +16,9 @@ class CreateCancionesTable extends Migration
         Schema::create('canciones', function (Blueprint $table) {
             $table->id();
             $table->string('titulo', 255);
-            $table->foreignId('artista_id')->nullable()->constrained('artistas')->onDelete('set null');
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
             $table->foreignId('album_id')->nullable()->constrained('albumes')->onDelete('set null');
+            $table->boolean('active')->nullable()->default(false);
             $table->string('archivo');
             $table->string('portada')->nullable();
             $table->integer('duracion')->nullable();

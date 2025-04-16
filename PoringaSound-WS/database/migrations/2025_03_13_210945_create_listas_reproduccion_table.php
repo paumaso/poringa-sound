@@ -15,7 +15,8 @@ class CreateListasReproduccionTable extends Migration
     {
         Schema::create('listas_reproduccion', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('users_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->boolean('active')->nullable()->default(false);
             $table->string('nombre', 255);
             $table->json('canciones')->nullable();
             $table->timestamps();

@@ -15,7 +15,7 @@ class CreateDenunciasTable extends Migration
     {
         Schema::create('denuncias', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('users_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('cancion_id')->constrained('canciones')->onDelete('cascade');
             $table->text('motivo');
             $table->enum('estado', ['pendiente', 'revisado'])->default('pendiente');
