@@ -9,7 +9,8 @@ import {
     Link
 } from "@mui/material";
 import { Google } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
+import { redirect, useNavigate } from "react-router-dom";
+import { loginUser } from "../../services/auth"; 
 
 const SingIn = () => {
     const [email, setEmail] = useState("");
@@ -23,9 +24,9 @@ const SingIn = () => {
 
         try {
             const data = await loginUser(email, password);
-            console.log(data);
             if (data.token) {
-                navigate("/home"); 
+                console.log("Token:", data.token);
+                redirect("/home"); 
             }
         } catch (error) {
             setError("Correo electrónico o contraseña incorrectos.");

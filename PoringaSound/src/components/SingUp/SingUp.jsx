@@ -9,7 +9,7 @@ import {
   Divider,
   IconButton,
 } from "@mui/material";
-import { Google, PhotoCamera } from "@mui/icons-material";
+import { Google, Login, PhotoCamera } from "@mui/icons-material";
 import { registerUser } from "../../services/auth";
 
 const SignUp = () => {
@@ -44,7 +44,7 @@ const SignUp = () => {
     try {
       const data = await registerUser(nombre, email, password, image);
       if (data.token) {
-        navigate("/home");
+        navigate("/login");
       }
     } catch (error) {
       setError("Correo electrónico o contraseña incorrectos.");

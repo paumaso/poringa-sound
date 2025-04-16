@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 const API_URL = 'http://127.0.0.1:8000/api';
 
 export const registerUser = async (nombre, email, password, imagenPerfil) => {
@@ -19,7 +20,7 @@ export const registerUser = async (nombre, email, password, imagenPerfil) => {
     const data = await response.json();
 
     if (response.ok) {
-      localStorage.setItem('token', data.token);
+      Cookies.set("token", data.token, { expires: 1 });
       return data.token;
     } else {
       throw new Error(data.message || 'Error al registrar el usuario');
@@ -44,7 +45,7 @@ export const loginUser = async (email, password) => {
     const data = await response.json();
 
     if (response.ok) {
-      localStorage.setItem('token', data.token);
+      Cookies.set("token", data.token, { expires: 1 });
       return data;
     } else {
       throw new Error(data.message || 'Error al iniciar sesión');
@@ -56,9 +57,9 @@ export const loginUser = async (email, password) => {
 };
 
 export const logoutUser = () => {
-  localStorage.removeItem('token');
+  Cookies.remove("token");
 };
 
 export const getToken = () => {
-  return localStorage.getItem('token');
+  return Cookies.get("token");
 };
