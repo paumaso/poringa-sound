@@ -1,0 +1,144 @@
+import React, { useState } from "react";
+import { TextField } from "@mui/material";
+import { Button } from "@mui/material";
+import { Typography } from "@mui/material";
+import { Divider } from "@mui/material";
+import { IconButton } from "@mui/material";
+import { Link } from "@mui/material";
+import { Grid } from "@mui/material";
+import { PhotoCamera } from "@mui/icons-material";
+import { registerUser } from "../../services/auth";
+import { Box } from "@mui/material";
+const RegisterForm = ({ onClose, switchToLogin }) => {
+  const [nombre, setNombre] = useState("");
+  const [email, setEmail] = useState("");
+  const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    if (password !== confirmPassword) {
+      setError("Las contraseñas no coinciden.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const data = await registerUser(nombre, email, password, image);
+      if (data.token) {
+        onClose(); 
+      }
+    } catch (error) {
+      setError(error.message || "Error al registrarse.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+      {error && (
+        <Typography color="error" sx={{ mb: 2, textAlign: "center" }}>
+          {error}
+        </Typography>
+      )}
+
+      <Grid container spacing={2} alignItems="center">
+        <Grid item xs={9}>
+          <TextField
+            label="Nombre"
+            fullWidth
+            margin="normal"
+            required
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <input
+            accept="image/*"
+            style={{ display: "none" }}
+            id="register-upload-button"
+            type="file"
+            onChange={handleImageChange}
+          />
+          <label htmlFor="register-upload-button">
+            <IconButton component="span">
+              {imagePreview ? (
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  style={{ width: 50, height: 50, borderRadius: "50%" }}
+                />
+              ) : (
+                <PhotoCamera />
+              )}
+            </IconButton>
+          </label>
+        </Grid>
+      </Grid>
+
+      <TextField
+        label="Correo electrónico"
+        type="email"
+        fullWidth
+        margin="normal"
+        required
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+
+      <TextField
+        label="Contraseña"
+        type="password"
+        fullWidth
+        margin="normal"
+        required
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+
+      <TextField
+        label="Confirmar Contraseña"
+        type="password"
+        fullWidth
+        margin="normal"
+        required
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
+      />
+
+      <Button
+        type="submit"
+        variant="contained"
+        fullWidth
+        sx={{ mt: 2 }}
+        disabled={loading}
+      >
+        {loading ? "Registrando..." : "Registrarse"}
+      </Button>
+
+      <Typography sx={{ mt: 2, textAlign: "center" }}>
+        ¿Ya tienes cuenta?{" "}
+        <Link component="button" onClick={switchToLogin} sx={{ cursor: "pointer" }}>
+          Inicia sesión
+        </Link>
+      </Typography>
+    </Box>
+  );
+};
+
+export default RegisterForm;

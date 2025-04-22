@@ -19,6 +19,7 @@ class CreateAlbumesTable extends Migration
             $table->string('titulo', 255);
             $table->json('canciones')->nullable();
             $table->string('portada')->nullable();
+            $table->boolean('active')->nullable()->default(false);
             $table->date('fecha_lanzamiento')->nullable();
             $table->timestamps();
         });

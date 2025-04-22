@@ -15,10 +15,9 @@ import MailIcon from '@mui/icons-material/Mail';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import Typography from '@mui/material/Typography';
-import logo from "../../assets/logoAzul.png";
+import logo from "../../assets/logo.png";
 
 export default function MenuDrawer() {
-    const navigate = useNavigate();
     const { t, i18n } = useTranslation();
     const [open, setOpen] = React.useState(false);
 
@@ -38,7 +37,7 @@ export default function MenuDrawer() {
 
             <List>
                 <ListItem disablePadding>
-                    <ListItemButton onClick={() => navigate('/default')}>
+                    <ListItemButton onClick={() => navigate('/')}>
                         <ListItemIcon>
                             <HomeIcon />
                         </ListItemIcon>
