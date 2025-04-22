@@ -38,7 +38,7 @@ const AuthModal = ({  open, onClose, activeForm, setActiveForm }) => {
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
-                        p: 3,
+                        p: 2,
                         borderBottom: "1px solid",
                         borderColor: "divider",
                     }}
@@ -49,7 +49,6 @@ const AuthModal = ({  open, onClose, activeForm, setActiveForm }) => {
                     </IconButton>
                 </Box>
 
-                {/* Contenido animado */}
                 <Box sx={{ p: 3 }}>
                     <Fade in={fadeIn} timeout={500}>
                         <Grow  in={fadeIn} timeout={500}>

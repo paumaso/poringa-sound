@@ -21,7 +21,7 @@ export const registerUser = async (nombre, email, password, imagenPerfil) => {
 
     if (response.ok) {
       Cookies.set("token", data.token, { expires: 1 });
-      return data.token;
+      return { token: data.token, user: data.user };
     } else {
       throw new Error(data.message || 'Error al registrar el usuario');
     }
@@ -46,7 +46,8 @@ export const loginUser = async (email, password) => {
 
     if (response.ok) {
       Cookies.set("token", data.token, { expires: 1 });
-      return data;
+      sessionStorage.setItem("user", JSON.stringify(data.user));
+      return { token: data.token, user: data.user };
     } else {
       throw new Error(data.message || 'Error al iniciar sesión');
     }

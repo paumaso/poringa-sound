@@ -1,8 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { getToken, logoutUser } from "../services/auth";
-import Box from '@mui/material/Box';
-import CircularProgress from '@mui/material/CircularProgress';
-import Cookies from 'js-cookie';
+import { getToken, logoutUser, loginUser, registerUser } from "../services/auth";
 
 const AuthContext = createContext();
 
@@ -12,33 +9,53 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const token = getToken(); 
-    setIsAuthenticated(!!token); 
-    setLoading(false);
+    const token = getToken();
+    const userData = sessionStorage.getItem('user') ? JSON.parse(sessionStorage.getItem('user')) : null;
+    if (token) {
+      setIsAuthenticated(true);
+      setUser(userData);
+    } else {
+      setIsAuthenticated(false);
+      setUser(null);
+    }
   }, []);
 
-  const login = (token) => {
-    Cookies.set('token', token, { expires: 1 }); 
-    setIsAuthenticated(true);  
+  const login = async (email, password) => {
+    try {
+      const { user } = await loginUser(email, password); 
+      sessionStorage.setItem('user', JSON.stringify(user));
+      setIsAuthenticated(true);
+      setUser(user);
+    } catch (error) {
+      console.error("Error al iniciar sesión:", error);
+      throw error;
+    }
+  };
+
+  const register = async (nombre, email, password, imagenPerfil) => {
+    try {
+      const { user } = await registerUser(nombre, email, password, imagenPerfil); 
+      sessionStorage.setItem('user', JSON.stringify(user));
+      setIsAuthenticated(true);
+      setUser(user);
+    } catch (error) {
+      console.error("Error al registrar:", error);
+      throw error;
+    }
   };
 
   const logout = () => {
-    logoutUser(); 
-    setIsAuthenticated(false); 
+    logoutUser();
+    sessionStorage.removeItem('user');
+    setIsAuthenticated(false);
+    setUser(null);
   };
 
-  if (loading) {
-    return (
-    <Box sx={{ display: 'flex' }}>
-      <CircularProgress />
-    </Box>); 
-  }
-
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

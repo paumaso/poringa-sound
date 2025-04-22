@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { TextField, Button, Typography, Link, Box } from "@mui/material";
+import { useAuth } from "../../context/AuthContext";
 import { loginUser } from "../../services/auth";
 
 const LoginForm = ({ onClose, switchToRegister }) => {
@@ -7,6 +8,8 @@ const LoginForm = ({ onClose, switchToRegister }) => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { login } = useAuth();
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -14,10 +17,8 @@ const LoginForm = ({ onClose, switchToRegister }) => {
     setError(null);
 
     try {
-      const data = await loginUser(email, password);
-      if (data.token) {
-        onClose(); // Cierra el modal después del login exitoso
-      }
+      await login(email, password);
+      onClose();
     } catch (error) {
       setError(error.message || "Credenciales incorrectas.");
     } finally {
@@ -26,9 +27,9 @@ const LoginForm = ({ onClose, switchToRegister }) => {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+    <Box component="form" onSubmit={handleSubmit}>
       {error && (
-        <Typography color="error" sx={{ mb: 2, textAlign: "center" }}>
+        <Typography color="error" sx={{ textAlign: "center" }}>
           {error}
         </Typography>
       )}

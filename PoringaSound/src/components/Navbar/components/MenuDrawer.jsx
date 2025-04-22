@@ -15,7 +15,7 @@ import MailIcon from '@mui/icons-material/Mail';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import Typography from '@mui/material/Typography';
-import logo from "../../assets/logo.png";
+import logo from "../../../assets/logo.png";
 
 export default function MenuDrawer() {
     const { t, i18n } = useTranslation();

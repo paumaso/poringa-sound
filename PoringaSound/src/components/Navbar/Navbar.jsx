@@ -2,18 +2,21 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import MenuIcon from '@mui/icons-material/Menu';
 import IconButton from "@mui/material/IconButton";
-import LanguageSwitcher from "./LanguageSwitcher";
-import InfoDropDown from "./InfoDropDown";
-import SearchBar from "./SearchBar";
-import MenuDrawer from "./MenuDrawer";
+import LanguageSwitcher from "./components/LanguageSwitcher";
+import InfoDropDown from "./components/InfoDropDown";
+import SearchBar from "./components/SearchBar";
+import MenuDrawer from "./components/MenuDrawer";
 import { Button } from "@mui/material";
 import AuthModal from "../Auth/AuthModal";
+import { useAuth } from "../../context/AuthContext";
+import Avatar from "./components/Avatar";
 
 const Navbar = () => {
     const { t } = useTranslation();
     const [openDrawer, setOpenDrawer] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [activeForm, setActiveForm] = useState("login");
+    const { isAuthenticated, user, logout, login } = useAuth();
 
     const handleOpenModal = (formType) => {
         setActiveForm(formType);
@@ -36,26 +39,35 @@ const Navbar = () => {
                     <li>
                         <LanguageSwitcher />
                     </li>
-                    <li>
-                        <Button
-                            variant="outlined"
-                            onClick={() => handleOpenModal("login")}
-                        >
-                            {t('Sing In')}
-                        </Button>
-                    </li>
-                    <li>
-                        <Button
-                            variant="contained"
-                            onClick={() => handleOpenModal("register")}
-                        >
-                            {t('Sing Up')}
-                        </Button>
-                    </li>
+                    {isAuthenticated && user ? ( // Verifica que el usuario esté autenticado y que los datos del usuario existan
+                        <>
+                            <li>
+                                <Avatar />
+                            </li>
+                        </>
+                    ) : (
+                        <>
+                            <li>
+                                <Button
+                                    variant="outlined"
+                                    onClick={() => handleOpenModal("login")}
+                                >
+                                    {t('Sign In')}
+                                </Button>
+                            </li>
+                            <li>
+                                <Button
+                                    variant="contained"
+                                    onClick={() => handleOpenModal("register")}
+                                >
+                                    {t('Sign Up')}
+                                </Button>
+                            </li>
+                        </>
+                    )}
                 </div>
             </ul>
 
-            {/* Modal de Autenticación */}
             <AuthModal
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}

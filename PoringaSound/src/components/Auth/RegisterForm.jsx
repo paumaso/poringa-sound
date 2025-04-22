@@ -9,6 +9,8 @@ import { Grid } from "@mui/material";
 import { PhotoCamera } from "@mui/icons-material";
 import { registerUser } from "../../services/auth";
 import { Box } from "@mui/material";
+import { useAuth } from "../../context/AuthContext";
+
 const RegisterForm = ({ onClose, switchToLogin }) => {
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
@@ -18,6 +20,8 @@ const RegisterForm = ({ onClose, switchToLogin }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { register } = useAuth();
+
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -29,20 +33,14 @@ const RegisterForm = ({ onClose, switchToLogin }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
-    if (password !== confirmPassword) {
-      setError("Las contraseñas no coinciden.");
-      return;
-    }
-
     setLoading(true);
+    setError(null);
+
     try {
-      const data = await registerUser(nombre, email, password, image);
-      if (data.token) {
-        onClose(); 
-      }
+      await register(nombre, email, password, image);
+      onClose();
     } catch (error) {
-      setError(error.message || "Error al registrarse.");
+      setError(error.message || "Credenciales incorrectas.");
     } finally {
       setLoading(false);
     }
