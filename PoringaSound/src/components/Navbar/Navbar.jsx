@@ -9,7 +9,7 @@ import MenuDrawer from "./components/MenuDrawer";
 import { Button } from "@mui/material";
 import AuthModal from "../Auth/AuthModal";
 import { useAuth } from "../../context/AuthContext";
-import Avatar from "./components/Avatar";
+import AvatarAccount from "./components/AvatarAccount";
 
 const Navbar = () => {
     const { t } = useTranslation();
@@ -42,7 +42,7 @@ const Navbar = () => {
                     {isAuthenticated && user ? ( // Verifica que el usuario esté autenticado y que los datos del usuario existan
                         <>
                             <li>
-                                <Avatar />
+                                <AvatarAccount />
                             </li>
                         </>
                     ) : (

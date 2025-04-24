@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AuthProvider } from './context/AuthContext'
 import PoringaSound from './pages/PoringaSound';
+import { PageProvider } from './context/PageContext'
 
 import { Button } from '@mui/material';
 
@@ -10,10 +11,11 @@ function App() {
   return (
     <React.StrictMode>
       <AuthProvider>
-        <PoringaSound />
+        <PageProvider>
+          <PoringaSound />
+        </PageProvider>
       </AuthProvider>
     </React.StrictMode>
-
   );
 }
 
