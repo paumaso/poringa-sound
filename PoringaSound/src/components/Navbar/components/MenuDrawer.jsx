@@ -15,6 +15,9 @@ import MailIcon from '@mui/icons-material/Mail';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import Typography from '@mui/material/Typography';
+import MusicNoteIcon from '@mui/icons-material/MusicNote';
+import AlbumIcon from '@mui/icons-material/Album';
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import logo from "../../../assets/logo.png";
 
 export default function MenuDrawer() {
@@ -47,18 +50,31 @@ export default function MenuDrawer() {
             </List>
             <Divider />
 
-            {/* Otros elementos */}
             <List>
-                {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-                    <ListItem key={text} disablePadding>
-                        <ListItemButton>
-                            <ListItemIcon>
-                                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                            </ListItemIcon>
-                            <ListItemText primary={text} />
-                        </ListItemButton>
-                    </ListItem>
-                ))}
+                <ListItem disablePadding>
+                    <ListItemButton onClick={() => navigate('/')}>
+                        <ListItemIcon>
+                            <MusicNoteIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Songs" />
+                    </ListItemButton>
+                </ListItem>
+                <ListItem disablePadding>
+                    <ListItemButton onClick={() => navigate('/')}>
+                        <ListItemIcon>
+                            <AlbumIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Albums" />
+                    </ListItemButton>
+                </ListItem>
+                <ListItem disablePadding>
+                    <ListItemButton onClick={() => navigate('/')}>
+                        <ListItemIcon>
+                            <PeopleAltIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Artists" />
+                    </ListItemButton>
+                </ListItem>
             </List>
         </Box>
     );

@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { Avatar, Typography, Box, Menu, MenuItem, IconButton } from "@mui/material";
+import { Avatar, Box, Menu, MenuItem, IconButton } from "@mui/material";
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useAuth } from "../../../context/AuthContext";
 
 const Account = () => {
     const { user, logout } = useAuth();
     const [anchorEl, setAnchorEl] = useState(null);
+
+    const apiUrl = process.env.VITE_IMAGES_URL;
 
     const handleMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -28,10 +30,10 @@ const Account = () => {
         <Box display="flex" alignItems="center" gap={2}>
             <IconButton onClick={handleMenuOpen}>
                 <Avatar
-                    src={user?.imagen_perfil || ""}
+                    src={apiUrl + user?.imagen_perfil || ""}
                     alt={user?.nombre || "User"}
                     sx={{
-                        bgcolor: user?.imagen_perfil ? "transparent" : "primary.main",
+                        bgcolor: apiUrl + user?.imagen_perfil ? "transparent" : "primary.main",
                         width: 40,
                         height: 40,
                     }}
