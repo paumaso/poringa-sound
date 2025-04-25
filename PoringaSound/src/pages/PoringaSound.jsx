@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Navbar from "../components/Navbar/Navbar";
 import SongDrawer from "../components/SongDrawer/SongDrawer";
 import AccountInfo from "../components/Account/Account";
@@ -6,6 +6,7 @@ import { usePage } from "../context/PageContext";
 
 const PoringaSound = () => {
     const { activePage } = usePage(); // Obtener la página activa desde el contexto
+    const [drawerOpen, setDrawerOpen] = useState(false); // Estado para el Drawer
 
     const renderContent = () => {
         switch (activePage) {
@@ -31,15 +32,15 @@ const PoringaSound = () => {
             <div
                 className="content"
                 style={{
-                    marginRight: "0",
-                    transition: "margin-right 0.3s ease",
+                    marginRight: drawerOpen ? "400px" : "0",
+                    transition: "margin-right 0.3s ease", 
                 }}
             >
                 {renderContent()}
             </div>
 
             {/* SongDrawer */}
-            <SongDrawer />
+            <SongDrawer onDrawerToggle={setDrawerOpen} />
         </div>
     );
 };

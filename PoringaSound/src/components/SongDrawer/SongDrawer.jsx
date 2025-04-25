@@ -11,7 +11,7 @@ const SongDrawer = ({ onDrawerToggle }) => {
     const toggleDrawer = (newOpen) => () => {
         setOpen(newOpen);
         if (onDrawerToggle) {
-            onDrawerToggle(newOpen); // Notifica al componente principal sobre el estado del Drawer
+            onDrawerToggle(newOpen);
         }
     };
 

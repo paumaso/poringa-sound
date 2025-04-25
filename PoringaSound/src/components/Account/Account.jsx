@@ -5,12 +5,22 @@ import {
     Typography,
     Divider,
     IconButton,
-    Stack
+    Stack,
+    Tabs,
+    Tab,
 } from "@mui/material";
-import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from "@mui/icons-material/Edit";
+import MusicNoteIcon from "@mui/icons-material/MusicNote";
+import AlbumIcon from "@mui/icons-material/Album";
+import QueueMusicIcon from '@mui/icons-material/QueueMusic';
 import { useAuth } from "../../context/AuthContext";
 
 const AccountInfo = ({ onEdit }) => {
+    const [value, setValue] = React.useState('one');
+
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+    };
     const { user } = useAuth();
     const apiUrl = import.meta.env.VITE_IMAGES_URL;
 
@@ -64,6 +74,40 @@ const AccountInfo = ({ onEdit }) => {
 
             {/* Sección para información adicional */}
             <Box>
+                <Tabs
+                    value={value}
+                    onChange={handleChange}
+                    textColor="primary"
+                    indicatorColor="primary"
+                >
+                    <Tab
+                        value="one"
+                        label={
+                            <Box display="flex" alignItems="center" gap={1}>
+                                <QueueMusicIcon />
+                                <Typography>Listas</Typography>
+                            </Box>
+                        }
+                    />
+                    <Tab
+                        value="two"
+                        label={
+                            <Box display="flex" alignItems="center" gap={1}>
+                                <MusicNoteIcon />
+                                <Typography>Songs</Typography>
+                            </Box>
+                        }
+                    />
+                    <Tab
+                        value="three"
+                        label={
+                            <Box display="flex" alignItems="center" gap={1}>
+                                <AlbumIcon />
+                                <Typography>Albums</Typography>
+                            </Box>
+                        }
+                    />
+                </Tabs>
             </Box>
         </Box>
     );
