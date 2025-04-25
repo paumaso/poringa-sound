@@ -11,11 +11,11 @@ import {
 } from "@mui/material";
 import { Logout } from "@mui/icons-material";
 import { useAuth } from "../../../context/AuthContext";
-import { usePage } from "../../../context/PageContext"; // Importar el contexto de la página
+import { usePage } from "../../../context/PageContext";
 
 const AvatarAccount = () => {
     const { user, logout } = useAuth();
-    const { setActivePage } = usePage(); // Usar el contexto para cambiar la página activa
+    const { setActivePage } = usePage();
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
 
@@ -36,7 +36,7 @@ const AvatarAccount = () => {
 
     const handleAccountClick = () => {
         handleMenuClose();
-        setActivePage("account"); // Cambiar la página activa a "account"
+        setActivePage("account");
     };
 
     const getInitial = (name) => {
@@ -83,7 +83,6 @@ const AvatarAccount = () => {
                         "& .MuiAvatar-root": {
                             width: 32,
                             height: 32,
-                            ml: -0.5,
                             mr: 1,
                         },
                         "&:before": {
@@ -106,7 +105,15 @@ const AvatarAccount = () => {
                 <MenuItem onClick={handleAccountClick} sx={{ pt: 2, pb: 2 }}>
                     <Avatar
                         src={user?.imagen_perfil ? apiUrl + user.imagen_perfil : ""}
-                        sx={{ width: 56, height: 56, mr: 2 }}
+                        alt={user?.nombre || "User"}
+                        sx={{
+                            bgcolor: user?.imagen_perfil ? "transparent" : "primary.main",
+                            width: 56,
+                            height: 56,
+                            mr: 2,
+                            border: "2px solid",
+                            borderColor: "white",
+                        }}
                     >
                         {!user?.imagen_perfil && getInitial(user?.nombre)}
                     </Avatar>
