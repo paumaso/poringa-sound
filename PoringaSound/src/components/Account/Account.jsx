@@ -114,7 +114,7 @@ const AccountInfo = ({ onEdit }) => {
             </Box>
 
             {/* Contenido dinámico basado en el tab seleccionado */}
-            <Box sx={{ mt: 3 }}>
+            <Box sx={{ mt: 2 }}>
                 {value === "one" && <UserLists userId={user?.id} />}
                 {value === "two" && <UserSongs userId={user?.id} />}
                 {value === "three" && <UserAlbums userId={user?.id} />}

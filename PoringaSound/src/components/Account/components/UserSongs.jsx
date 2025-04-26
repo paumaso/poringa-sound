@@ -77,7 +77,7 @@ const UserSongs = ({ userId }) => {
     }
 
     return (
-        <Box sx={{ p: 3, position: "relative" }}>
+        <Box sx={{ p: 1, position: "relative" }}>
             {/* Lista de canciones */}
             {songs.length === 0 ? (
                 <Typography variant="body1" color="textSecondary">
@@ -151,20 +151,6 @@ const UserSongs = ({ userId }) => {
                 <MenuItem onClick={() => handleMenuItemClick('Eliminar')}>Eliminar</MenuItem>
                 <MenuItem onClick={() => handleMenuItemClick('Compartir')}>Compartir</MenuItem>
             </Menu>
-
-            {/* Botón para agregar canción */}
-            <Fab
-                color="primary"
-                aria-label="add"
-                onClick={handleAddSong}
-                sx={{
-                    position: 'fixed',
-                    bottom: 16,
-                    right: 16,
-                }}
-            >
-                <AddIcon />
-            </Fab>
         </Box>
     );
 };
