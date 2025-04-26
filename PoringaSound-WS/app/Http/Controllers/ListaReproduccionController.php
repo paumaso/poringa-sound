@@ -17,9 +17,11 @@ class ListaReproduccionController extends Controller
         return response()->json(ListaReproduccion::find($id), 200);
     }
 
-    public function getLlistaReproducionsByUserId($id)
+    public function getListasReproduccionByUserId(Request $request, $userId)
     {
-        return response()->json(ListaReproduccion::where('user_id', $id)->get(), 200);
+        $perPage = $request->query('per_page', 10);
+        $listas = ListaReproduccion::where('user_id', $userId)->paginate($perPage);
+        return response()->json($listas, 200);
     }
 
     public function createListaReproduccion(Request $request)

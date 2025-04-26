@@ -1,27 +1,12 @@
 import React, { useState } from "react";
 import Navbar from "../components/Navbar/Navbar";
 import SongDrawer from "../components/SongDrawer/SongDrawer";
-import AccountInfo from "../components/Account/Account";
 import { usePage } from "../context/PageContext";
+import { renderContent } from "./PoringaSoundUtils.jsx";
 
 const PoringaSound = () => {
-    const { activePage } = usePage(); // Obtener la página activa desde el contexto
-    const [drawerOpen, setDrawerOpen] = useState(false); // Estado para el Drawer
-
-    const renderContent = () => {
-        switch (activePage) {
-            case "account":
-                return <AccountInfo />;
-            case "default":
-            default:
-                return (
-                    <div>
-                        <h1>Poringa Sound</h1>
-                        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Minima, amet molestiae. Eum atque obcaecati minus placeat quis quibusdam porro ad maiores fugit sed? Numquam non voluptates asperiores itaque et odio?</p>
-                    </div>
-                );
-        }
-    };
+    const { activePage } = usePage();
+    const [drawerOpen, setDrawerOpen] = useState(false); 
 
     return (
         <div>
@@ -33,10 +18,10 @@ const PoringaSound = () => {
                 className="content"
                 style={{
                     marginRight: drawerOpen ? "400px" : "0",
-                    transition: "margin-right 0.3s ease", 
+                    transition: "margin-right 0.3s ease",
                 }}
             >
-                {renderContent()}
+                {renderContent(activePage)}
             </div>
 
             {/* SongDrawer */}

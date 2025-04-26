@@ -15,22 +15,54 @@ class CancionController extends Controller
 
     public function getCancionById($id)
     {
-        return response()->json(Cancion::find($id), 200);
+        $cancion = Cancion::find($id);
+
+        if (!$cancion) {
+            return response()->json(['message' => 'Canción no encontrada'], 404);
+        }
+
+        return response()->json($cancion, 200);
     }
 
     public function getRandomCancion()
     {
-        return response()->json(Cancion::inRandomOrder()->first(), 200);
+        $cancion = Cancion::inRandomOrder()->first();
+
+        if (!$cancion) {
+            return response()->json(['message' => 'No hay canciones disponibles'], 404);
+        }
+
+        return response()->json($cancion, 200);
     }
 
     public function getCancionesByAlbumId($id)
     {
-        return response()->json(Cancion::where('album_id', $id)->get(), 200);
+        $canciones = Cancion::where('album_id', $id)->get();
+
+        if ($canciones->isEmpty()) {
+            return response()->json(['message' => 'No se encontraron canciones para este álbum'], 404);
+        }
+
+        return response()->json($canciones, 200);
     }
 
     public function getCancionesByGenero($genero)
     {
-        return response()->json(Cancion::where('genero', $genero)->get(), 200);
+        $canciones = Cancion::where('genero', $genero)->get();
+
+        if ($canciones->isEmpty()) {
+            return response()->json(['message' => 'No se encontraron canciones para este género'], 404);
+        }
+
+        return response()->json($canciones, 200);
+    }
+
+    public function getCancionesByUserId(Request $request, $userId)
+    {
+        $perPage = $request->query('per_page', 10);
+        $canciones = Cancion::where('user_id', $userId)->paginate($perPage);
+
+        return response()->json($canciones, 200);
     }
 
     public function createCancion(Request $request)
@@ -40,6 +72,7 @@ class CancionController extends Controller
 
         $cancion = Cancion::create([
             'titulo' => $request->titulo,
+            'user_id' => auth()->user()->id,
             'album_id' => $request->album_id,
             'duracion' => $request->duracion,
             'archivo' => $archivo,
@@ -56,7 +89,11 @@ class CancionController extends Controller
         $this->validateCancion($request);
         $cancion = Cancion::find($id);
 
-        if ($cancion->user_id != auth()->user()->id) { // Cambiado de artista a user
+        if (!$cancion) {
+            return response()->json(['message' => 'Canción no encontrada'], 404);
+        }
+
+        if ($cancion->user_id != auth()->user()->id) {
             return response()->json(['message' => 'No autorizado'], 401);
         }
 
@@ -69,6 +106,7 @@ class CancionController extends Controller
         $archivo = $this->guardarArchivo($request);
         $cancion->update([
             'titulo' => $request->titulo,
+            'user_id' => auth()->user()->id,
             'album_id' => $request->album_id,
             'duracion' => $request->duracion,
             'archivo' => $archivo,
@@ -84,7 +122,11 @@ class CancionController extends Controller
     {
         $cancion = Cancion::find($id);
 
-        if ($cancion->album->artista->user_id != auth()->user()->id) {
+        if (!$cancion) {
+            return response()->json(['message' => 'Canción no encontrada'], 404);
+        }
+
+        if ($cancion->user_id != auth()->user()->id) {
             return response()->json(['message' => 'No autorizado'], 401);
         }
 
@@ -102,12 +144,12 @@ class CancionController extends Controller
     {
         $request->validate([
             'titulo' => 'required|string|max:255',
-            'album_id' => 'exists:albums,id',
-            'duracion' => 'integer',
+            'album_id' => 'nullable|exists:albumes,id',
+            'duracion' => 'nullable|integer',
             'archivo' => 'required|file|mimes:mp3,wav,ogg|max:10240',
-            'genero' => 'required|string|max:255',
-            'active' => $request->active ?? false,
-            'portada' => $request->portada,
+            'genero' => 'nullable|exists:generos,id',
+            'active' => 'nullable|boolean',
+            'portada' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
     }
 

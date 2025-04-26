@@ -9,11 +9,14 @@ class Album extends Model
 {
     use HasFactory;
 
+    protected $table = 'albumes';
+
     protected $fillable = [
         'titulo',
-        'artista_id',
-        'fecha_lanzamiento',
+        'user_id',
+        'active',
         'portada',
+        'fecha_lanzamiento',
     ];
 
     protected $casts = [
@@ -23,10 +26,5 @@ class Album extends Model
     public function canciones()
     {
         return $this->hasMany(Cancion::class);
-    }
-
-    public function artista()
-    {
-        return $this->belongsTo(Artista::class);
     }
 }

@@ -30,6 +30,13 @@ class AlbumController extends Controller
         return response()->json($album->canciones, 200);
     }
 
+    public function getAlbumByUserId(Request $request, $userId)
+    {
+        $perPage = $request->query('per_page', 10);
+        $albums = Album::where('user_id', $userId)->paginate($perPage);
+        return response()->json($albums, 200);
+    }
+
     public function createAlbum(Request $request)
     {
         $this->validateAlbum($request);

@@ -12,30 +12,33 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import AlbumIcon from "@mui/icons-material/Album";
-import QueueMusicIcon from '@mui/icons-material/QueueMusic';
+import QueueMusicIcon from "@mui/icons-material/QueueMusic";
 import { useAuth } from "../../context/AuthContext";
+import UserSongs from "./components/UserSongs.jsx";
+import UserLists from "./components/UserLists.jsx";
+import UserAlbums from "./components/UserAlbums.jsx";
 
 const AccountInfo = ({ onEdit }) => {
-    const [value, setValue] = React.useState('one');
+    const [value, setValue] = React.useState("one");
+    const { user } = useAuth();
+    const apiUrl = import.meta.env.VITE_IMAGES_URL;
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
-    const { user } = useAuth();
-    const apiUrl = import.meta.env.VITE_IMAGES_URL;
 
     const getInitial = (name) => {
         return name ? name.charAt(0).toUpperCase() : "?";
     };
 
     return (
-        <Box sx={{ p: 3, position: 'relative' }}>
+        <Box sx={{ p: 3, position: "relative" }}>
             {/* Botón de editar en esquina superior derecha */}
             <IconButton
                 onClick={onEdit}
                 size="medium"
                 sx={{
-                    position: 'absolute',
+                    position: "absolute",
                     top: 16,
                     right: 16,
                 }}
@@ -52,7 +55,7 @@ const AccountInfo = ({ onEdit }) => {
                         width: 100,
                         height: 100,
                         border: "3px solid",
-                        borderColor: 'divider',
+                        borderColor: "divider",
                         fontSize: 60,
                     }}
                 >
@@ -69,10 +72,10 @@ const AccountInfo = ({ onEdit }) => {
                 </Box>
             </Stack>
 
-            {/* Divider - esta es la línea que mencionas */}
+            {/* Divider */}
             <Divider sx={{ my: 2 }} />
 
-            {/* Sección para información adicional */}
+            {/* Tabs */}
             <Box>
                 <Tabs
                     value={value}
@@ -108,6 +111,13 @@ const AccountInfo = ({ onEdit }) => {
                         }
                     />
                 </Tabs>
+            </Box>
+
+            {/* Contenido dinámico basado en el tab seleccionado */}
+            <Box sx={{ mt: 3 }}>
+                {value === "one" && <UserLists userId={user?.id} />}
+                {value === "two" && <UserSongs userId={user?.id} />}
+                {value === "three" && <UserAlbums userId={user?.id} />}
             </Box>
         </Box>
     );

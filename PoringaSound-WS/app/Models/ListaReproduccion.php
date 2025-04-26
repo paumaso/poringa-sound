@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class ListaReproduccion extends Model
 {
     use HasFactory;
+    protected $table = 'listas_reproduccion';
 
     protected $fillable = [
         'user_id', 'nombre', 'canciones_ids',

@@ -13,10 +13,13 @@ class Cancion extends Model
     
     protected $fillable = [
         'titulo',
+        'user_id',
         'album_id',
-        'archivo',
         'duracion',
+        'archivo',
         'genero',
+        'active',
+        'portada',
     ];
 
     public function album()

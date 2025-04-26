@@ -10,7 +10,11 @@ class Interaccion extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'cancion_id', 'tipo', 'comentario', 'puntuacion',
+        'user_id',
+        'cancion_id',
+        'tipo',
+        'comentario',
+        'puntuacion',
     ];
 
     public function usuario()
