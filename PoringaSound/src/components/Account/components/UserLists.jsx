@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { fetchlistasReproduccionByUserId } from "../../../services/api";
-import { CircularProgress } from "@mui/material";
+import { 
+    CircularProgress,
+    Box,
+    Typography,
+} from "@mui/material";
 
 const UserLists = ({ userId }) => {
     const [lists, setLists] = useState([]);
@@ -22,8 +26,21 @@ const UserLists = ({ userId }) => {
         fetchLists();
     }, [userId]);
 
-    if (loading) return <CircularProgress />;
-    if (error) return <p>Error al cargar las listas de reproducción: {error}</p>;
+    if (loading) {
+        return (
+            <Box display="flex" justifyContent="center" p={3}>
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    if (error) {
+        return (
+            <Box p={3}>
+                <Typography color="error">Error al cargar las canciones: {error}</Typography>
+            </Box>
+        );
+    }
 
     return (
         <div>

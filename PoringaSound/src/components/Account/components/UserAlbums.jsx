@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { fetchAlbumsByUserId } from "../../../services/api";
-import { CircularProgress } from "@mui/material";
+import { 
+    CircularProgress,
+    Box,
+    Typography,
+} from "@mui/material";
 
 const UserAlbums = ({ userId }) => {
     const [albums, setAlbums] = useState([]);
@@ -22,8 +26,21 @@ const UserAlbums = ({ userId }) => {
         fetchAlbums();
     }, [userId]);
 
-    if (loading) return <CircularProgress />;
-    if (error) return <p>Error al cargar los álbumes: {error}</p>;
+    if (loading) {
+        return (
+            <Box display="flex" justifyContent="center" p={3}>
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    if (error) {
+        return (
+            <Box p={3}>
+                <Typography color="error">Error al cargar las canciones: {error}</Typography>
+            </Box>
+        );
+    }
 
     return (
         <div>

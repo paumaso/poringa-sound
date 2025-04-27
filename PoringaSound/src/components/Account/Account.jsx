@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     Avatar,
     Box,
@@ -8,20 +8,29 @@ import {
     Stack,
     Tabs,
     Tab,
+    Button,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    TextField,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import AlbumIcon from "@mui/icons-material/Album";
 import QueueMusicIcon from "@mui/icons-material/QueueMusic";
+import AddIcon from "@mui/icons-material/Add";
 import { useAuth } from "../../context/AuthContext";
 import UserSongs from "./components/UserSongs.jsx";
 import UserLists from "./components/UserLists.jsx";
 import UserAlbums from "./components/UserAlbums.jsx";
 
 const AccountInfo = ({ onEdit }) => {
-    const [value, setValue] = React.useState("one");
+    const [value, setValue] = useState("one");
     const { user } = useAuth();
     const apiUrl = import.meta.env.VITE_IMAGES_URL;
+
+    const [open, setOpen] = useState(false); // Estado para controlar el modal
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -29,6 +38,14 @@ const AccountInfo = ({ onEdit }) => {
 
     const getInitial = (name) => {
         return name ? name.charAt(0).toUpperCase() : "?";
+    };
+
+    const handleOpenModal = () => {
+        setOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setOpen(false);
     };
 
     return (
@@ -75,50 +92,98 @@ const AccountInfo = ({ onEdit }) => {
             {/* Divider */}
             <Divider sx={{ my: 2 }} />
 
-            {/* Tabs */}
             <Box>
-                <Tabs
-                    value={value}
-                    onChange={handleChange}
-                    textColor="primary"
-                    indicatorColor="primary"
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        mb: 2, // Margen inferior para separar los tabs del contenido
+                    }}
                 >
-                    <Tab
-                        value="one"
-                        label={
-                            <Box display="flex" alignItems="center" gap={1}>
-                                <QueueMusicIcon />
-                                <Typography>Listas</Typography>
-                            </Box>
-                        }
-                    />
-                    <Tab
-                        value="two"
-                        label={
-                            <Box display="flex" alignItems="center" gap={1}>
-                                <MusicNoteIcon />
-                                <Typography>Songs</Typography>
-                            </Box>
-                        }
-                    />
-                    <Tab
-                        value="three"
-                        label={
-                            <Box display="flex" alignItems="center" gap={1}>
-                                <AlbumIcon />
-                                <Typography>Albums</Typography>
-                            </Box>
-                        }
-                    />
-                </Tabs>
+                    {/* Tabs alineados a la izquierda */}
+                    <Tabs
+                        value={value}
+                        onChange={handleChange}
+                        textColor="primary"
+                        indicatorColor="primary"
+                    >
+                        <Tab
+                            value="one"
+                            label={
+                                <Box display="flex" alignItems="center" gap={1}>
+                                    <QueueMusicIcon />
+                                    <Typography>Listas</Typography>
+                                </Box>
+                            }
+                        />
+                        <Tab
+                            value="two"
+                            label={
+                                <Box display="flex" alignItems="center" gap={1}>
+                                    <MusicNoteIcon />
+                                    <Typography>Songs</Typography>
+                                </Box>
+                            }
+                        />
+                        <Tab
+                            value="three"
+                            label={
+                                <Box display="flex" alignItems="center" gap={1}>
+                                    <AlbumIcon />
+                                    <Typography>Albums</Typography>
+                                </Box>
+                            }
+                        />
+                    </Tabs>
+
+                    {/* Botón alineado a la derecha */}
+                    <Button
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        onClick={handleOpenModal} // Abre el modal
+                    >
+                        New
+                    </Button>
+                </Box>
+
+                {/* Contenido dinámico basado en el tab seleccionado */}
+                <Box sx={{ mt: 2 }}>
+                    {value === "one" && <UserLists userId={user?.id} />}
+                    {value === "two" && <UserSongs userId={user?.id} />}
+                    {value === "three" && <UserAlbums userId={user?.id} />}
+                </Box>
             </Box>
 
-            {/* Contenido dinámico basado en el tab seleccionado */}
-            <Box sx={{ mt: 2 }}>
-                {value === "one" && <UserLists userId={user?.id} />}
-                {value === "two" && <UserSongs userId={user?.id} />}
-                {value === "three" && <UserAlbums userId={user?.id} />}
-            </Box>
+            {/* Modal */}
+            <Dialog open={open} onClose={handleCloseModal}>
+                <DialogTitle>Agregar nuevo elemento</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        label="Título"
+                        type="text"
+                        fullWidth
+                        variant="outlined"
+                    />
+                    <TextField
+                        margin="dense"
+                        label="Descripción"
+                        type="text"
+                        fullWidth
+                        variant="outlined"
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseModal} color="secondary">
+                        Cancelar
+                    </Button>
+                    <Button onClick={handleCloseModal} color="primary">
+                        Guardar
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };
