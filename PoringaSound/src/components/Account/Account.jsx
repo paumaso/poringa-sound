@@ -21,9 +21,10 @@ import AlbumIcon from "@mui/icons-material/Album";
 import QueueMusicIcon from "@mui/icons-material/QueueMusic";
 import AddIcon from "@mui/icons-material/Add";
 import { useAuth } from "../../context/AuthContext";
-import UserSongs from "./components/UserSongs.jsx";
-import UserLists from "./components/UserLists.jsx";
-import UserAlbums from "./components/UserAlbums.jsx";
+import UserSongs from "./components/song/UserSongs.jsx";
+import UserLists from "./components/list/UserLists.jsx";
+import UserAlbums from "./components/album/UserAlbums.jsx";
+import NewSongDialog from "./components/song/NewSongDialog.jsx";
 
 const AccountInfo = ({ onEdit }) => {
     const [value, setValue] = useState("one");
@@ -156,34 +157,7 @@ const AccountInfo = ({ onEdit }) => {
             </Box>
 
             {/* Modal */}
-            <Dialog open={open} onClose={handleCloseModal}>
-                <DialogTitle>Agregar nuevo elemento</DialogTitle>
-                <DialogContent>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        label="Título"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                    />
-                    <TextField
-                        margin="dense"
-                        label="Descripción"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseModal} color="secondary">
-                        Cancelar
-                    </Button>
-                    <Button onClick={handleCloseModal} color="primary">
-                        Guardar
-                    </Button>
-                </DialogActions>
-            </Dialog>
+            <NewSongDialog open={open} onClose={handleCloseModal} />
         </Box>
     );
 };

@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { fetchlistasReproduccionByUserId } from "../../../services/api";
+import { fetchAlbumsByUserId } from "../../../../services/api";
 import { 
     CircularProgress,
     Box,
     Typography,
 } from "@mui/material";
 
-const UserLists = ({ userId }) => {
-    const [lists, setLists] = useState([]);
+const UserAlbums = ({ userId }) => {
+    const [albums, setAlbums] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchLists = async () => {
+        const fetchAlbums = async () => {
             try {
-                const data = await fetchlistasReproduccionByUserId(userId);
-                setLists(data.data);
+                const data = await fetchAlbumsByUserId(userId);
+                setAlbums(data.data);
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -23,7 +23,7 @@ const UserLists = ({ userId }) => {
             }
         };
 
-        fetchLists();
+        fetchAlbums();
     }, [userId]);
 
     if (loading) {
@@ -44,12 +44,12 @@ const UserLists = ({ userId }) => {
 
     return (
         <div>
-            {lists.length === 0 ? (
-                <p>No hay listas de reproducción disponibles.</p>
+            {albums.length === 0 ? (
+                <p>No hay álbumes disponibles.</p>
             ) : (
                 <ul>
-                    {lists.map((list) => (
-                        <li key={list.id}>{list.nombre}</li>
+                    {albums.map((album) => (
+                        <li key={album.id}>{album.nombre}</li>
                     ))}
                 </ul>
             )}
@@ -57,4 +57,4 @@ const UserLists = ({ userId }) => {
     );
 };
 
-export default UserLists;
+export default UserAlbums;
