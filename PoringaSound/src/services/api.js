@@ -86,3 +86,27 @@ export const fetchlistasReproduccionByUserId = async (userId, page = 1, perPage 
     throw error;
   }
 }
+
+export const fetchGeneros = async () => {
+  try {
+    const token = getAuthToken();
+    const response = await fetch(`${API_URL}/generos/`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error("No autorizado. Por favor, inicia sesión nuevamente.");
+      }
+      throw new Error(`Error al obtener géneros: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error al obtener géneros:", error);
+    throw error;
+  }
+}
