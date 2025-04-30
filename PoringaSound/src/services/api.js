@@ -110,3 +110,29 @@ export const fetchGeneros = async () => {
     throw error;
   }
 }
+
+export const fetchCreateSong = async (songData) => {
+  try {
+    const token = getAuthToken(); 
+    const response = await fetch(`${API_URL}/canciones`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: songData, 
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error("No autorizado. Por favor, inicia sesión nuevamente.");
+      }
+      throw new Error(`Error al crear la canción: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error al crear la canción:", error);
+    throw error;
+  }
+};
