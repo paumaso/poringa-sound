@@ -111,7 +111,7 @@ export const fetchCreateSong = async (titulo, genero, active, archivo, portada) 
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
-        ContentType: "multipart/form-data",
+        Accept: "application/json",
       },
       body: formData,
     });

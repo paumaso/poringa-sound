@@ -69,8 +69,8 @@ const NewSongDialog = ({ open, onClose, onSave }) => {
         try {
           const formData = new FormData();
           formData.append("titulo", title);
-          // formData.append("genero", genero?.nombre || "");
-          formData.append("active", active);
+          formData.append("genero", genero?.id || "");
+          formData.append("active", active ? "1" : "0");
           formData.append("archivo", audioFile);
           if (imageFile) {
             formData.append("portada", imageFile);

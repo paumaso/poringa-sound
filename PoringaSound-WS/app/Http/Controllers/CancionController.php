@@ -144,12 +144,12 @@ class CancionController extends Controller
     {
         $request->validate([
             'titulo' => 'required|string|max:255',
-            'album_id' => 'nullable|exists:albumes,id',
-            'duracion' => 'nullable|integer',
-            'archivo' => 'nullable|file|mimes:mp3,wav,ogg|max:10240',
-            'genero' => 'nullable|exists:generos,id',
-            'active' => 'nullable|boolean',
-            'portada' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'album_id' => 'nullable',
+            'duracion' => 'nullable',
+            'archivo' => 'nullable',
+            'genero' => 'nullable',
+            'active' => 'nullable',
+            'portada' => 'nullable',
         ]);
     }
 
