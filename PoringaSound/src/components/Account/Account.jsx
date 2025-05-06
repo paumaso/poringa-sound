@@ -9,11 +9,6 @@ import {
     Tabs,
     Tab,
     Button,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    TextField,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
@@ -25,13 +20,17 @@ import UserSongs from "./components/song/UserSongs.jsx";
 import UserLists from "./components/list/UserLists.jsx";
 import UserAlbums from "./components/album/UserAlbums.jsx";
 import NewSongDialog from "./components/song/NewSongDialog.jsx";
+import NewAlbumDialog from "./components/album/NewAlbumDialog.jsx";
+import NewListDialog from "./components/list/NewListDialog.jsx";
 
 const AccountInfo = ({ onEdit }) => {
     const [value, setValue] = useState("one");
     const { user } = useAuth();
     const apiUrl = import.meta.env.VITE_IMAGES_URL;
 
-    const [open, setOpen] = useState(false); // Estado para controlar el modal
+    const [openListDialog, setOpenListDialog] = useState(false);
+    const [openSongDialog, setOpenSongDialog] = useState(false);
+    const [openAlbumDialog, setOpenAlbumDialog] = useState(false);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -41,12 +40,16 @@ const AccountInfo = ({ onEdit }) => {
         return name ? name.charAt(0).toUpperCase() : "?";
     };
 
-    const handleOpenModal = () => {
-        setOpen(true);
+    const handleSaveList = async () => {
+        setOpenListDialog(false);
     };
 
-    const handleCloseModal = () => {
-        setOpen(false);
+    const handleSaveSong = async () => {
+        setOpenSongDialog(false);
+    };
+
+    const handleSaveAlbum = async () => {
+        setOpenAlbumDialog(false);
     };
 
     return (
@@ -99,7 +102,7 @@ const AccountInfo = ({ onEdit }) => {
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
-                        mb: 2, // Margen inferior para separar los tabs del contenido
+                        mb: 2,
                     }}
                 >
                     {/* Tabs alineados a la izquierda */}
@@ -142,9 +145,19 @@ const AccountInfo = ({ onEdit }) => {
                     <Button
                         variant="contained"
                         startIcon={<AddIcon />}
-                        onClick={handleOpenModal} // Abre el modal
+                        onClick={() => {
+                            if (value === "one") {
+                                setOpenListDialog(true);
+                            } else if (value === "two") {
+                                setOpenSongDialog(true);
+                            } else if (value === "three") {
+                                setOpenAlbumDialog(true);
+                            }
+                        }}
                     >
-                        New
+                        {value === "one" && "New List"}
+                        {value === "two" && "New Song"}
+                        {value === "three" && "New Album"}
                     </Button>
                 </Box>
 
@@ -156,8 +169,22 @@ const AccountInfo = ({ onEdit }) => {
                 </Box>
             </Box>
 
-            {/* Modal */}
-            <NewSongDialog open={open} onClose={handleCloseModal} />
+            {/* Modals */}
+            <NewListDialog
+                open={openListDialog}
+                onClose={() => setOpenListDialog(false)}
+                onSave={handleSaveList}
+            />
+            <NewSongDialog
+                open={openSongDialog}
+                onClose={() => setOpenSongDialog(false)}
+                onSave={handleSaveSong}
+            />
+            <NewAlbumDialog
+                open={openAlbumDialog}
+                onClose={() => setOpenAlbumDialog(false)}
+                onSave={handleSaveAlbum}
+            />
         </Box>
     );
 };

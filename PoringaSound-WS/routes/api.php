@@ -18,16 +18,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Rutas de autenticación
     Route::post('logout', [AuthController::class, 'logout']);
 
-    // Rutas de administración
-    Route::prefix('admin')->group(function () {
-        Route::delete('/user/{id}', [AdminController::class, 'deleteUser']);
-        Route::delete('/cancion/{id}', [AdminController::class, 'deleteCancion']);
-        Route::delete('/album/{id}', [AdminController::class, 'deleteAlbum']);
-        Route::delete('/interaccion/{id}', [AdminController::class, 'deleteInteraccion']);
-        Route::put('/user/{id}', [AdminController::class, 'editUser']);
-        Route::put('/cancion/{id}', [AdminController::class, 'editCancion']);
-        Route::put('/album/{id}', [AdminController::class, 'editAlbum']);
-        Route::put('/interaccion/{id}', [AdminController::class, 'editInteraccion']);
+    // user
+    Route::prefix('user')->group(function () {
+        Route::put('/{id}', [AuthController::class, 'updateUser']);
     });
 
     // Rutas de álbumes

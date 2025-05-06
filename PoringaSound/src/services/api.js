@@ -6,6 +6,17 @@ const getAuthToken = () => {
   return Cookies.get("token");
 };
 
+const handleResponseError = async (response) => {
+  if (!response.ok) {
+    const errorData = await response.json();
+    if (response.status === 401) {
+      throw new Error("No autorizado. Por favor, inicia sesión nuevamente.");
+    }
+    throw new Error(`Error: ${response.status} ${response.statusText}. ${errorData.message || ''}`);
+  }
+  return response.json();
+};
+
 export const fetchSongByUserId = async (userId, page = 1, perPage = 10) => {
   try {
     const token = getAuthToken();
@@ -18,14 +29,7 @@ export const fetchSongByUserId = async (userId, page = 1, perPage = 10) => {
       }
     );
 
-    if (!response.ok) {
-      if (response.status === 401) {
-        throw new Error("No autorizado. Por favor, inicia sesión nuevamente.");
-      }
-      throw new Error(`Error al obtener canciones: ${response.statusText}`);
-    }
-
-    const data = await response.json();
+    const data = await handleResponseError(response);
     return data;
   } catch (error) {
     console.error("Error al obtener canciones por usuario:", error);
@@ -45,20 +49,13 @@ export const fetchAlbumsByUserId = async (userId, page = 1, perPage = 10) => {
       }
     );
 
-    if (!response.ok) {
-      if (response.status === 401) {
-        throw new Error("No autorizado. Por favor, inicia sesión nuevamente.");
-      }
-      throw new Error(`Error al obtener álbumes: ${response.statusText}`);
-    }
-
-    const data = await response.json();
+    const data = await handleResponseError(response);
     return data;
   } catch (error) {
     console.error("Error al obtener álbumes por usuario:", error);
     throw error;
   }
-}
+};
 
 export const fetchlistasReproduccionByUserId = async (userId, page = 1, perPage = 10) => {
   try {
@@ -72,20 +69,13 @@ export const fetchlistasReproduccionByUserId = async (userId, page = 1, perPage 
       }
     );
 
-    if (!response.ok) {
-      if (response.status === 401) {
-        throw new Error("No autorizado. Por favor, inicia sesión nuevamente.");
-      }
-      throw new Error(`Error al obtener listas de reproducción: ${response.statusText}`);
-    }
-
-    const data = await response.json();
+    const data = await handleResponseError(response);
     return data;
   } catch (error) {
     console.error("Error al obtener listas de reproducción por usuario:", error);
     throw error;
   }
-}
+};
 
 export const fetchGeneros = async () => {
   try {
@@ -96,20 +86,13 @@ export const fetchGeneros = async () => {
       },
     });
 
-    if (!response.ok) {
-      if (response.status === 401) {
-        throw new Error("No autorizado. Por favor, inicia sesión nuevamente.");
-      }
-      throw new Error(`Error al obtener géneros: ${response.statusText}`);
-    }
-
-    const data = await response.json();
+    const data = await handleResponseError(response);
     return data;
   } catch (error) {
     console.error("Error al obtener géneros:", error);
     throw error;
   }
-}
+};
 
 export const fetchCreateSong = async (titulo, genero, active, archivo, portada) => {
   try {
@@ -128,17 +111,12 @@ export const fetchCreateSong = async (titulo, genero, active, archivo, portada) 
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
+        ContentType: "multipart/form-data",
       },
       body: formData,
     });
 
-    if (!response.ok) {
-      if (response.status === 401) {
-        throw new Error("No autorizado. Por favor, inicia sesión nuevamente.");
-      }
-    }
-
-    const data = await response.json();
+    const data = await handleResponseError(response);
     return data;
   } catch (error) {
     console.error("Error al crear la canción:", error);
