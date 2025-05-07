@@ -1,0 +1,74 @@
+import Cookies from "js-cookie";
+import { getToken } from "./auth.js";
+const API_URL = import.meta.env.VITE_API_URL;
+
+const handleResponseError = async (response) => {
+    if (!response.ok) {
+        const errorData = await response.json();
+        if (response.status === 401) {
+            throw new Error("No autorizado. Por favor, inicia sesión nuevamente.");
+        }
+        throw new Error(`Error: ${response.status} ${response.statusText}. ${errorData.message || ''}`);
+    }
+    return response.json();
+};
+
+export const fetchSongByUserId = async (userId, page = 1, perPage = 10) => {
+    try {
+        const token = getToken();
+        const response = await fetch(
+            `${API_URL}/canciones/user/${userId}?page=${page}&per_page=${perPage}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+
+        const data = await handleResponseError(response);
+        return data;
+    } catch (error) {
+        console.error("Error al obtener canciones por usuario:", error);
+        throw error;
+    }
+};
+
+export const fetchCreateSong = async (formData) => {
+    try {
+        const token = getToken();
+        console.log(formData)
+        const response = await fetch(`${API_URL}/canciones/`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+            },
+            body: formData,
+        });
+
+        const data = await handleResponseError(response);
+        return data;
+    } catch (error) {
+        console.error("Error al crear la canción:", error);
+        throw error;
+    }
+};
+
+export const fetchDeleteSong = async (songId) => {
+    try {
+        const token = getToken();
+        const response = await fetch(`${API_URL}/canciones/${songId}`, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+            },
+        });
+
+        const data = await handleResponseError(response);
+        return data;
+    } catch (error) {
+        console.error("Error al eliminar la canción:", error);
+        throw error;
+    }
+};

@@ -14,7 +14,7 @@ class GeneroSeeder extends Seeder
      */
     public function run()
     {
-        $generos = [
+        $genero = [
             ['nombre' => 'Rock'],
             ['nombre' => 'Pop'],
             ['nombre' => 'Reggaeton'],
@@ -27,6 +27,6 @@ class GeneroSeeder extends Seeder
             ['nombre' => 'Metal'],
         ];
 
-        DB::table('generos')->insert($generos);
+        DB::table('genero')->insert($genero);
     }
 }

@@ -10,17 +10,22 @@ class Cancion extends Model
     use HasFactory;
 
     protected $table = 'canciones';
-    
+
     protected $fillable = [
         'titulo',
         'user_id',
         'album_id',
         'duracion',
         'archivo',
-        'genero',
+        'genero_id',
         'active',
         'portada',
     ];
+
+    public function genero()
+    {
+        return $this->belongsTo(Genero::class, 'genero_id', 'id');
+    }
 
     public function album()
     {

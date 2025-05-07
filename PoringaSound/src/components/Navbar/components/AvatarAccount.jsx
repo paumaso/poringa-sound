@@ -19,7 +19,7 @@ const AvatarAccount = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
 
-    const apiUrl = import.meta.env.VITE_IMAGES_URL;
+    const apiUrl = import.meta.env.VITE_STORAGE_URL;
 
     const handleMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);

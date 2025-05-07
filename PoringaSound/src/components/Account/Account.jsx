@@ -23,14 +23,15 @@ import NewSongDialog from "./components/song/NewSongDialog.jsx";
 import NewAlbumDialog from "./components/album/NewAlbumDialog.jsx";
 import NewListDialog from "./components/list/NewListDialog.jsx";
 
-const AccountInfo = ({ onEdit }) => {
+const Account = ({ onEdit }) => {
     const [value, setValue] = useState("one");
     const { user } = useAuth();
-    const apiUrl = import.meta.env.VITE_IMAGES_URL;
-
+    const apiUrl = import.meta.env.VITE_STORAGE_URL;
     const [openListDialog, setOpenListDialog] = useState(false);
     const [openSongDialog, setOpenSongDialog] = useState(false);
     const [openAlbumDialog, setOpenAlbumDialog] = useState(false);
+    const [reloadSongs, setReloadSongs] = useState(false);
+
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -46,6 +47,11 @@ const AccountInfo = ({ onEdit }) => {
 
     const handleSaveSong = async () => {
         setOpenSongDialog(false);
+        setReloadSongs(true);
+    };
+
+    const handleSongsUpdated = () => {
+        setReloadSongs(false);
     };
 
     const handleSaveAlbum = async () => {
@@ -164,7 +170,8 @@ const AccountInfo = ({ onEdit }) => {
                 {/* Contenido dinámico basado en el tab seleccionado */}
                 <Box sx={{ mt: 2 }}>
                     {value === "one" && <UserLists userId={user?.id} />}
-                    {value === "two" && <UserSongs userId={user?.id} />}
+                    {value === "two" && <UserSongs userId={user?.id} onSongsUpdated={handleSongsUpdated}
+                        reload={reloadSongs} />}
                     {value === "three" && <UserAlbums userId={user?.id} />}
                 </Box>
             </Box>
@@ -189,4 +196,4 @@ const AccountInfo = ({ onEdit }) => {
     );
 };
 
-export default AccountInfo;
+export default Account;

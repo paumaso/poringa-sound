@@ -10,12 +10,14 @@ class CancionController extends Controller
 {
     public function getAllCanciones()
     {
-        return response()->json(Cancion::all(), 200);
+        $canciones = Cancion::with('genero:id,nombre')->get();
+
+        return response()->json($canciones, 200);
     }
 
     public function getCancionById($id)
     {
-        $cancion = Cancion::find($id);
+        $cancion = Cancion::with('genero:id,nombre')->find($id);
 
         if (!$cancion) {
             return response()->json(['message' => 'Canción no encontrada'], 404);
@@ -26,7 +28,7 @@ class CancionController extends Controller
 
     public function getRandomCancion()
     {
-        $cancion = Cancion::inRandomOrder()->first();
+        $cancion = Cancion::with('genero:id,nombre')->inRandomOrder()->first();
 
         if (!$cancion) {
             return response()->json(['message' => 'No hay canciones disponibles'], 404);
@@ -37,7 +39,7 @@ class CancionController extends Controller
 
     public function getCancionesByAlbumId($id)
     {
-        $canciones = Cancion::where('album_id', $id)->get();
+        $canciones = Cancion::where('album_id', $id)->with('genero:id,nombre')->get();
 
         if ($canciones->isEmpty()) {
             return response()->json(['message' => 'No se encontraron canciones para este álbum'], 404);
@@ -48,7 +50,9 @@ class CancionController extends Controller
 
     public function getCancionesByGenero($genero)
     {
-        $canciones = Cancion::where('genero', $genero)->get();
+        $canciones = Cancion::whereHas('genero', function ($query) use ($genero) {
+            $query->where('nombre', $genero);
+        })->with('genero:id,nombre')->get();
 
         if ($canciones->isEmpty()) {
             return response()->json(['message' => 'No se encontraron canciones para este género'], 404);
@@ -60,7 +64,10 @@ class CancionController extends Controller
     public function getCancionesByUserId(Request $request, $userId)
     {
         $perPage = $request->query('per_page', 10);
-        $canciones = Cancion::where('user_id', $userId)->paginate($perPage);
+
+        $canciones = Cancion::where('user_id', $userId)
+            ->with('genero:id,nombre')
+            ->paginate($perPage);
 
         return response()->json($canciones, 200);
     }
@@ -72,7 +79,9 @@ class CancionController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
         }
+
         $archivo = $this->guardarArchivo($request);
+        $portada = $this->guardarPortada($request);
 
         $cancion = Cancion::create([
             'titulo' => $request->titulo,
@@ -80,9 +89,9 @@ class CancionController extends Controller
             'album_id' => $request->album_id,
             'duracion' => $request->duracion,
             'archivo' => $archivo,
-            'genero' => $request->genero,
+            'genero_id' => $request->genero_id,
             'active' => $request->active,
-            'portada' => $request->portada,
+            'portada' => $portada,
         ]);
 
         return response()->json($cancion, 201);
@@ -107,16 +116,24 @@ class CancionController extends Controller
             }
         }
 
+        if ($cancion->portada && $request->hasFile('portada')) {
+            if (Storage::disk('public')->exists($cancion->portada)) {
+                Storage::disk('public')->delete($cancion->portada);
+            }
+        }
+
         $archivo = $this->guardarArchivo($request);
+        $portada = $this->guardarPortada($request);
+
         $cancion->update([
             'titulo' => $request->titulo,
             'user_id' => auth()->user()->id,
             'album_id' => $request->album_id,
             'duracion' => $request->duracion,
             'archivo' => $archivo,
-            'genero' => $request->genero,
+            'genero_id' => $request->genero_id,
             'active' => $request->active,
-            'portada' => $request->portada,
+            'portada' => $portada,
         ]);
 
         return response()->json($cancion, 200);
@@ -151,9 +168,9 @@ class CancionController extends Controller
             'album_id' => 'nullable|exists:albumes,id',
             'duracion' => 'nullable|integer',
             'archivo' => 'nullable|file',
-            'genero' => 'nullable',
+            'genero_id' => 'nullable|exists:genero,id',
             'active' => 'nullable|boolean',
-            'portada' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'portada' => 'nullable|image',
         ]);
     }
 
@@ -163,11 +180,25 @@ class CancionController extends Controller
             return null;
         }
 
-        $cancion = $request->file('archivo');
+        $archivo = $request->file('archivo');
         $nombreSanitizado = preg_replace('/[^A-Za-z0-9\-]/', '-', $request->titulo);
-        $nombreCancion = $nombreSanitizado . '-' . time() . '.' . $cancion->getClientOriginalExtension();
-        $cancion->storeAs('canciones', $nombreCancion, 'public');
+        $nombreArchivo = $nombreSanitizado . '-' . time() . '.' . $archivo->getClientOriginalExtension();
+        $archivo->storeAs('canciones/audios', $nombreArchivo, 'public');
 
-        return 'storage/canciones/' . $nombreCancion;
+        return 'storage/canciones/audios/' . $nombreArchivo;
+    }
+
+    private function guardarPortada(Request $request)
+    {
+        if (!$request->hasFile('portada')) {
+            return null;
+        }
+
+        $portada = $request->file('portada');
+        $nombreSanitizado = preg_replace('/[^A-Za-z0-9\-]/', '-', $request->titulo);
+        $nombrePortada = $nombreSanitizado . '-portada-' . time() . '.' . $portada->getClientOriginalExtension();
+        $portada->storeAs('canciones/portadas', $nombrePortada, 'public');
+
+        return 'storage/canciones/portadas/' . $nombrePortada;
     }
 }

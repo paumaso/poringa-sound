@@ -97,7 +97,7 @@ export const fetchGeneros = async () => {
 export const fetchCreateSong = async (formData) => {
   try {
     const token = getAuthToken();
-
+    console.log(formData)
     const response = await fetch(`${API_URL}/canciones/`, {
       method: "POST",
       headers: {

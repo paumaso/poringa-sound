@@ -69,25 +69,26 @@ const NewSongDialog = ({ open, onClose, onSave }) => {
         try {
           const formData = new FormData();
           formData.append("titulo", title);
-          formData.append("genero", genero?.id || "");
+          formData.append("genero_id", genero?.id || "");
           formData.append("active", active ? "1" : "0");
           formData.append("archivo", audioFile);
-          console.log("Archivo seleccionado:", audioFile);
           if (imageFile) {
             formData.append("portada", imageFile);
           }
       
           const response = await fetchCreateSong(formData);
-          console.log("Canción creada exitosamente:", response);
       
-          setTitle("");
-          setAudioFile(null);
-          setAudioPreview(null);
-          setImageFile(null);
-          setImagePreview(null);
-          setGenero(null);
-          setActive(false);
-      
+          if (response.status !== 200) {
+            setTitle("");
+            setAudioFile(null);
+            setAudioPreview(null);
+            setImageFile(null);
+            setImagePreview(null);
+            setGenero(null);
+            setActive(false);
+          }
+          
+          onSave();
           onClose();
         } catch (error) {
           console.error("Error al crear la canción:", error);

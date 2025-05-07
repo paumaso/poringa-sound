@@ -2,24 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Generos;
+use App\Models\Genero;
 use Illuminate\Http\Request;
 
 class GenerosController extends Controller
 {
     public function getAllGeneros()
     {
-        return response()->json(Generos::all(), 200);
+        return response()->json(Genero::all(), 200);
     }
 
     public function getGeneroById($id)
     {
-        return response()->json(Generos::find($id), 200);
+        return response()->json(Genero::find($id), 200);
     }
 
     public function getGeneroByNombre($nombre)
     {
-        return response()->json(Generos::where('nombre', $nombre)->first(), 200);
+        return response()->json(Genero::where('nombre', $nombre)->first(), 200);
     }
 
     public function createGenero(Request $request)
@@ -28,7 +28,7 @@ class GenerosController extends Controller
             'nombre' => 'required|string|max:255',
         ]);
 
-        $genero = Generos::create([
+        $genero = Genero::create([
             'nombre' => $request->nombre,
         ]);
 
@@ -37,7 +37,7 @@ class GenerosController extends Controller
 
     public function deleteGenero($id)
     {
-        $genero = Generos::find($id);
+        $genero = Genero::find($id);
         if (!$genero) {
             return response()->json(['message' => 'Genero not found'], 404);
         }

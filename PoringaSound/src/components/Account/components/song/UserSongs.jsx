@@ -1,158 +1,201 @@
 import React, { useEffect, useState } from "react";
-import { fetchSongByUserId } from "../../../../services/api";
+import { fetchSongByUserId, fetchDeleteSong } from "../../../../services/songs";
 import {
-    CircularProgress,
-    Box,
-    Chip,
-    Fab,
-    Typography,
-    List,
-    ListItem,
-    ListItemAvatar,
-    Avatar,
-    ListItemText,
-    IconButton,
-    Menu,
-    MenuItem
+  CircularProgress,
+  Box,
+  Typography,
+  List,
+  ListItem,
+  ListItemAvatar,
+  Avatar,
+  Chip,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ShareIcon from "@mui/icons-material/Share";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
+import PlayCircleIcon from "@mui/icons-material/PlayCircle";
+import DeleteDialog from "../DeleteDialog";
 
 const UserSongs = ({ userId }) => {
-    const [songs, setSongs] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [selectedSong, setSelectedSong] = useState(null);
+  const apiUrl = import.meta.env.VITE_STORAGE_URL;
 
-    useEffect(() => {
-        const fetchSongs = async () => {
-            try {
-                const data = await fetchSongByUserId(userId);
-                setSongs(data.data);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
+  const [songs, setSongs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedSong, setSelectedSong] = useState(null);
 
-        fetchSongs();
-    }, [userId]);
-
-    const handleMenuOpen = (event, song) => {
-        setAnchorEl(event.currentTarget);
-        setSelectedSong(song);
+  useEffect(() => {
+    const fetchSongs = async () => {
+      try {
+        const data = await fetchSongByUserId(userId);
+        setSongs(data.data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const handleMenuClose = () => {
-        setAnchorEl(null);
-        setSelectedSong(null);
-    };
+    fetchSongs();
+  }, [userId]);
 
-    const handleAddSong = () => {
-        console.log("Agregar canción");
-    };
+  const handleEdit = (song) => {
+    console.log("Editar canción:", song);
+  };
 
-    const handleMenuItemClick = (action) => {
-        console.log(`${action} canción:`, selectedSong);
-        handleMenuClose();
-    };
+  const handleDeleteClick = (song) => {
+    setSelectedSong(song);
+    setDeleteDialogOpen(true);
+  };
 
-    if (loading) {
-        return (
-            <Box display="flex" justifyContent="center" p={3}>
-                <CircularProgress />
-            </Box>
+  const handleDeleteConfirm = async () => {
+    try {
+      if (selectedSong) {
+        await fetchDeleteSong(selectedSong.id);
+        setSongs((prevSongs) =>
+          prevSongs.filter((song) => song.id !== selectedSong.id)
         );
+        console.log("Canción eliminada:", selectedSong);
+      }
+    } catch (error) {
+      console.error("Error al eliminar la canción:", error);
+    } finally {
+      setDeleteDialogOpen(false);
+      setSelectedSong(null);
     }
+  };
 
-    if (error) {
-        return (
-            <Box p={3}>
-                <Typography color="error">Error al cargar las canciones: {error}</Typography>
-            </Box>
-        );
-    }
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+    setSelectedSong(null);
+  };
 
+  const handleShare = (song) => {
+    console.log("Compartir canción:", song);
+  };
+
+  if (loading) {
     return (
-        <Box sx={{ p: 1, position: "relative" }}>
-            {/* Lista de canciones */}
-            {songs.length === 0 ? (
-                <Typography variant="body1" color="textSecondary">
-                    No hay canciones disponibles.
-                </Typography>
-            ) : (
-                <List>
-                    {songs.map((song) => (
-                        <ListItem
-                            key={song.id}
-                            secondaryAction={
-                                <IconButton
-                                    edge="end"
-                                    aria-label="options"
-                                    onClick={(e) => handleMenuOpen(e, song)}
-                                >
-                                    <MoreVertIcon />
-                                </IconButton>
-                            }
-                        >
-                            <Box
-                                sx={{
-                                    width: 64,
-                                    height: 64, 
-                                    borderRadius: 1,
-                                    overflow: "hidden", 
-                                    marginRight: 2,
-                                    backgroundColor: "#f0f0f0",
-                                }}
-                            >
-                                {song.portada ? (
-                                    <img
-                                        src={song.portada}
-                                        alt={song.titulo}
-                                        style={{
-                                            width: "100%",
-                                            height: "100%",
-                                            objectFit: "cover", 
-                                        }}
-                                    />
-                                ) : (
-                                    <MusicNoteIcon
-                                        style={{
-                                            width: "100%",
-                                            height: "100%",
-                                            color: "#9e9e9e",
-                                        }}
-                                    />
-                                )}
-                            </Box>
-                            <ListItemText
-                                primary={song.titulo}
-                                secondary={
-                                    <>
-                                        <Chip label={song.genero} variant="outlined" />
-                                    </>
-                                }
-                            />
-                        </ListItem>
-                    ))}
-                </List>
-            )}
-
-            {/* Menú de opciones */}
-            <Menu
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleMenuClose}
-            >
-                <MenuItem onClick={() => handleMenuItemClick('Editar')}>Editar</MenuItem>
-                <MenuItem onClick={() => handleMenuItemClick('Eliminar')}>Eliminar</MenuItem>
-                <MenuItem onClick={() => handleMenuItemClick('Compartir')}>Compartir</MenuItem>
-            </Menu>
-        </Box>
+      <Box display="flex" justifyContent="center" p={3}>
+        <CircularProgress />
+      </Box>
     );
+  }
+
+  if (error) {
+    return (
+      <Box p={3}>
+        <Typography color="error">Error al cargar las canciones: {error}</Typography>
+      </Box>
+    );
+  }
+
+  return (
+    <Box sx={{ p: 1, position: "relative" }}>
+      {songs.length === 0 ? (
+        <Typography component="div" variant="body1" color="textSecondary">
+          No hay canciones disponibles.
+        </Typography>
+      ) : (
+        <List>
+          {songs.map((song) => (
+            <ListItem key={song.id} sx={{ alignItems: "flex-start" }}>
+              <ListItemAvatar>
+                <Box
+                  sx={{
+                    position: "relative",
+                    width: 64,
+                    height: 64,
+                    "&:hover .hover-overlay": {
+                      opacity: 1,
+                    },
+                  }}
+                >
+                  <Avatar
+                    variant="rounded"
+                    sx={{
+                      width: 64,
+                      height: 64,
+                      backgroundColor: "#f0f0f0",
+                    }}
+                    src={apiUrl + song.portada || undefined}
+                    alt={song.titulo}
+                  >
+                    {!song.portada && (
+                      <MusicNoteIcon sx={{ color: "#9e9e9e" }} />
+                    )}
+                  </Avatar>
+                  <Box
+                    className="hover-overlay"
+                    sx={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      backgroundColor: "rgba(0, 0, 0, 0.5)",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      opacity: 0,
+                      transition: "opacity 0.3s ease",
+                      borderRadius: "8px",
+                    }}
+                  >
+                    <PlayCircleIcon
+                      sx={{ color: "white", fontSize: 40 }}
+                    />
+                  </Box>
+                </Box>
+              </ListItemAvatar>
+              <Box sx={{ flex: 1, ml: 2 }}>
+                <Typography variant="body1">{song.titulo}</Typography>
+                <Chip label={song.genero.nombre} sx={{ mt: 1 }} />
+              </Box>
+              <Box display="flex" gap={1} alignItems="center">
+                <Tooltip title="Editar">
+                  <IconButton
+                    onClick={() => handleEdit(song)}
+                    aria-label="Editar"
+                  >
+                    <EditIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Eliminar">
+                  <IconButton
+                    onClick={() => handleDeleteClick(song)}
+                    aria-label="Eliminar"
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Compartir">
+                  <IconButton
+                    onClick={() => handleShare(song)}
+                    aria-label="Compartir"
+                  >
+                    <ShareIcon />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            </ListItem>
+          ))}
+        </List>
+      )}
+
+      {/* Modal de confirmación para eliminar */}
+      <DeleteDialog
+        open={deleteDialogOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        text={`¿Estás seguro de que deseas eliminar la canción "${selectedSong?.titulo}"? Esta acción no se puede deshacer.`}
+      />
+    </Box>
+  );
 };
 
 export default UserSongs;
