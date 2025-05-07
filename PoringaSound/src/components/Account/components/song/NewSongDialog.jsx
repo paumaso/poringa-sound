@@ -72,6 +72,7 @@ const NewSongDialog = ({ open, onClose, onSave }) => {
           formData.append("genero", genero?.id || "");
           formData.append("active", active ? "1" : "0");
           formData.append("archivo", audioFile);
+          console.log("Archivo seleccionado:", audioFile);
           if (imageFile) {
             formData.append("portada", imageFile);
           }
@@ -87,7 +88,7 @@ const NewSongDialog = ({ open, onClose, onSave }) => {
           setGenero(null);
           setActive(false);
       
-          onClose(); // Cierra el modal
+          onClose();
         } catch (error) {
           console.error("Error al crear la canción:", error);
           setError(error.message);

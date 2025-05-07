@@ -67,7 +67,11 @@ class CancionController extends Controller
 
     public function createCancion(Request $request)
     {
-        $this->validateCancion($request);
+        try {
+            $this->validateCancion($request);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
+        }
         $archivo = $this->guardarArchivo($request);
 
         $cancion = Cancion::create([
@@ -77,7 +81,7 @@ class CancionController extends Controller
             'duracion' => $request->duracion,
             'archivo' => $archivo,
             'genero' => $request->genero,
-            'active' => $request->active ?? false,
+            'active' => $request->active,
             'portada' => $request->portada,
         ]);
 
@@ -111,7 +115,7 @@ class CancionController extends Controller
             'duracion' => $request->duracion,
             'archivo' => $archivo,
             'genero' => $request->genero,
-            'active' => $request->active ?? false,
+            'active' => $request->active,
             'portada' => $request->portada,
         ]);
 
@@ -144,12 +148,12 @@ class CancionController extends Controller
     {
         $request->validate([
             'titulo' => 'required|string|max:255',
-            'album_id' => 'nullable',
-            'duracion' => 'nullable',
-            'archivo' => 'nullable',
+            'album_id' => 'nullable|exists:albumes,id',
+            'duracion' => 'nullable|integer',
+            'archivo' => 'nullable|file',
             'genero' => 'nullable',
-            'active' => 'nullable',
-            'portada' => 'nullable',
+            'active' => 'nullable|boolean',
+            'portada' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
     }
 

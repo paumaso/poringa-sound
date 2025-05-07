@@ -94,20 +94,11 @@ export const fetchGeneros = async () => {
   }
 };
 
-export const fetchCreateSong = async (titulo, genero, active, archivo, portada) => {
+export const fetchCreateSong = async (formData) => {
   try {
     const token = getAuthToken();
-    const formData = new FormData();
-    formData.append("titulo", titulo);
-    formData.append("genero", genero);
-    formData.append("active", active);
-    formData.append("archivo", archivo);
 
-    if (portada) {
-      formData.append("portada", portada);
-    }
-
-    const response = await fetch(`${API_URL}/canciones`, {
+    const response = await fetch(`${API_URL}/canciones/`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
