@@ -5,11 +5,10 @@ import IconButton from "@mui/material/IconButton";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 
-const SongDrawer = ({ onDrawerToggle }) => {
-    const [open, setOpen] = React.useState(false);
-
+const SongDrawer = ({ open, onDrawerToggle, songData }) => {
+    const apiUrl = import.meta.env.VITE_STORAGE_URL;
+    
     const toggleDrawer = (newOpen) => () => {
-        setOpen(newOpen);
         if (onDrawerToggle) {
             onDrawerToggle(newOpen);
         }
@@ -62,6 +61,16 @@ const SongDrawer = ({ onDrawerToggle }) => {
                     >
                         <ArrowBackIosIcon />
                     </IconButton>
+                    {songData && (
+                        <div>
+                            <img
+                                src={apiUrl + songData.portada}
+                                alt={songData.titulo}
+                                style={{ width: "100%", borderRadius: "10px" }}
+                            />
+                            <h2>{songData.titulo}</h2>
+                        </div>
+                    )}
                 </div>
             </Drawer>
         </div>

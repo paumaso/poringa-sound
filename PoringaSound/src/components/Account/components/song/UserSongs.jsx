@@ -19,14 +19,19 @@ import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import DeleteDialog from "../DeleteDialog";
 
-const UserSongs = ({ userId }) => {
+const UserSongs = ({ userId, onSongClick }) => {
   const apiUrl = import.meta.env.VITE_STORAGE_URL;
 
   const [songs, setSongs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedSong, setSelectedSong] = useState(null);
+
+  const [currentSong, setCurrentSong] = useState(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
 
   useEffect(() => {
     const fetchSongs = async () => {
@@ -78,6 +83,11 @@ const UserSongs = ({ userId }) => {
     console.log("Compartir canción:", song);
   };
 
+  const handleSongClick = (song) => {
+    setCurrentSong(song);
+    setDrawerOpen(true);
+};
+
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" p={3}>
@@ -103,7 +113,7 @@ const UserSongs = ({ userId }) => {
       ) : (
         <List>
           {songs.map((song) => (
-            <ListItem key={song.id} sx={{ alignItems: "flex-start" }}>
+            <ListItem key={song.id} onClick={() => onSongClick(song)} sx={{ alignItems: "flex-start" }}>
               <ListItemAvatar>
                 <Box
                   sx={{
@@ -113,7 +123,9 @@ const UserSongs = ({ userId }) => {
                     "&:hover .hover-overlay": {
                       opacity: 1,
                     },
+                    cursor: "pointer",
                   }}
+                  onClick={() => handleSongClick(song)}
                 >
                   <Avatar
                     variant="rounded"

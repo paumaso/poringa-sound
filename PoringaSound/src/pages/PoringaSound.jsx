@@ -6,7 +6,13 @@ import { renderContent } from "./PoringaSoundUtils.jsx";
 
 const PoringaSound = () => {
     const { activePage } = usePage();
-    const [drawerOpen, setDrawerOpen] = useState(false); 
+    const [drawerOpen, setDrawerOpen] = useState(false);
+    const [currentSong, setCurrentSong] = useState(null);
+
+    const handleSongClick = (song) => {
+        setCurrentSong(song);
+        setDrawerOpen(true);
+    };
 
     return (
         <div>
@@ -21,11 +27,15 @@ const PoringaSound = () => {
                     transition: "margin-right 0.3s ease",
                 }}
             >
-                {renderContent(activePage)}
+                {renderContent(activePage, handleSongClick)}
             </div>
 
             {/* SongDrawer */}
-            <SongDrawer onDrawerToggle={setDrawerOpen} />
+            <SongDrawer
+                open={drawerOpen}
+                onDrawerToggle={setDrawerOpen}
+                songData={currentSong}
+            />
         </div>
     );
 };

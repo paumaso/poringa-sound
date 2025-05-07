@@ -23,7 +23,7 @@ import NewSongDialog from "./components/song/NewSongDialog.jsx";
 import NewAlbumDialog from "./components/album/NewAlbumDialog.jsx";
 import NewListDialog from "./components/list/NewListDialog.jsx";
 
-const Account = ({ onEdit }) => {
+const Account = ({ onEdit, onSongClick }) => {
     const [value, setValue] = useState("one");
     const { user } = useAuth();
     const apiUrl = import.meta.env.VITE_STORAGE_URL;
@@ -170,8 +170,12 @@ const Account = ({ onEdit }) => {
                 {/* Contenido dinámico basado en el tab seleccionado */}
                 <Box sx={{ mt: 2 }}>
                     {value === "one" && <UserLists userId={user?.id} />}
-                    {value === "two" && <UserSongs userId={user?.id} onSongsUpdated={handleSongsUpdated}
-                        reload={reloadSongs} />}
+                    {value === "two" && (
+                        <UserSongs
+                            userId={user?.id}
+                            onSongClick={onSongClick}
+                        />
+                    )}
                     {value === "three" && <UserAlbums userId={user?.id} />}
                 </Box>
             </Box>

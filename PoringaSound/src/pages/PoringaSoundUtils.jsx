@@ -1,10 +1,10 @@
 import React from "react";
-import AccountInfo from "../components/Account/Account";
+import Account from "../components/Account/Account";
 
-export const renderContent = (activePage) => {
+export const renderContent = (activePage, handleSongClick) => {
     switch (activePage) {
         case "account":
-            return <AccountInfo />;
+            return <Account onSongClick={handleSongClick} />;
         case "default":
         default:
             return (
