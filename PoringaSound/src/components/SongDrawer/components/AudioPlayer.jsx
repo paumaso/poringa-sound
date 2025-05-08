@@ -9,15 +9,20 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import SkipNextIcon from "@mui/icons-material/SkipNext";
 import SkipPreviousIcon from "@mui/icons-material/SkipPrevious";
-import VolumeUpIcon from "@mui/icons-material/VolumeUp";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import RatingDialog from "./RatingDialog";
+import StarBorderIcon from "@mui/icons-material/StarBorder";
 
 const AudioPlayer = ({ song }) => {
     const apiUrl = import.meta.env.VITE_STORAGE_URL;
     const audioRef = useRef(null);
+    const [ratingModalOpen, setRatingModalOpen] = useState(false);
+    const [ratingValue, setRatingValue] = useState(0);
     const [isPlaying, setIsPlaying] = useState(false);
-    const [volume, setVolume] = useState(1);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
+    const [liked, setLiked] = useState(false);
 
     const togglePlayPause = () => {
         const audio = audioRef.current;
@@ -39,11 +44,6 @@ const AudioPlayer = ({ song }) => {
         audio.currentTime = Math.max(audio.currentTime - 10, 0);
     };
 
-    const handleVolumeChange = (event, newValue) => {
-        setVolume(newValue);
-        audioRef.current.volume = newValue;
-    };
-
     const handleTimeUpdate = () => {
         setCurrentTime(audioRef.current.currentTime);
     };
@@ -55,6 +55,10 @@ const AudioPlayer = ({ song }) => {
     const handleSeek = (event, newValue) => {
         audioRef.current.currentTime = newValue;
         setCurrentTime(newValue);
+    };
+
+    const toggleLike = () => {
+        setLiked((prev) => !prev);
     };
 
     return (
@@ -88,12 +92,49 @@ const AudioPlayer = ({ song }) => {
                 />
             )}
 
-            {/* Título y artista */}
             <Box sx={{ width: "100%" }}>
-                <Typography variant="h6">{song?.titulo || "Sin título"}</Typography>
-                <Typography variant="subtitle2" color="text.secondary">
-                    {song?.user?.nombre || "Sin artista"}
+                {/* Título: línea superior */}
+                <Typography variant="h6" sx={{ mb: 0.5 }}>
+                    {song?.titulo || "Sin título"}
                 </Typography>
+
+                {/* Línea inferior: artista a la izquierda, botones a la derecha */}
+                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    {/* Nombre del artista */}
+                    <Typography variant="subtitle2" color="text.secondary">
+                        {song?.user?.nombre || "Sin artista"}
+                    </Typography>
+
+                    {/* Botones rating y like */}
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        <IconButton
+                            onClick={() => setRatingModalOpen(true)}
+                            size="small"
+                        >
+                            <StarBorderIcon />
+                        </IconButton>
+
+                        <IconButton
+                            onClick={toggleLike}
+                            color={liked ? "error" : "default"}
+                            size="small"
+                        >
+                            {liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                        </IconButton>
+                    </Box>
+                </Box>
+
+                {/* Modal para rating */}
+                <RatingDialog
+                    open={ratingModalOpen}
+                    onClose={() => setRatingModalOpen(false)}
+                    onSubmit={(val) => {
+                        console.log("Puntuación enviada:", val);
+                        setRatingModalOpen(false);
+                    }}
+                    value={ratingValue}
+                    setValue={setRatingValue}
+                />
             </Box>
 
             {/* Controles de audio */}

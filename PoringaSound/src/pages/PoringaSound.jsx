@@ -10,8 +10,10 @@ const PoringaSound = () => {
     const [currentSong, setCurrentSong] = useState(null);
 
     const handleSongClick = (song) => {
+        console.log("Drawer open state:", drawerOpen);
         setCurrentSong(song);
         setDrawerOpen(true);
+        console.log("Drawer open state:", drawerOpen);
     };
 
     return (
