@@ -22,6 +22,11 @@ class Cancion extends Model
         'portada',
     ];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
     public function genero()
     {
         return $this->belongsTo(Genero::class, 'genero_id', 'id');

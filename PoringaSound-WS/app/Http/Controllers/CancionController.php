@@ -10,14 +10,14 @@ class CancionController extends Controller
 {
     public function getAllCanciones()
     {
-        $canciones = Cancion::with('genero:id,nombre')->get();
+        $canciones = Cancion::with(['genero:id,nombre', 'user:id,nombre'])->get();
 
         return response()->json($canciones, 200);
     }
 
     public function getCancionById($id)
     {
-        $cancion = Cancion::with('genero:id,nombre')->find($id);
+        $cancion = Cancion::with(['genero:id,nombre', 'user:id,nombre'])->find($id);
 
         if (!$cancion) {
             return response()->json(['message' => 'Canción no encontrada'], 404);
@@ -52,7 +52,7 @@ class CancionController extends Controller
     {
         $canciones = Cancion::whereHas('genero', function ($query) use ($genero) {
             $query->where('nombre', $genero);
-        })->with('genero:id,nombre')->get();
+        })->with(['genero:id,nombre', 'user:id,nombre'])->get();
 
         if ($canciones->isEmpty()) {
             return response()->json(['message' => 'No se encontraron canciones para este género'], 404);
@@ -66,7 +66,7 @@ class CancionController extends Controller
         $perPage = $request->query('per_page', 10);
 
         $canciones = Cancion::where('user_id', $userId)
-            ->with('genero:id,nombre')
+            ->with(['genero:id,nombre', 'user:id,nombre'])
             ->paginate($perPage);
 
         return response()->json($canciones, 200);

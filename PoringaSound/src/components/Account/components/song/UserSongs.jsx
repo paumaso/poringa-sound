@@ -17,6 +17,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ShareIcon from "@mui/icons-material/Share";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
+import EditSongDialog from "./EditSongDialog";
 import DeleteDialog from "../DeleteDialog";
 
 const UserSongs = ({ userId, onSongClick }) => {
@@ -27,11 +28,8 @@ const UserSongs = ({ userId, onSongClick }) => {
   const [error, setError] = useState(null);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedSong, setSelectedSong] = useState(null);
-
-  const [currentSong, setCurrentSong] = useState(null);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-
 
   useEffect(() => {
     const fetchSongs = async () => {
@@ -49,8 +47,15 @@ const UserSongs = ({ userId, onSongClick }) => {
   }, [userId]);
 
   const handleEdit = (song) => {
-    console.log("Editar canción:", song);
+    setSelectedSong(song);
+    setEditDialogOpen(true);
   };
+
+  const handleEditClose = () => {
+    setEditDialogOpen(false);
+    setSelectedSong(null);
+  };
+
 
   const handleDeleteClick = (song) => {
     setSelectedSong(song);
@@ -83,11 +88,6 @@ const UserSongs = ({ userId, onSongClick }) => {
     console.log("Compartir canción:", song);
   };
 
-  const handleSongClick = (song) => {
-    setCurrentSong(song);
-    setDrawerOpen(true);
-};
-
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" p={3}>
@@ -113,8 +113,8 @@ const UserSongs = ({ userId, onSongClick }) => {
       ) : (
         <List>
           {songs.map((song) => (
-            <ListItem key={song.id} onClick={() => onSongClick(song)} sx={{ alignItems: "flex-start" }}>
-              <ListItemAvatar>
+            <ListItem key={song.id} sx={{ alignItems: "flex-start" }}>
+              <ListItemAvatar onClick={() => onSongClick(song)}>
                 <Box
                   sx={{
                     position: "relative",
@@ -125,7 +125,6 @@ const UserSongs = ({ userId, onSongClick }) => {
                     },
                     cursor: "pointer",
                   }}
-                  onClick={() => handleSongClick(song)}
                 >
                   <Avatar
                     variant="rounded"
@@ -197,6 +196,18 @@ const UserSongs = ({ userId, onSongClick }) => {
             </ListItem>
           ))}
         </List>
+      )}
+
+      {/* Modal para Editar una cancion */}
+      {selectedSong && (
+        <EditSongDialog
+          open={editDialogOpen}
+          onClose={handleEditClose}
+          onSave={() => {
+            setEditDialogOpen(false);
+          }}
+          song={selectedSong}
+        />
       )}
 
       {/* Modal de confirmación para eliminar */}

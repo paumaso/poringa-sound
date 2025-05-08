@@ -30,6 +30,8 @@ const Account = ({ onEdit, onSongClick }) => {
     const [openListDialog, setOpenListDialog] = useState(false);
     const [openSongDialog, setOpenSongDialog] = useState(false);
     const [openAlbumDialog, setOpenAlbumDialog] = useState(false);
+    
+    const [selectedSong, setSelectedSong] = useState(null);
     const [reloadSongs, setReloadSongs] = useState(false);
 
 
@@ -174,6 +176,8 @@ const Account = ({ onEdit, onSongClick }) => {
                         <UserSongs
                             userId={user?.id}
                             onSongClick={onSongClick}
+                            setOpenSongDialog={setOpenSongDialog}
+                            setSelectedSong={setSelectedSong}
                         />
                     )}
                     {value === "three" && <UserAlbums userId={user?.id} />}

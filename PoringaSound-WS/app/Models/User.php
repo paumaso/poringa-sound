@@ -44,9 +44,4 @@ class User extends Authenticatable
     {
         return $this->hasMany(Interaccion::class);
     }
-
-    public function artista()
-    {
-        return $this->hasOne(Artista::class);
-    }
 }

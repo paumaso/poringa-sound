@@ -1,13 +1,10 @@
 import React from "react";
-import Button from "@mui/material/Button";
-import Drawer from "@mui/material/Drawer";
-import IconButton from "@mui/material/IconButton";
+import { Box, IconButton, Button, Drawer, Typography } from "@mui/material";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
+import AudioPlayer from "./components/AudioPlayer";
 
 const SongDrawer = ({ open, onDrawerToggle, songData }) => {
-    const apiUrl = import.meta.env.VITE_STORAGE_URL;
-    
     const toggleDrawer = (newOpen) => () => {
         if (onDrawerToggle) {
             onDrawerToggle(newOpen);
@@ -16,7 +13,7 @@ const SongDrawer = ({ open, onDrawerToggle, songData }) => {
 
     return (
         <div>
-            {/* Botón para abrir el Drawer */}
+            {/* Botón flotante para abrir el Drawer */}
             {!open && (
                 <Button
                     onClick={toggleDrawer(true)}
@@ -29,14 +26,14 @@ const SongDrawer = ({ open, onDrawerToggle, songData }) => {
                         position: "fixed",
                         bottom: "20px",
                         right: "20px",
-                        zIndex: 1000,
+                        zIndex: 1300,
                     }}
                 >
                     <MusicNoteIcon />
                 </Button>
             )}
 
-            {/* Drawer lateral persistente */}
+            {/* Drawer lateral */}
             <Drawer
                 anchor="right"
                 open={open}
@@ -44,34 +41,40 @@ const SongDrawer = ({ open, onDrawerToggle, songData }) => {
                 sx={{
                     "& .MuiDrawer-paper": {
                         width: "400px",
-                        padding: "20px",
                         top: "74px",
                         height: "calc(100% - 74px)",
+                        display: "flex",
+                        flexDirection: "column",
+                        position: "fixed",
                     },
                 }}
             >
-                <div>
+                {/* Contenedor principal scrollable */}
+                <Box sx={{ flex: 1, overflowY: "auto", position: "relative", px: 2, pt: 1 }}>
+                    {/* Botón Back dentro del Drawer (posición absoluta) */}
                     <IconButton
                         onClick={toggleDrawer(false)}
                         sx={{
-                            position: "absolute",
-                            top: "10px",
-                            left: "10px",
+                            position: "sticky",
+                            top: "0px",
+                            left: 0,
+                            zIndex: 100,
+                            backgroundColor: "#fff",
+                            boxShadow: 1,
                         }}
                     >
                         <ArrowBackIosIcon />
                     </IconButton>
-                    {songData && (
-                        <div>
-                            <img
-                                src={apiUrl + songData.portada}
-                                alt={songData.titulo}
-                                style={{ width: "100%", borderRadius: "10px" }}
-                            />
-                            <h2>{songData.titulo}</h2>
-                        </div>
-                    )}
-                </div>
+
+                    {/* Contenido del Drawer */}
+                    {songData && <AudioPlayer song={songData} />}
+
+                    {/* Sección de comentarios */}
+                    <Box sx={{ mt: 4 }}>
+                        <Typography variant="h6">Comentarios</Typography>
+                        {/* Aquí puedes agregar input y lista de comentarios */}
+                    </Box>
+                </Box>
             </Drawer>
         </div>
     );

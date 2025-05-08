@@ -26,7 +26,6 @@ const NewSongDialog = ({ open, onClose, onSave }) => {
     const [audioPreview, setAudioPreview] = useState(null);
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
-    const [albumId, setAlbumId] = useState("");
     const [genero, setGenero] = useState("");
     const [generosList, setGenerosList] = useState([]);
     const [active, setActive] = useState(false);
