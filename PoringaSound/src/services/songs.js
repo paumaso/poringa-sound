@@ -1,4 +1,3 @@
-import Cookies from "js-cookie";
 import { getToken } from "./auth.js";
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -13,6 +12,55 @@ const handleResponseError = async (response) => {
     return response.json();
 };
 
+export const fetchAllSongs = async (page = 1, perPage = 10) => {
+    try {
+        const token = getToken();
+        const response = await fetch(
+            `${API_URL}/canciones?page=${page}&per_page=${perPage}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    Accept: "application/json",
+                },
+            }
+        );
+        return await handleResponseError(response);
+    } catch (error) {
+        console.error("Error al obtener todas las canciones:", error);
+        throw error;
+    }
+};
+
+export const fetchSongById = async (id) => {
+    try {
+        const token = getToken();
+        const response = await fetch(`${API_URL}/canciones/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return await handleResponseError(response);
+    } catch (error) {
+        console.error("Error al obtener la canción:", error);
+        throw error;
+    }
+};
+
+export const fetchRandomSong = async () => {
+    try {
+        const token = getToken();
+        const response = await fetch(`${API_URL}/canciones/random`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return await handleResponseError(response);
+    } catch (error) {
+        console.error("Error al obtener canción aleatoria:", error);
+        throw error;
+    }
+};
+
 export const fetchSongByUserId = async (userId, page = 1, perPage = 10) => {
     try {
         const token = getToken();
@@ -21,6 +69,7 @@ export const fetchSongByUserId = async (userId, page = 1, perPage = 10) => {
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
+                    Accept: "application/json",
                 },
             }
         );
@@ -38,7 +87,6 @@ export const fetchSongByUserId = async (userId, page = 1, perPage = 10) => {
 export const fetchCreateSong = async (formData) => {
     try {
         const token = getToken();
-        console.log(formData)
         const response = await fetch(`${API_URL}/canciones/`, {
             method: "POST",
             headers: {
@@ -52,6 +100,24 @@ export const fetchCreateSong = async (formData) => {
         return data;
     } catch (error) {
         console.error("Error al crear la canción:", error);
+        throw error;
+    }
+};
+
+export const fetchUpdateSong = async (id, formData) => {
+    try {
+        const token = getToken();
+        const response = await fetch(`${API_URL}/canciones/${id}`, {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+            },
+            body: formData,
+        });
+        return await handleResponseError(response);
+    } catch (error) {
+        console.error("Error al actualizar canción:", error);
         throw error;
     }
 };

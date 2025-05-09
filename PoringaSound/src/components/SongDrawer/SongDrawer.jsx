@@ -13,7 +13,6 @@ const SongDrawer = ({ open, onDrawerToggle, songData }) => {
 
     return (
         <div>
-            {/* Botón flotante para abrir el Drawer */}
             {!open && (
                 <Button
                     onClick={toggleDrawer(true)}
@@ -33,7 +32,6 @@ const SongDrawer = ({ open, onDrawerToggle, songData }) => {
                 </Button>
             )}
 
-            {/* Drawer lateral */}
             <Drawer
                 anchor="right"
                 open={open}
@@ -49,9 +47,8 @@ const SongDrawer = ({ open, onDrawerToggle, songData }) => {
                     },
                 }}
             >
-                {/* Contenedor principal scrollable */}
+
                 <Box sx={{ flex: 1, overflowY: "auto", position: "relative", px: 2, pt: 1 }}>
-                    {/* Botón Back dentro del Drawer (posición absoluta) */}
                     <IconButton
                         onClick={toggleDrawer(false)}
                         sx={{
@@ -59,21 +56,13 @@ const SongDrawer = ({ open, onDrawerToggle, songData }) => {
                             top: "0px",
                             left: 0,
                             zIndex: 100,
-                            backgroundColor: "#fff",
-                            boxShadow: 1,
+                            mb: 2,
                         }}
                     >
                         <ArrowBackIosIcon />
                     </IconButton>
 
-                    {/* Contenido del Drawer */}
-                    {songData && <AudioPlayer song={songData} />}
-
-                    {/* Sección de comentarios */}
-                    <Box sx={{ mt: 4 }}>
-                        <Typography variant="h6">Comentarios</Typography>
-                        {/* Aquí puedes agregar input y lista de comentarios */}
-                    </Box>
+                    <AudioPlayer songId={songData} />
                 </Box>
             </Drawer>
         </div>

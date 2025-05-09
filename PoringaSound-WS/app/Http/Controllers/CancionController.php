@@ -8,58 +8,70 @@ use App\Models\Cancion;
 
 class CancionController extends Controller
 {
-    public function getAllCanciones()
+    public function getCanciones(Request $request)
     {
-        $canciones = Cancion::with(['genero:id,nombre', 'user:id,nombre'])->get();
+        $perPage = $request->query('per_page', 10);
+        $authUserId = auth()->id();
+
+        $canciones = Cancion::with([
+            'genero:id,nombre',
+            'user:id,nombre',
+            'interacciones' => function ($query) use ($authUserId) {
+                $query->where('user_id', $authUserId);
+            }
+        ])->paginate($perPage);
 
         return response()->json($canciones, 200);
-    }
-
-    public function getCancionById($id)
-    {
-        $cancion = Cancion::with(['genero:id,nombre', 'user:id,nombre'])->find($id);
-
-        if (!$cancion) {
-            return response()->json(['message' => 'Canción no encontrada'], 404);
-        }
-
-        return response()->json($cancion, 200);
     }
 
     public function getRandomCancion()
     {
-        $cancion = Cancion::with('genero:id,nombre')->inRandomOrder()->first();
+        $authUserId = auth()->id();
 
-        if (!$cancion) {
-            return response()->json(['message' => 'No hay canciones disponibles'], 404);
-        }
+        $cancion = Cancion::inRandomOrder()
+            ->with([
+                'genero:id,nombre',
+                'user:id,nombre',
+                'comentarios',
+                'interacciones' => function ($query) use ($authUserId) {
+                    $query->where('user_id', $authUserId);
+                }
+            ])
+            ->firstOrFail();
+
+        $interacciones = $cancion->interacciones;
+
+        $cancion->has_liked = $interacciones->firstWhere('tipo', 'like') !== null;
+        $cancion->puntuacion_usuario = optional($interacciones->firstWhere('tipo', 'puntuacion'))->puntuacion;
+
+        unset($cancion->interacciones);
+
+        return response()->json($cancion);
+    }
+
+    public function getCancionById($cancionId)
+    {
+        $authUserId = auth()->id();
+
+        $cancion = Cancion::with([
+            'genero:id,nombre',
+            'user:id,nombre',
+            'comentarios',
+            'interacciones' => function ($query) use ($authUserId) {
+                $query->where('user_id', $authUserId);
+            }
+        ])->where('id', $cancionId)->firstOrFail();
+
+        $interacciones = $cancion->interacciones;
+
+        $cancion->has_liked = $interacciones->firstWhere('tipo', 'like') !== null;
+        $cancion->puntuacion_usuario = optional($interacciones->firstWhere('tipo', 'puntuacion'))->puntuacion;
+
+        unset($cancion->interacciones);
 
         return response()->json($cancion, 200);
     }
 
-    public function getCancionesByAlbumId($id)
-    {
-        $canciones = Cancion::where('album_id', $id)->with('genero:id,nombre')->get();
-
-        if ($canciones->isEmpty()) {
-            return response()->json(['message' => 'No se encontraron canciones para este álbum'], 404);
-        }
-
-        return response()->json($canciones, 200);
-    }
-
-    public function getCancionesByGenero($genero)
-    {
-        $canciones = Cancion::whereHas('genero', function ($query) use ($genero) {
-            $query->where('nombre', $genero);
-        })->with(['genero:id,nombre', 'user:id,nombre'])->get();
-
-        if ($canciones->isEmpty()) {
-            return response()->json(['message' => 'No se encontraron canciones para este género'], 404);
-        }
-
-        return response()->json($canciones, 200);
-    }
 
     public function getCancionesByUserId(Request $request, $userId)
     {
@@ -71,16 +83,6 @@ class CancionController extends Controller
                 $query->where('user_id', $authUserId);
             }])
             ->paginate($perPage);
-
-        $canciones->getCollection()->transform(function ($cancion) use ($authUserId) {
-            $interacciones = $cancion->interacciones;
-
-            $cancion->has_liked = $interacciones->firstWhere('tipo', 'like') !== null;
-            $cancion->puntuacion_usuario = optional($interacciones->firstWhere('tipo', 'puntuacion'))->puntuacion;
-
-            unset($cancion->interacciones);
-            return $cancion;
-        });
 
         return response()->json($canciones, 200);
     }

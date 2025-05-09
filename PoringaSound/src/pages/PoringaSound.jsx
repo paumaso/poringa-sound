@@ -36,7 +36,7 @@ const PoringaSound = () => {
             <SongDrawer
                 open={drawerOpen}
                 onDrawerToggle={setDrawerOpen}
-                songData={currentSong}
+                songData={currentSong?.id}
             />
         </div>
     );

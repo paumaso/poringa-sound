@@ -46,4 +46,9 @@ class Cancion extends Model
     {
         return $this->hasMany(\App\Models\Interaccion::class, 'cancion_id');
     }
+
+    public function comentarios()
+    {
+        return $this->hasMany(Interaccion::class)->where('tipo', 'comentario')->with('user:id,nombre,imagen_perfil');
+    }
 }

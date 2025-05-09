@@ -78,3 +78,29 @@ export const puntuarCancion = async (cancionId, puntuacion) => {
         throw error;
     }
 };
+
+export const comentarCancion = async (cancionId, comentario) => {
+    try {
+        const token = getToken();
+        const response = await fetch(`${API_URL}/interacciones/comentario`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+            body: JSON.stringify({ cancion_id: cancionId, comentario })
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Error al comentar');
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Error al comentar:", error);
+        throw error;
+    }
+}
