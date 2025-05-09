@@ -35,6 +35,7 @@ const UserSongs = ({ userId, onSongClick }) => {
     const fetchSongs = async () => {
       try {
         const data = await fetchSongByUserId(userId);
+        console.log("Canciones del usuario:", data);
         setSongs(data.data);
       } catch (err) {
         setError(err.message);

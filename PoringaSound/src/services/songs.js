@@ -24,7 +24,9 @@ export const fetchSongByUserId = async (userId, page = 1, perPage = 10) => {
                 },
             }
         );
-
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        }
         const data = await handleResponseError(response);
         return data;
     } catch (error) {

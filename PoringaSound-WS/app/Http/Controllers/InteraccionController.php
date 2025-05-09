@@ -7,51 +7,93 @@ use App\Models\Interaccion;
 
 class InteraccionController extends Controller
 {
-    public function getAllInteracciones()
+    public function totalLikes($cancionId)
     {
-        return response()->json(Interaccion::all(), 200);
+        $total = Interaccion::where('cancion_id', $cancionId)
+            ->where('tipo', 'like')
+            ->count();
+
+        return response()->json(['likes' => $total]);
     }
 
-    public function getInteraccionById($id)
+    public function mediaPuntuacion($cancionId)
     {
-        return response()->json(Interaccion::find($id), 200);
+        $media = Interaccion::where('cancion_id', $cancionId)
+            ->where('tipo', 'puntuacion')
+            ->avg('puntuacion');
+
+        return response()->json(['media_puntuacion' => round($media, 2)]);
     }
 
-    public function getInteraccionesByUserId($id)
+    public function comentariosCancion($cancionId)
     {
-        return response()->json(Interaccion::where('user_id', $id)->get(), 200);
+        $comentarios = Interaccion::with('usuario:id,nombre')
+            ->where('cancion_id', $cancionId)
+            ->where('tipo', 'comentario')
+            ->whereNotNull('comentario')
+            ->get(['comentario', 'user_id', 'created_at']);
+
+        return response()->json($comentarios);
     }
 
-    public function getComentariosByCancionId($id)
+    public function likeCancion(Request $request)
     {
-        return response()->json(Interaccion::where('cancion_id', $id)->where('tipo', 'comentario')->whereNotNull('comentario')->get(), 200);
-    }
+        $this->validateInteraccion($request, 'like');
 
-    public function getLikesByCancionId($id)
-    {
-        return response()->json(Interaccion::where('cancion_id', $id)->where('tipo', 'like')->get(), 200);
-    }
+        $userId = auth()->id();
+        $cancionId = $request->cancion_id;
 
-    public function getMediaPuntuacionByCancionId($id)
-    {
-        return response()->json(Interaccion::where('cancion_id', $id)->where('tipo', 'puntuacion')->avg('puntuacion'), 200);
-    }
+        $existingLike = Interaccion::where('user_id', $userId)
+            ->where('cancion_id', $cancionId)
+            ->where('tipo', 'like')
+            ->first();
 
-    public function likeCnacion(Request $request){
-        $this->validateInteraccion($request);
+        if ($existingLike) {
+            return response()->json([
+                'message' => 'Ya has dado like a esta canción.'
+            ], 409);
+        }
+
         $interaccion = Interaccion::create([
-            'user_id' => auth()->user()->id,
-            'cancion_id' => $request->cancion_id,
+            'user_id' => $userId,
+            'cancion_id' => $cancionId,
             'tipo' => 'like',
         ]);
 
         return response()->json($interaccion, 201);
     }
 
-    public function comentarCancion(Request $request){
-        $this->validateInteraccion($request);
+    public function quitarLike(Request $request)
+    {
+        $this->validateInteraccion($request, 'like');
+
+        $userId = auth()->id();
+        $cancionId = $request->cancion_id;
+
+        $existingLike = Interaccion::where('user_id', $userId)
+            ->where('cancion_id', $cancionId)
+            ->where('tipo', 'like')
+            ->first();
+
+        if (!$existingLike) {
+            return response()->json([
+                'message' => 'No has dado like a esta canción.'
+            ], 404);
+        }
+
+        $existingLike->delete();
+
+        return response()->json([
+            'message' => 'Like eliminado correctamente.',
+        ], 200);
+    }
+
+    public function comentarCancion(Request $request)
+    {
+        $this->validateInteraccion($request, 'comentario');
+
         $interaccion = Interaccion::create([
-            'user_id' => auth()->user()->id,
+            'user_id' => auth()->id(),
             'cancion_id' => $request->cancion_id,
             'comentario' => $request->comentario,
             'tipo' => 'comentario',
@@ -60,26 +102,50 @@ class InteraccionController extends Controller
         return response()->json($interaccion, 201);
     }
 
-    public function puntuarCancion(Request $request){
-        $this->validateInteraccion($request);
-        $interaccion = Interaccion::create([
-            'user_id' => auth()->user()->id,
-            'cancion_id' => $request->cancion_id,
-            'puntuacion' => $request->puntuacion,
-            'tipo' => 'puntuacion',
-        ]);
+    public function puntuarCancion(Request $request)
+    {
+        $this->validateInteraccion($request, 'puntuacion');
 
-        return response()->json($interaccion, 201);
+        $userId = auth()->id();
+        $cancionId = $request->cancion_id;
+
+        $interaccion = Interaccion::where('user_id', $userId)
+            ->where('cancion_id', $cancionId)
+            ->where('tipo', 'puntuacion')
+            ->first();
+
+        if ($interaccion) {
+            $interaccion->puntuacion = $request->puntuacion;
+            $interaccion->save();
+        } else {
+            // Crea una nueva puntuación
+            $interaccion = Interaccion::create([
+                'user_id' => $userId,
+                'cancion_id' => $cancionId,
+                'puntuacion' => $request->puntuacion,
+                'tipo' => 'puntuacion',
+            ]);
+        }
+
+        return response()->json($interaccion, 200);
     }
 
-    
 
-    private function validateInteraccion(Request $request)
+
+    private function validateInteraccion(Request $request, $tipo = null)
     {
-        $request->validate([
+        $rules = [
             'cancion_id' => 'required|exists:canciones,id',
-            'comentario' => 'nullable|string',
-            'puntuacion' => 'nullable|integer|between:1,5',
-        ]);
+        ];
+
+        if ($tipo === 'comentario') {
+            $rules['comentario'] = 'required|string';
+        }
+
+        if ($tipo === 'puntuacion') {
+            $rules['puntuacion'] = 'required|integer|between:1,5';
+        }
+
+        $request->validate($rules);
     }
 }

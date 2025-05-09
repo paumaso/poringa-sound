@@ -41,4 +41,9 @@ class Cancion extends Model
     {
         return $this->belongsToMany(ListaReproduccion::class, 'cancion_lista_reproduccion');
     }
+
+    public function interacciones()
+    {
+        return $this->hasMany(\App\Models\Interaccion::class, 'cancion_id');
+    }
 }

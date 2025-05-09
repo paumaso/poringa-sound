@@ -2,9 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\CancionController;
+use App\Http\Controllers\InteraccionController;
 use App\Http\Controllers\ListaReproduccionController;
 use App\Http\Controllers\GenerosController;
 
@@ -44,6 +44,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/', [CancionController::class, 'createCancion']);
         Route::put('/{id}', [CancionController::class, 'actualizarCancion']);
         Route::delete('/{id}', [CancionController::class, 'deleteCancion']);
+    });
+
+    Route::prefix('interacciones')->group(function () {
+        Route::post('/like', [InteraccionController::class, 'likeCancion']);
+        Route::delete('/like', [InteraccionController::class, 'quitarLike']);
+        Route::post('/puntuacion', [InteraccionController::class, 'puntuarCancion']);
+        Route::post('/comentario', [InteraccionController::class, 'comentarCancion']);
     });
 
     // Rutas de listas de reproducción

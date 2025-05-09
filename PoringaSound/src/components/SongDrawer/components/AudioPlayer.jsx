@@ -1,9 +1,10 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
     Box,
     IconButton,
     Typography,
     Slider,
+    Rating
 } from "@mui/material";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
@@ -11,18 +12,17 @@ import SkipNextIcon from "@mui/icons-material/SkipNext";
 import SkipPreviousIcon from "@mui/icons-material/SkipPrevious";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import RatingDialog from "./RatingDialog";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
+import { likeSong, quitarLike, puntuarCancion } from "../../../services/interactions"; 
 
 const AudioPlayer = ({ song }) => {
     const apiUrl = import.meta.env.VITE_STORAGE_URL;
     const audioRef = useRef(null);
-    const [ratingModalOpen, setRatingModalOpen] = useState(false);
-    const [ratingValue, setRatingValue] = useState(0);
+    const [ratingValue, setRatingValue] = useState(song?.puntuacion_usuario || 0);  // Inicializa la puntuación desde la API
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
-    const [liked, setLiked] = useState(false);
+    const [liked, setLiked] = useState(song?.has_liked || false);  // Inicializa el estado de like desde la API
 
     const togglePlayPause = () => {
         const audio = audioRef.current;
@@ -34,31 +34,55 @@ const AudioPlayer = ({ song }) => {
         setIsPlaying(!isPlaying);
     };
 
+    // Avanza 10 segundos en el audio
     const skipForward = () => {
         const audio = audioRef.current;
         audio.currentTime = Math.min(audio.currentTime + 10, duration);
     };
 
+    // Retrocede 10 segundos en el audio
     const skipBackward = () => {
         const audio = audioRef.current;
         audio.currentTime = Math.max(audio.currentTime - 10, 0);
     };
 
+    // Actualiza el tiempo actual del audio
     const handleTimeUpdate = () => {
         setCurrentTime(audioRef.current.currentTime);
     };
 
+    // Maneja la metadata del audio (como duración)
     const handleLoadedMetadata = () => {
         setDuration(audioRef.current.duration);
     };
 
+    // Cambia el tiempo de reproducción al mover el slider
     const handleSeek = (event, newValue) => {
         audioRef.current.currentTime = newValue;
         setCurrentTime(newValue);
     };
 
-    const toggleLike = () => {
-        setLiked((prev) => !prev);
+    const toggleLike = async () => {
+        try {
+            if (liked) {
+                await quitarLike(song.id); 
+            } else {
+                await likeSong(song.id);
+            }
+            setLiked((prev) => !prev); 
+        } catch (error) {
+            console.error("Error al interactuar con like:", error);
+        }
+    };
+
+    // Maneja la puntuación
+    const handleRatingChange = async (event, newValue) => {
+        try {
+            await puntuarCancion(song.id, newValue); 
+            setRatingValue(newValue); 
+        } catch (error) {
+            console.error("Error al puntuar la canción:", error);
+        }
     };
 
     return (
@@ -92,49 +116,33 @@ const AudioPlayer = ({ song }) => {
                 />
             )}
 
+            {/* Información de la canción */}
             <Box sx={{ width: "100%" }}>
-                {/* Título: línea superior */}
                 <Typography variant="h6" sx={{ mb: 0.5 }}>
                     {song?.titulo || "Sin título"}
                 </Typography>
 
-                {/* Línea inferior: artista a la izquierda, botones a la derecha */}
                 <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    {/* Nombre del artista */}
                     <Typography variant="subtitle2" color="text.secondary">
                         {song?.user?.nombre || "Sin artista"}
                     </Typography>
 
-                    {/* Botones rating y like */}
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        {/* Rating de la canción */}
+                        <Rating
+                            name="song-rating"
+                            value={ratingValue}
+                            onChange={handleRatingChange}  // Llama a la función para puntuar
+                        />
+                        {/* Botón de Like */}
                         <IconButton
-                            onClick={() => setRatingModalOpen(true)}
-                            size="small"
-                        >
-                            <StarBorderIcon />
-                        </IconButton>
-
-                        <IconButton
-                            onClick={toggleLike}
+                            onClick={toggleLike}  // Llama a la función para manejar like
                             color={liked ? "error" : "default"}
-                            size="small"
                         >
                             {liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
                         </IconButton>
                     </Box>
                 </Box>
-
-                {/* Modal para rating */}
-                <RatingDialog
-                    open={ratingModalOpen}
-                    onClose={() => setRatingModalOpen(false)}
-                    onSubmit={(val) => {
-                        console.log("Puntuación enviada:", val);
-                        setRatingModalOpen(false);
-                    }}
-                    value={ratingValue}
-                    setValue={setRatingValue}
-                />
             </Box>
 
             {/* Controles de audio */}
@@ -168,7 +176,6 @@ const AudioPlayer = ({ song }) => {
                     <SkipNextIcon />
                 </IconButton>
             </Box>
-
         </Box>
     );
 };

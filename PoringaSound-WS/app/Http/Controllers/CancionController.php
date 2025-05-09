@@ -64,10 +64,23 @@ class CancionController extends Controller
     public function getCancionesByUserId(Request $request, $userId)
     {
         $perPage = $request->query('per_page', 10);
+        $authUserId = auth()->id();
 
         $canciones = Cancion::where('user_id', $userId)
-            ->with(['genero:id,nombre', 'user:id,nombre'])
+            ->with(['genero:id,nombre', 'user:id,nombre', 'interacciones' => function ($query) use ($authUserId) {
+                $query->where('user_id', $authUserId);
+            }])
             ->paginate($perPage);
+
+        $canciones->getCollection()->transform(function ($cancion) use ($authUserId) {
+            $interacciones = $cancion->interacciones;
+
+            $cancion->has_liked = $interacciones->firstWhere('tipo', 'like') !== null;
+            $cancion->puntuacion_usuario = optional($interacciones->firstWhere('tipo', 'puntuacion'))->puntuacion;
+
+            unset($cancion->interacciones);
+            return $cancion;
+        });
 
         return response()->json($canciones, 200);
     }
