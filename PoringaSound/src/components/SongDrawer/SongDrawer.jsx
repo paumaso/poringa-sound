@@ -48,7 +48,7 @@ const SongDrawer = ({ open, onDrawerToggle, songData }) => {
                 }}
             >
 
-                <Box sx={{ flex: 1, overflowY: "auto", position: "relative", px: 2, pt: 1 }}>
+                <Box sx={{ flex: 1, overflowY: "auto", position: "relative", px: 2, }}>
                     <IconButton
                         onClick={toggleDrawer(false)}
                         sx={{
@@ -56,7 +56,6 @@ const SongDrawer = ({ open, onDrawerToggle, songData }) => {
                             top: "0px",
                             left: 0,
                             zIndex: 100,
-                            mb: 2,
                         }}
                     >
                         <ArrowBackIosIcon />

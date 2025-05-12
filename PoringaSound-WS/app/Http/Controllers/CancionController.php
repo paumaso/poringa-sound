@@ -8,6 +8,18 @@ use App\Models\Cancion;
 
 class CancionController extends Controller
 {
+    public function getCancionesOrdenRandom(Request $request)
+    {
+        $perPage = $request->query('per_page', 10);
+
+        $canciones = Cancion::with([
+            'genero:id,nombre',
+            'user:id,nombre',
+        ])->where('active', 1)->inRandomOrder()->paginate($perPage);
+
+        return response()->json($canciones, 200);
+    }
+
     public function getCanciones(Request $request)
     {
         $perPage = $request->query('per_page', 10);

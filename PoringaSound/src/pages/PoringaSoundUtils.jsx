@@ -1,10 +1,37 @@
 import React from "react";
 import Account from "../components/Account/Account";
+import Home from "../components/Home/Home";
 
 export const renderContent = (activePage, handleSongClick) => {
     switch (activePage) {
+        case "home":
+            return <Home onSongClick={handleSongClick} />; 
         case "account":
             return <Account onSongClick={handleSongClick} />;
+        case "song":
+            return (
+                <div>
+                    <h1>Song Profail</h1>
+                </div>
+            );
+        case "album":
+            return (
+                <div>
+                    <h1>Album</h1>
+                </div>
+            );
+        case "list":
+            return (
+                <div>
+                    <h1>List</h1>
+                </div>
+            );
+        case "ArtistProfile":
+            return (
+                <div>
+                    <h1>Artist</h1>
+                </div>
+            );
         case "default":
         default:
             return (

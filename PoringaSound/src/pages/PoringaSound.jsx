@@ -10,29 +10,23 @@ const PoringaSound = () => {
     const [currentSong, setCurrentSong] = useState(null);
 
     const handleSongClick = (song) => {
-        console.log("Drawer open state:", drawerOpen);
         setCurrentSong(song);
         setDrawerOpen(true);
-        console.log("Drawer open state:", drawerOpen);
     };
 
     return (
         <div>
-            {/* Navbar */}
             <Navbar />
 
-            {/* Main content */}
             <div
-                className="content"
                 style={{
                     marginRight: drawerOpen ? "400px" : "0",
-                    transition: "margin-right 0.3s ease",
+                    transition: "margin-right 0.4s ease",
                 }}
             >
                 {renderContent(activePage, handleSongClick)}
             </div>
 
-            {/* SongDrawer */}
             <SongDrawer
                 open={drawerOpen}
                 onDrawerToggle={setDrawerOpen}

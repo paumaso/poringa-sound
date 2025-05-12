@@ -12,7 +12,7 @@ use App\Http\Controllers\GenerosController;
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 Route::get('canciones/random', [CancionController::class, 'getRandomCancion']);
-
+Route::get('canciones/random-list', [CancionController::class, 'getCancionesOrdenRandom']);
 
 // Rutas protegidas por autenticación
 Route::middleware('auth:sanctum')->group(function () {

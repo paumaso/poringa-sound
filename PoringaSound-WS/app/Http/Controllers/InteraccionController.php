@@ -118,7 +118,6 @@ class InteraccionController extends Controller
             $interaccion->puntuacion = $request->puntuacion;
             $interaccion->save();
         } else {
-            // Crea una nueva puntuación
             $interaccion = Interaccion::create([
                 'user_id' => $userId,
                 'cancion_id' => $cancionId,

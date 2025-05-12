@@ -27,6 +27,7 @@ import {
     puntuarCancion,
 } from "../../../services/interactions";
 import { fetchSongById, fetchRandomSong } from "../../../services/songs";
+import Coments from "./Coments";
 
 const AudioPlayer = ({ songId, onNextSong }) => {
     const apiUrl = import.meta.env.VITE_STORAGE_URL;
@@ -229,60 +230,10 @@ const AudioPlayer = ({ songId, onNextSong }) => {
 
             <Divider sx={{ width: "100%", mt: 2 }} />
 
-            <Coments coments={coments} cancionId={song.id} onNewComent={handleNewComent}/>
+            <Coments coments={coments} cancionId={song.id} onNewComent={handleNewComent} />
         </Box>
     );
 };
 
-// Componente para manejar los comentarios
-const Coments = ({ coments = [], cancionId, onNewComent }) => {
-    const [newComent, setNewComent] = useState("");
-
-    const handleSend = () => {
-        if (newComent.trim() === "") return;
-
-        const comentarioData = {
-            comentario: newComent,
-            user: { nombre: "Usuario" },  // Esto sería de la API en un caso real
-        };
-
-        onNewComent(comentarioData);
-        setNewComent("");
-    };
-
-    return (
-        <Box sx={{ width: "100%", mt: 2 }}>
-            <Box sx={{ height: 150, overflowY: "scroll", mb: 2 }}>
-                {coments.length > 0 ? (
-                    coments.map((coment, idx) => (
-                        <Box key={idx} sx={{ display: "flex", mb: 1 }}>
-                            <Avatar sx={{ bgcolor: "#1976d2", width: 32, height: 32, mr: 1 }}>
-                                {coment.user?.nombre.charAt(0).toUpperCase()}
-                            </Avatar>
-                            <Paper sx={{ flex: 1, padding: 1, backgroundColor: "#f1f1f1" }}>
-                                <Typography variant="body2">{coment.comentario}</Typography>
-                            </Paper>
-                        </Box>
-                    ))
-                ) : (
-                    <Typography color="text.secondary">No hay comentarios.</Typography>
-                )}
-            </Box>
-
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-                <TextField
-                    fullWidth
-                    placeholder="Escribe un comentario"
-                    value={newComent}
-                    onChange={(e) => setNewComent(e.target.value)}
-                    sx={{ mr: 1 }}
-                />
-                <IconButton onClick={handleSend} color="primary">
-                    <SendIcon />
-                </IconButton>
-            </Box>
-        </Box>
-    );
-};
 
 export default AudioPlayer;

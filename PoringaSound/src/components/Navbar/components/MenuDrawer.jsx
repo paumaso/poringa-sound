@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { usePage } from "../../../context/PageContext";
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -10,8 +10,6 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import HomeIcon from '@mui/icons-material/Home';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import Typography from '@mui/material/Typography';
@@ -23,6 +21,7 @@ import logo from "../../../assets/logo.png";
 export default function MenuDrawer() {
     const { t, i18n } = useTranslation();
     const [open, setOpen] = React.useState(false);
+    const { setActivePage } = usePage();
 
     const toggleDrawer = (newOpen) => () => {
         setOpen(newOpen);
@@ -40,7 +39,7 @@ export default function MenuDrawer() {
 
             <List>
                 <ListItem disablePadding>
-                    <ListItemButton onClick={() => navigate('/')}>
+                    <ListItemButton onClick={() => setActivePage("home")}>
                         <ListItemIcon>
                             <HomeIcon />
                         </ListItemIcon>
@@ -52,7 +51,7 @@ export default function MenuDrawer() {
 
             <List>
                 <ListItem disablePadding>
-                    <ListItemButton onClick={() => navigate('/')}>
+                    <ListItemButton onClick={() => setActivePage("songs")}>
                         <ListItemIcon>
                             <MusicNoteIcon />
                         </ListItemIcon>
@@ -60,7 +59,7 @@ export default function MenuDrawer() {
                     </ListItemButton>
                 </ListItem>
                 <ListItem disablePadding>
-                    <ListItemButton onClick={() => navigate('/')}>
+                    <ListItemButton onClick={() => setActivePage("albums")}>
                         <ListItemIcon>
                             <AlbumIcon />
                         </ListItemIcon>
@@ -68,7 +67,7 @@ export default function MenuDrawer() {
                     </ListItemButton>
                 </ListItem>
                 <ListItem disablePadding>
-                    <ListItemButton onClick={() => navigate('/')}>
+                    <ListItemButton onClick={() => setActivePage("artists")}>
                         <ListItemIcon>
                             <PeopleAltIcon />
                         </ListItemIcon>
