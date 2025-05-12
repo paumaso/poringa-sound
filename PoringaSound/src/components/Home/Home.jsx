@@ -11,8 +11,10 @@ import {
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 import axios from "axios";
 import SongCard from "./components/SongCard";
+import { fetchAllSongs, fetchSongsPreferences } from "../../services/songs";
+import { getToken } from "../../services/auth";
 
-const Home = () => {
+const Home = ( { onSongClick } ) => {
     const [canciones, setCanciones] = useState([]);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -21,7 +23,6 @@ const Home = () => {
     const apiUrl = import.meta.env.VITE_STORAGE_URL;
     const theme = useTheme();
 
-    // Detectar tamaño de pantalla para definir perPage dinámicamente
     const isXs = useMediaQuery(theme.breakpoints.down("sm"));
     const isSm = useMediaQuery(theme.breakpoints.only("sm"));
     const isMd = useMediaQuery(theme.breakpoints.only("md"));
@@ -38,9 +39,18 @@ const Home = () => {
     const fetchCanciones = async () => {
         setLoading(true);
         try {
-            const res = await axios.get(`/api/canciones/random-list?page=${page}&per_page=${perPage}`);
-            setCanciones(res.data.data);
-            setTotalPages(res.data.last_page);
+            let data;
+            const token = getToken();
+
+            if (token) {
+                data = await fetchSongsPreferences(page, perPage);
+            } else {
+                data = await fetchAllSongs(page, perPage);
+            }
+
+            setCanciones(data?.canciones?.data ?? data?.data ?? []);
+            console.log("Canciones:", data);
+            setTotalPages(data?.last_page ?? 1);
         } catch (error) {
             console.error("Error fetching canciones:", error);
         }
@@ -48,7 +58,6 @@ const Home = () => {
     };
 
     useEffect(() => {
-        // Siempre resetear a la página 1 si cambia el tamaño de pantalla
         setPage(1);
     }, [perPage]);
 
@@ -117,7 +126,7 @@ const Home = () => {
                                     justifyContent: "space-around",
                                 }}
                             >
-                                <SongCard cancion={cancion} apiUrl={apiUrl} />
+                                <SongCard cancion={cancion} apiUrl={apiUrl} onSongClick={onSongClick} />
                             </Grid>
                         ))}
                     </Grid>

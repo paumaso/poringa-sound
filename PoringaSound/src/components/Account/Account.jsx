@@ -62,7 +62,6 @@ const Account = ({ onEdit, onSongClick }) => {
 
     return (
         <Box sx={{ p: 3, position: "relative" }}>
-            {/* Botón de editar en esquina superior derecha */}
             <IconButton
                 onClick={onEdit}
                 size="medium"

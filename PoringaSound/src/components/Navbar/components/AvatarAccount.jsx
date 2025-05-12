@@ -31,6 +31,7 @@ const AvatarAccount = () => {
 
     const handleLogout = () => {
         handleMenuClose();
+        setActivePage("");
         logout();
     };
 

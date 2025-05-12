@@ -16,7 +16,7 @@ export const fetchAllSongs = async (page = 1, perPage = 10) => {
     try {
         const token = getToken();
         const response = await fetch(
-            `${API_URL}/canciones?page=${page}&per_page=${perPage}`,
+            `${API_URL}/canciones/random-list?page=${page}&per_page=${perPage}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -31,12 +31,32 @@ export const fetchAllSongs = async (page = 1, perPage = 10) => {
     }
 };
 
+export const fetchSongsPreferences = async (page = 1, perPage = 10) => {
+    try {
+        const token = getToken();
+        const response = await fetch(
+            `${API_URL}/canciones/preferencia?page=${page}&per_page=${perPage}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    Accept: "application/json",
+                },
+            }
+        );
+        return await handleResponseError(response);
+    } catch (error) {
+        console.error("Error al obtener canciones:", error);
+        throw error;
+    }
+}
+
 export const fetchSongById = async (id) => {
     try {
         const token = getToken();
         const response = await fetch(`${API_URL}/canciones/${id}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
         });
         return await handleResponseError(response);

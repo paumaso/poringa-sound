@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Interaccion;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use App\Models\Cancion;
@@ -20,20 +22,32 @@ class CancionController extends Controller
         return response()->json($canciones, 200);
     }
 
-    public function getCanciones(Request $request)
+    public function getCancionesOrdenadasPorPreferencia(Request $request)
     {
-        $perPage = $request->query('per_page', 10);
         $authUserId = auth()->id();
+        $perPage = $request->query('per_page', 20);
 
-        $canciones = Cancion::with([
-            'genero:id,nombre',
-            'user:id,nombre',
-            'interacciones' => function ($query) use ($authUserId) {
-                $query->where('user_id', $authUserId);
-            }
-        ])->paginate($perPage);
+        $generoFavorito = Interaccion::select('canciones.genero_id', DB::raw('count(*) as total'))
+            ->join('canciones', 'interacciones.cancion_id', '=', 'canciones.id')
+            ->where('interacciones.user_id', $authUserId)
+            ->groupBy('canciones.genero_id')
+            ->orderByDesc('total')
+            ->value('genero_id');
 
-        return response()->json($canciones, 200);
+        $canciones = Cancion::with(['genero:id,nombre', 'user:id,nombre'])
+            ->where('active', 1)
+            ->orderByRaw("
+            CASE 
+                WHEN genero_id = ? THEN 0 
+                ELSE 1 
+            END, RAND()
+        ", [$generoFavorito])
+            ->paginate($perPage);
+
+        return response()->json([
+            'genero_favorito' => $generoFavorito,
+            'canciones' => $canciones,
+        ],);
     }
 
     public function getRandomCancion()

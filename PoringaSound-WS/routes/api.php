@@ -12,7 +12,8 @@ use App\Http\Controllers\GenerosController;
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 Route::get('canciones/random', [CancionController::class, 'getRandomCancion']);
-Route::get('canciones/random-list', [CancionController::class, 'getCancionesOrdenRandom']);
+Route::get('canciones/{id}', [CancionController::class, 'getCancionById']);
+Route::get('/canciones/random-list', [CancionController::class, 'getCancionesOrdenRandom']);
 
 // Rutas protegidas por autenticación
 Route::middleware('auth:sanctum')->group(function () {
@@ -39,8 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Rutas de canciones
     Route::prefix('canciones')->group(function () {
         Route::get('/', [CancionController::class, 'getAllCanciones']);
-        Route::get('/{id}', [CancionController::class, 'getCancionById']);
-        //Route::get('/random', [CancionController::class, 'getRandomCancion']);
+        Route::get('/preferencia', [CancionController::class, 'getCancionesOrdenadasPorPreferencia']);
         Route::get('/user/{id}', [CancionController::class, 'getCancionesByUserId']);
         Route::post('/', [CancionController::class, 'createCancion']);
         Route::put('/{id}', [CancionController::class, 'actualizarCancion']);
