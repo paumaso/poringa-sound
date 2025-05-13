@@ -11,9 +11,10 @@ use App\Http\Controllers\GenerosController;
 // Rutas públicas
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
-Route::get('canciones/random', [CancionController::class, 'getRandomCancion']);
-Route::get('canciones/{id}', [CancionController::class, 'getCancionById']);
-Route::get('/canciones/random-list', [CancionController::class, 'getCancionesOrdenRandom']);
+Route::get('public/canciones/random-list', [CancionController::class, 'getCancionesOrdenRandom']);
+Route::get('public/canciones/random', [CancionController::class, 'getRandomCancion']);
+
+Route::get('public/canciones/{id}', [CancionController::class, 'getCancionById']);
 
 // Rutas protegidas por autenticación
 Route::middleware('auth:sanctum')->group(function () {

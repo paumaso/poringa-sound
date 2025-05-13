@@ -19,20 +19,22 @@ const SongCard = ({ cancion, apiUrl, onSongClick }) => {
                 flexDirection: "column",
                 overflow: "hidden",
                 borderRadius: 2,
-                cursor: "pointer",
                 position: "relative",
             }}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
         >
             <Box
                 onClick={() => onSongClick(cancion)}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
                 sx={{
                     width: "100%",
                     height: 160,
                     position: "relative",
                     backgroundColor: "#eee",
+                    cursor: "pointer",
+
                 }}
+
             >
                 {cancion?.portada ? (
                     <img

@@ -16,7 +16,7 @@ export const fetchAllSongs = async (page = 1, perPage = 10) => {
     try {
         const token = getToken();
         const response = await fetch(
-            `${API_URL}/canciones/random-list?page=${page}&per_page=${perPage}`,
+            `${API_URL}/public/canciones/random-list?page=${page}&per_page=${perPage}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -53,7 +53,7 @@ export const fetchSongsPreferences = async (page = 1, perPage = 10) => {
 export const fetchSongById = async (id) => {
     try {
         const token = getToken();
-        const response = await fetch(`${API_URL}/canciones/${id}`, {
+        const response = await fetch(`${API_URL}/public/canciones/${id}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 Accept: "application/json",
@@ -69,7 +69,7 @@ export const fetchSongById = async (id) => {
 export const fetchRandomSong = async () => {
     try {
         const token = getToken();
-        const response = await fetch(`${API_URL}/canciones/random`, {
+        const response = await fetch(`${API_URL}/public/canciones/random`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
