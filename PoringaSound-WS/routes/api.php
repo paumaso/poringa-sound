@@ -42,10 +42,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('canciones')->group(function () {
         Route::get('/', [CancionController::class, 'getAllCanciones']);
         Route::get('/preferencia', [CancionController::class, 'getCancionesOrdenadasPorPreferencia']);
-        Route::get('/user/{id}', [CancionController::class, 'getCancionesByUserId']);
         Route::post('/', [CancionController::class, 'createCancion']);
+        Route::get('/{id}', [CancionController::class, 'getCancionById']);
         Route::put('/{id}', [CancionController::class, 'actualizarCancion']);
         Route::delete('/{id}', [CancionController::class, 'deleteCancion']);
+        Route::get('/user/{id}', [CancionController::class, 'getCancionesByUserId']);
     });
 
     Route::prefix('interacciones')->group(function () {

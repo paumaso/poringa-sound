@@ -53,12 +53,23 @@ export const fetchSongsPreferences = async (page = 1, perPage = 10) => {
 export const fetchSongById = async (id) => {
     try {
         const token = getToken();
-        const response = await fetch(`${API_URL}/public/canciones/${id}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        var response;
+        if (!token) {
+            response = await fetch(`${API_URL}/public/canciones/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    Accept: "application/json",
+                },
+            });
+        } else {
+            response = await fetch(`${API_URL}/canciones/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    Accept: "application/json",
+                },
+            });
+        }
+
         return await handleResponseError(response);
     } catch (error) {
         console.error("Error al obtener la canción:", error);

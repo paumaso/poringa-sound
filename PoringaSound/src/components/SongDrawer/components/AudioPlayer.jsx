@@ -48,7 +48,7 @@ const AudioPlayer = ({ songId, onNextSong }) => {
                 const data = songId
                     ? await fetchSongById(songId)
                     : await fetchRandomSong();
-
+                console.log("Canción cargada:", data);
                 setSong(data);
                 setRatingValue(data.puntuacion_usuario || 0);
                 setLiked(!!data.has_liked);

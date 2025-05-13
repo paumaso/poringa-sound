@@ -6,6 +6,7 @@ use App\Models\Interaccion;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Models\Cancion;
 
 class CancionController extends Controller
@@ -82,39 +83,43 @@ class CancionController extends Controller
 
     public function getCancionById($cancionId)
     {
+        Log::info('Entrando a getCancionById', ['cancion_id' => $cancionId]);
+
         $authUserId = auth()->id();
+        Log::info('Auth user ID', ['user_id' => $authUserId]);
+
+        $withRelations = [
+            'genero:id,nombre',
+            'user:id,nombre',
+            'comentarios',
+        ];
 
         if ($authUserId) {
-            $cancion = Cancion::where('id', $cancionId)
-                ->with([
-                    'genero:id,nombre',
-                    'user:id,nombre',
-                    'comentarios',
-                    'interacciones' => function ($query) use ($authUserId) {
-                        $query->where('user_id', $authUserId);
-                    }
-                ])
-                ->first();
+            $withRelations['interacciones'] = function ($query) use ($authUserId) {
+                $query->where('user_id', $authUserId);
+            };
+        }
+
+        $cancion = Cancion::where('id', $cancionId)
+            ->with($withRelations)
+            ->first();
+
+        if ($authUserId) {
+            $interacciones = $cancion->interacciones;
+
+            $cancion->has_liked = $interacciones->firstWhere('tipo', 'like') !== null;
+            $cancion->puntuacion_usuario = optional($interacciones->firstWhere('tipo', 'puntuacion'))->puntuacion;
+
+            unset($cancion->interacciones);
         } else {
-            $cancion = Cancion::where('id', $cancionId)
-                ->with([
-                    'genero:id,nombre',
-                    'user:id,nombre',
-                    'comentarios'
-                ])
-                ->first();
+            $cancion->has_liked = false;
+            $cancion->puntuacion_usuario = null;
         }
 
         if (!$cancion) {
             return response()->json(['message' => 'Canción no encontrada'], 404);
         }
 
-        $interacciones = $cancion->interacciones;
-
-        $cancion->has_liked = $interacciones->firstWhere('tipo', 'like') !== null;
-        $cancion->puntuacion_usuario = optional($interacciones->firstWhere('tipo', 'puntuacion'))->puntuacion;
-
-        unset($cancion->interacciones);
 
         return response()->json($cancion, 200);
     }
