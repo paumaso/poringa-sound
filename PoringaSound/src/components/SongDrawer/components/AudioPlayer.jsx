@@ -124,6 +124,12 @@ const AudioPlayer = ({ songId, onNextSong }) => {
         setComents((prevComents) => [...prevComents, newComent]);
     };
 
+    const formatTime = (seconds) => {
+        const minutes = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60).toString().padStart(2, "0");
+        return `${minutes}:${secs}`;
+    };
+
     if (loading) {
         return (
             <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
@@ -213,6 +219,10 @@ const AudioPlayer = ({ songId, onNextSong }) => {
                 onChange={handleSeek}
                 sx={{ width: "100%" }}
             />
+
+            <Typography variant="caption">
+                {formatTime(currentTime)} / {formatTime(duration)}
+            </Typography>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                 <IconButton onClick={skipBackward}>

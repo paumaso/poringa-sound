@@ -25,7 +25,7 @@ const SongDrawer = ({ open, onDrawerToggle, songData }) => {
                         position: "fixed",
                         bottom: "20px",
                         right: "20px",
-                        zIndex: 1300,
+                        zIndex: 999,
                     }}
                 >
                     <MusicNoteIcon />
@@ -48,7 +48,7 @@ const SongDrawer = ({ open, onDrawerToggle, songData }) => {
                 }}
             >
 
-                <Box sx={{ flex: 1, overflowY: "auto", position: "relative", px: 2, }}>
+                <Box sx={{ flex: 1, overflowY: "auto", position: "relative", px: 1, }}>
                     <IconButton
                         onClick={toggleDrawer(false)}
                         sx={{
