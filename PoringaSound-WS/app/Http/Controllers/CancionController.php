@@ -84,30 +84,37 @@ class CancionController extends Controller
     {
         $authUserId = auth()->id();
 
-        $with = [
-            'genero:id,nombre',
-            'user:id,nombre',
-            'comentarios',
-        ];
-
         if ($authUserId) {
-            $with['interacciones'] = function ($query) use ($authUserId) {
-                $query->where('user_id', $authUserId);
-            };
+            $cancion = Cancion::where('id', $cancionId)
+                ->with([
+                    'genero:id,nombre',
+                    'user:id,nombre',
+                    'comentarios',
+                    'interacciones' => function ($query) use ($authUserId) {
+                        $query->where('user_id', $authUserId);
+                    }
+                ])
+                ->first();
+        } else {
+            $cancion = Cancion::where('id', $cancionId)
+                ->with([
+                    'genero:id,nombre',
+                    'user:id,nombre',
+                    'comentarios'
+                ])
+                ->first();
         }
 
-        $cancion = Cancion::with($with)
-            ->where('id', $cancionId)
-            ->firstOrFail();
-
-        if ($authUserId && $cancion->relationLoaded('interacciones')) {
-            $interacciones = $cancion->interacciones;
-
-            $cancion->has_liked = $interacciones->firstWhere('tipo', 'like') !== null;
-            $cancion->puntuacion_usuario = optional($interacciones->firstWhere('tipo', 'puntuacion'))->puntuacion;
-
-            unset($cancion->interacciones);
+        if (!$cancion) {
+            return response()->json(['message' => 'Canción no encontrada'], 404);
         }
+
+        $interacciones = $cancion->interacciones;
+
+        $cancion->has_liked = $interacciones->firstWhere('tipo', 'like') !== null;
+        $cancion->puntuacion_usuario = optional($interacciones->firstWhere('tipo', 'puntuacion'))->puntuacion;
+
+        unset($cancion->interacciones);
 
         return response()->json($cancion, 200);
     }

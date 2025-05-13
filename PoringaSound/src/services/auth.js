@@ -58,7 +58,22 @@ export const loginUser = async (email, password) => {
 };
 
 export const logoutUser = () => {
-  Cookies.remove("token");
+  try {
+    const token = Cookies.get("token");
+    if (token) {
+      fetch(`${API_URL}/logout`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      Cookies.remove("token");
+    }
+  }
+  catch (error) {
+    console.error("Error al cerrar sesión:", error);
+  }
+
 };
 
 export const getToken = () => {
