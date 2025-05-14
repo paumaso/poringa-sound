@@ -79,3 +79,8 @@ export const logoutUser = () => {
 export const getToken = () => {
   return Cookies.get("token");
 };
+
+export const getUser = () => {
+  const user = sessionStorage.getItem("user");
+  return user ? JSON.parse(user) : null;
+};

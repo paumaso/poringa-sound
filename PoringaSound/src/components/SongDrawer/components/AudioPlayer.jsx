@@ -7,38 +7,24 @@ import {
     Rating,
     Divider,
     CircularProgress,
-    TextField,
-    Paper,
-    Avatar,
-    Button
 } from "@mui/material";
+import LikeButton from "../../Interacciones/LikeButton";
+import RatingSong from "../../Interacciones/RatingSong";
+import ComentsBox from "../../Interacciones/ComentsBox";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import SkipNextIcon from "@mui/icons-material/SkipNext";
 import SkipPreviousIcon from "@mui/icons-material/SkipPrevious";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import StarBorderIcon from "@mui/icons-material/StarBorder";
-import StarIcon from "@mui/icons-material/Star";
-import SendIcon from "@mui/icons-material/Send";
-import {
-    likeSong,
-    quitarLike,
-    puntuarCancion,
-} from "../../../services/interactions";
 import { fetchSongById, fetchRandomSong } from "../../../services/songs";
-import Coments from "./Coments";
 
 const AudioPlayer = ({ songId, onNextSong }) => {
     const apiUrl = import.meta.env.VITE_STORAGE_URL;
     const audioRef = useRef(null);
     const [song, setSong] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [ratingValue, setRatingValue] = useState(0);
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
-    const [liked, setLiked] = useState(false);
     const [coments, setComents] = useState([]);
 
     useEffect(() => {
@@ -48,13 +34,10 @@ const AudioPlayer = ({ songId, onNextSong }) => {
                 const data = songId
                     ? await fetchSongById(songId)
                     : await fetchRandomSong();
-                console.log("Canción cargada:", data);
                 setSong(data);
-                setRatingValue(data.puntuacion_usuario || 0);
-                setLiked(!!data.has_liked);
+                setComents(data.comentarios || []);
                 setCurrentTime(0);
                 setIsPlaying(false);
-                setComents(data.comentarios || []);
             } catch (error) {
                 console.error("Error al cargar la canción:", error);
             } finally {
@@ -96,32 +79,6 @@ const AudioPlayer = ({ songId, onNextSong }) => {
     const handleSeek = (event, newValue) => {
         audioRef.current.currentTime = newValue;
         setCurrentTime(newValue);
-    };
-
-    const toggleLike = async () => {
-        try {
-            if (liked) {
-                await quitarLike(song.id);
-            } else {
-                await likeSong(song.id);
-            }
-            setLiked((prev) => !prev);
-        } catch (error) {
-            console.error("Error al interactuar con like:", error);
-        }
-    };
-
-    const handleRatingChange = async (event, newValue) => {
-        try {
-            await puntuarCancion(song.id, newValue);
-            setRatingValue(newValue);
-        } catch (error) {
-            console.error("Error al puntuar la canción:", error);
-        }
-    };
-
-    const handleNewComent = (newComent) => {
-        setComents((prevComents) => [...prevComents, newComent]);
     };
 
     const formatTime = (seconds) => {
@@ -188,19 +145,15 @@ const AudioPlayer = ({ songId, onNextSong }) => {
                     </Typography>
 
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <Rating
-                            name="song-rating"
-                            value={ratingValue}
-                            onChange={handleRatingChange}
-                            icon={<StarIcon sx={{ fontSize: 28 }} />}
-                            emptyIcon={<StarBorderIcon sx={{ fontSize: 28 }} />}
+                        <RatingSong
+                            songId={song.id}
+                            initialRating={song.puntuacion_usuario}
                         />
-                        <IconButton
-                            onClick={toggleLike}
-                            sx={{ fontSize: 28, color: liked ? "red" : "black" }}
-                        >
-                            {liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-                        </IconButton>
+                        <LikeButton
+                            songId={song.id}
+                            initialLiked={song.has_liked}
+                            initialLikeCount={song.likes}
+                        />
                     </Box>
                 </Box>
             </Box>
@@ -240,7 +193,12 @@ const AudioPlayer = ({ songId, onNextSong }) => {
 
             <Divider sx={{ width: "100%", mt: 2 }} />
 
-            <Coments coments={coments} cancionId={song.id} onNewComent={handleNewComent} />
+            <ComentsBox
+                songId={song.id}
+                coments={coments}
+                cancionId={song.id}
+                onNewComent={(nuevoComent) => setComents((prev) => [...prev, nuevoComent])}
+            />
         </Box>
     );
 };

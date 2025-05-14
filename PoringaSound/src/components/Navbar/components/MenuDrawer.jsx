@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useTranslation } from "react-i18next";
 import { usePage } from "../../../context/PageContext";
+import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -46,7 +47,18 @@ export default function MenuDrawer() {
                         <ListItemText primary="Home" />
                     </ListItemButton>
                 </ListItem>
+
+                <ListItem disablePadding>
+                    <ListItemButton onClick={() => setActivePage("discover")}>
+                        <ListItemIcon>
+                            <TravelExploreIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Discover" />
+                    </ListItemButton>
+                </ListItem>
+
             </List>
+
             <Divider />
 
             <List>

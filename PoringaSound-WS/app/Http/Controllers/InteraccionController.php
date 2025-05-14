@@ -7,7 +7,7 @@ use App\Models\Interaccion;
 
 class InteraccionController extends Controller
 {
-    public function totalLikes($cancionId)
+    public function getTotalLikes($cancionId)
     {
         $total = Interaccion::where('cancion_id', $cancionId)
             ->where('tipo', 'like')

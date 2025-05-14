@@ -14,6 +14,8 @@ Route::post('login', [AuthController::class, 'login']);
 Route::get('public/canciones/random-list', [CancionController::class, 'getCancionesOrdenRandom']);
 Route::get('public/canciones/random', [CancionController::class, 'getRandomCancion']);
 
+Route::get('public/interacciones/total-likes/{id}', [InteraccionController::class, 'getTotalLikes']);
+Route::get('public/interacciones/avg-puntuaciones/{id}', [InteraccionController::class, 'getMediaPuntuacion']);
 Route::get('public/canciones/{id}', [CancionController::class, 'getCancionById']);
 
 // Rutas protegidas por autenticación

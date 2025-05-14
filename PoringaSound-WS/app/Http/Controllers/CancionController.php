@@ -71,22 +71,35 @@ class CancionController extends Controller
             return response()->json(['message' => 'No hay canciones disponibles'], 404);
         }
 
-        $interacciones = $cancion->interacciones;
+        $totalLikes = $cancion->interacciones()
+            ->where('tipo', 'like')
+            ->count();
 
-        $cancion->has_liked = $interacciones->firstWhere('tipo', 'like') !== null;
-        $cancion->puntuacion_usuario = optional($interacciones->firstWhere('tipo', 'puntuacion'))->puntuacion;
+        $mediaPuntuacion = $cancion->interacciones()
+            ->where('tipo', 'puntuacion')
+            ->avg('puntuacion');
 
-        unset($cancion->interacciones);
+        $cancion->total_likes = $totalLikes;
+        $cancion->media_puntuacion = round($mediaPuntuacion, 2);
+
+        if ($authUserId) {
+            $interacciones = $cancion->interacciones;
+
+            $cancion->has_liked = $interacciones->firstWhere('tipo', 'like') !== null;
+            $cancion->puntuacion_usuario = optional($interacciones->firstWhere('tipo', 'puntuacion'))->puntuacion;
+
+            unset($cancion->interacciones);
+        } else {
+            $cancion->has_liked = false;
+            $cancion->puntuacion_usuario = null;
+        }
 
         return response()->json($cancion);
     }
 
     public function getCancionById($cancionId)
     {
-        Log::info('Entrando a getCancionById', ['cancion_id' => $cancionId]);
-
         $authUserId = auth()->id();
-        Log::info('Auth user ID', ['user_id' => $authUserId]);
 
         $withRelations = [
             'genero:id,nombre',
@@ -104,6 +117,21 @@ class CancionController extends Controller
             ->with($withRelations)
             ->first();
 
+        if (!$cancion) {
+            return response()->json(['message' => 'Canción no encontrada'], 404);
+        }
+
+        $totalLikes = $cancion->interacciones()
+            ->where('tipo', 'like')
+            ->count();
+
+        $mediaPuntuacion = $cancion->interacciones()
+            ->where('tipo', 'puntuacion')
+            ->avg('puntuacion');
+
+        $cancion->total_likes = $totalLikes;
+        $cancion->media_puntuacion = round($mediaPuntuacion, 2);
+
         if ($authUserId) {
             $interacciones = $cancion->interacciones;
 
@@ -115,11 +143,6 @@ class CancionController extends Controller
             $cancion->has_liked = false;
             $cancion->puntuacion_usuario = null;
         }
-
-        if (!$cancion) {
-            return response()->json(['message' => 'Canción no encontrada'], 404);
-        }
-
 
         return response()->json($cancion, 200);
     }
