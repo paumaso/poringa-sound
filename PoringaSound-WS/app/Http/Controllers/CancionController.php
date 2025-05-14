@@ -35,7 +35,7 @@ class CancionController extends Controller
             ->orderByDesc('total')
             ->value('genero_id');
 
-        $canciones = Cancion::with(['genero:id,nombre', 'user:id,nombre'])
+        $canciones = Cancion::with(['genero:id,nombre', 'user:id,nombre,imagen_perfil'])
             ->where('active', 1)
             ->orderByRaw("
             CASE 

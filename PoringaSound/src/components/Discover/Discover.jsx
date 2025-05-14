@@ -3,11 +3,13 @@ import {
     Box,
     CircularProgress,
     Typography,
+    IconButton,
 } from "@mui/material";
-import AudioPlayer from "../SongDrawer/components/AudioPlayer";
+import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
+import SongCard from "./components/SongCard";
 import { fetchSongsPreferences } from "../../services/songs";
 
-const DiscoverPage = () => {
+const Discover = () => {
     const containerRef = useRef(null);
     const [songs, setSongs] = useState([]);
     const [page, setPage] = useState(1);
@@ -21,8 +23,8 @@ const DiscoverPage = () => {
         setLoading(true);
         try {
             const res = await fetchSongsPreferences(pageToLoad, 5);
-            const nuevasCanciones = res.canciones.data;
-            setSongs((prev) => [...prev, ...nuevasCanciones]);
+            const nuevas = res.canciones.data;
+            setSongs((prev) => [...prev, ...nuevas]);
             setHasMore(res.canciones.next_page_url !== null);
             setPage(pageToLoad);
         } catch (err) {
@@ -46,45 +48,100 @@ const DiscoverPage = () => {
         }
     };
 
+    const scrollToIndex = (index) => {
+        if (containerRef.current) {
+            const height = containerRef.current.clientHeight;
+            containerRef.current.scrollTo({
+                top: index * height,
+                behavior: "smooth",
+            });
+        }
+    };
+
+    const handleNext = () => {
+        if (activeIndex < songs.length - 1) {
+            scrollToIndex(activeIndex + 1);
+        }
+    };
+
+    const handlePrev = () => {
+        if (activeIndex > 0) {
+            scrollToIndex(activeIndex - 1);
+        }
+    };
+
     return (
-        <Box
-            ref={containerRef}
-            onScroll={handleScroll}
-            sx={{
-                height: "80vh",
-                overflowY: "scroll",
-                scrollSnapType: "y mandatory",
-            }}
-        >
-            {songs.map((song, index) => (
-                <Box
-                    key={song.id}
+        <Box sx={{ position: "relative", height: "calc(100vh - 74px)" }}>
+            <Box
+                ref={containerRef}
+                onScroll={handleScroll}
+                sx={{
+                    height: "100%",
+                    overflowY: "scroll",
+                    scrollSnapType: "y mandatory",
+                }}
+            >
+                {songs.map((song, i) => (
+                    <SongCard key={song.id} song={song} isActive={i === activeIndex} />
+                ))}
+
+                {loading && (
+                    <Box
+                        sx={{
+                            height: "100vh",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                        }}
+                    >
+                        <CircularProgress sx={{ color: "#fff" }} />
+                    </Box>
+                )}
+
+                {!hasMore && !loading && songs.length === 0 && (
+                    <Typography color="white" align="center" mt={4}>
+                        No hay canciones disponibles.
+                    </Typography>
+                )}
+            </Box>
+
+            {/* Botones flotantes */}
+            <Box
+                sx={{
+                    position: "fixed",
+                    right: 16,
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    display: "flex",
+                    flexDirection: "column",
+                    margin: 2,
+                    gap: 2,
+                    zIndex: 1000,
+                }}
+            >
+                <IconButton
+                    onClick={handlePrev}
                     sx={{
-                        height: "100vh",
-                        scrollSnapAlign: "start",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        px: 2,
+                        backgroundColor: "#333",
+                        color: "#fff",
+                        "&:hover": { backgroundColor: "#555" },
                     }}
                 >
-                    <AudioPlayer songId={song.id} />
-                </Box>
-            ))}
-
-            {loading && (
-                <Box sx={{ height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                    <CircularProgress />
-                </Box>
-            )}
-
-            {!hasMore && !loading && songs.length === 0 && (
-                <Typography color="white" align="center" sx={{ mt: 4 }}>
-                    No hay canciones disponibles.
-                </Typography>
-            )}
+                    <ArrowUpward />
+                </IconButton>
+                <IconButton
+                    onClick={handleNext}
+                    sx={{
+                        backgroundColor: "#333",
+                        color: "#fff",
+                        "&:hover": { backgroundColor: "#555" },
+                    }}
+                >
+                    <ArrowDownward />
+                </IconButton>
+            </Box>
         </Box>
     );
 };
 
-export default DiscoverPage;
+export default Discover;

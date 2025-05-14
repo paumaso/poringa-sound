@@ -33,11 +33,13 @@ const PoringaSound = () => {
                 {renderContent(activePage, selectedSong, handleSongClick, handleSongDetailsClick)}
             </div>
 
-            <SongDrawer
-                open={drawerOpen}
-                onDrawerToggle={setDrawerOpen}
-                songId={currentSong?.id}
-            />
+            {activePage !== "discover" && (
+                <SongDrawer
+                    open={drawerOpen}
+                    onDrawerToggle={setDrawerOpen}
+                    songId={currentSong?.id}
+                />
+            )}
         </div>
     );
 };
