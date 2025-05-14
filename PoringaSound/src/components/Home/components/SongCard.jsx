@@ -1,9 +1,9 @@
-import { Paper, Box, Typography, IconButton } from "@mui/material";
+import { Paper, Box, Typography, Tooltip } from "@mui/material";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import { useState } from "react";
 
-const SongCard = ({ cancion, apiUrl, onSongClick }) => {
+const SongCard = ({ cancion, apiUrl, onSongClick, onDetailsClick }) => {
     const [isHovered, setIsHovered] = useState(false);
 
     const handleMouseEnter = () => setIsHovered(true);
@@ -20,6 +20,7 @@ const SongCard = ({ cancion, apiUrl, onSongClick }) => {
                 overflow: "hidden",
                 borderRadius: 2,
                 position: "relative",
+                cursor: "default",
             }}
         >
             <Box
@@ -32,9 +33,7 @@ const SongCard = ({ cancion, apiUrl, onSongClick }) => {
                     position: "relative",
                     backgroundColor: "#eee",
                     cursor: "pointer",
-
                 }}
-
             >
                 {cancion?.portada ? (
                     <img
@@ -76,9 +75,7 @@ const SongCard = ({ cancion, apiUrl, onSongClick }) => {
                             transition: "opacity 0.3s ease",
                         }}
                     >
-                        <PlayCircleIcon
-                            sx={{ color: "white", fontSize: 40 }}
-                        />
+                        <PlayCircleIcon sx={{ color: "white", fontSize: 40 }} />
                     </Box>
                 )}
             </Box>
@@ -86,6 +83,7 @@ const SongCard = ({ cancion, apiUrl, onSongClick }) => {
             <Box sx={{ padding: 2, flexGrow: 1, overflow: "hidden" }}>
                 <Typography
                     variant="h6"
+                    onClick={() => onDetailsClick?.(cancion?.id)}
                     sx={{
                         fontSize: "1rem",
                         wordBreak: "break-word",
@@ -93,10 +91,20 @@ const SongCard = ({ cancion, apiUrl, onSongClick }) => {
                         mb: 1,
                         maxHeight: "2.6em",
                         overflow: "hidden",
+                        cursor: "pointer",
+                        transition: "all 0.2s ease",
+                        "&:hover": {
+                            textDecoration: "underline",
+                        },
                     }}
                 >
-                    {cancion?.titulo || "Título desconocido"}
+                    <Tooltip title={cancion?.titulo || "Título desconocido"}>
+                        <Box component="span">
+                            {cancion?.titulo || "Título desconocido"}
+                        </Box>
+                    </Tooltip>
                 </Typography>
+
                 <Typography
                     variant="body2"
                     color="text.secondary"

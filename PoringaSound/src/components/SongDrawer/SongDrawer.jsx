@@ -4,7 +4,7 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import AudioPlayer from "./components/AudioPlayer";
 
-const SongDrawer = ({ open, onDrawerToggle, songData }) => {
+const SongDrawer = ({ open, onDrawerToggle, songId }) => {
     const toggleDrawer = (newOpen) => () => {
         if (onDrawerToggle) {
             onDrawerToggle(newOpen);
@@ -61,7 +61,7 @@ const SongDrawer = ({ open, onDrawerToggle, songData }) => {
                         <ArrowBackIosIcon />
                     </IconButton>
 
-                    <AudioPlayer songId={songData} />
+                    <AudioPlayer songId={songId} />
                 </Box>
             </Drawer>
         </div>
