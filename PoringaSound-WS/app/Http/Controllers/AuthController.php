@@ -17,7 +17,7 @@ class AuthController extends Controller
             'email' => 'required|string|email|unique:users',
             'password' => 'required|string|min:6',
             'tipo' => 'in:usuario',
-            'imagen_perfil' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'imagen_perfil' => 'nullable|image|mimes:jpeg,png,jpg',
         ]);
 
         $image = $this->guardarImagenPerfil($request);

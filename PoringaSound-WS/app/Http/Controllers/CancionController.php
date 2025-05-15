@@ -18,9 +18,23 @@ class CancionController extends Controller
         $canciones = Cancion::with([
             'genero:id,nombre',
             'user:id,nombre,imagen_perfil',
+            'interacciones'
         ])
             ->where('active', 1)
+            ->inRandomOrder()
             ->paginate($perPage);
+
+        $canciones->getCollection()->transform(function ($cancion) {
+            $totalLikes = $cancion->interacciones->where('tipo', 'like')->count();
+            $mediaPuntuacion = $cancion->interacciones
+                ->where('tipo', 'puntuacion')
+                ->avg('puntuacion');
+
+            $cancion->total_likes = $totalLikes;
+            $cancion->media_puntuacion = round($mediaPuntuacion, 2);
+
+            return $cancion;
+        });
 
         return response()->json([
             'genero_favorito' => null,
@@ -40,15 +54,39 @@ class CancionController extends Controller
             ->orderByDesc('total')
             ->value('genero_id');
 
-        $canciones = Cancion::with(['genero:id,nombre', 'user:id,nombre,imagen_perfil'])
+        $canciones = Cancion::with([
+            'genero:id,nombre',
+            'user:id,nombre,imagen_perfil',
+            'interacciones' => function ($query) use ($authUserId) {
+                $query->where('user_id', $authUserId);
+            }
+        ])
             ->where('active', 1)
             ->orderByRaw("
             CASE 
                 WHEN genero_id = ? THEN 0 
                 ELSE 1 
-            END, RAND()
-        ", [$generoFavorito])
+            END", [$generoFavorito])
             ->paginate($perPage);
+
+        $canciones->getCollection()->transform(function ($cancion) use ($authUserId) {
+            $totalLikes = $cancion->interacciones()->where('tipo', 'like')->count();
+            $mediaPuntuacion = $cancion->interacciones()->where('tipo', 'puntuacion')->avg('puntuacion');
+
+            $cancion->total_likes = $totalLikes;
+            $cancion->media_puntuacion = round($mediaPuntuacion, 2);
+
+            if ($authUserId) {
+                $interacciones = $cancion->interacciones;
+                $cancion->has_liked = $interacciones->firstWhere('tipo', 'like') !== null;
+                $cancion->puntuacion_usuario = optional($interacciones->firstWhere('tipo', 'puntuacion'))->puntuacion;
+                unset($cancion->interacciones);
+            } else {
+                $cancion->has_liked = false;
+                $cancion->puntuacion_usuario = null;
+            }
+            return $cancion;
+        });
 
         return response()->json([
             'genero_favorito' => $generoFavorito,

@@ -15,6 +15,9 @@ export const registerUser = async (nombre, email, password, imagenPerfil) => {
     const response = await fetch(`${API_URL}/register`, {
       method: 'POST',
       body: formData,
+      headers: {
+        'Accept': 'application/json',
+      },
     });
 
     const data = await response.json();
@@ -40,6 +43,9 @@ export const loginUser = async (email, password) => {
     const response = await fetch(`${API_URL}/login`, {
       method: 'POST',
       body: formData,
+      headers: {
+        'Accept': 'application/json',
+      },
     });
 
     const data = await response.json();
@@ -65,6 +71,7 @@ export const logoutUser = () => {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
+          
         },
       });
       Cookies.remove("token");

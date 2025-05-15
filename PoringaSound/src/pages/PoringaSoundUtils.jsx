@@ -9,7 +9,7 @@ export const renderContent = (activePage, selectedSongId, handleSongClick, handl
         case "home":
             return <Home onSongClick={handleSongClick} onDetailsClick={handleSongDetailsClick} />;
         case "discover":
-            return <Discover />;
+            return <Discover onDetailsClick={handleSongDetailsClick}/>;
         case "account":
             return <Account onSongClick={handleSongClick} onDetailsClick={handleSongDetailsClick} />;
         case "song":

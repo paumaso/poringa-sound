@@ -1,13 +1,9 @@
 import { Paper, Box, Typography, Tooltip } from "@mui/material";
-import MusicNoteIcon from "@mui/icons-material/MusicNote";
-import PlayCircleIcon from "@mui/icons-material/PlayCircle";
-import { useState } from "react";
+import { getToken } from "../../../services/auth";
+import Portada from "../../LazyImages/Portada";
 
 const SongCard = ({ cancion, apiUrl, onSongClick, onDetailsClick }) => {
-    const [isHovered, setIsHovered] = useState(false);
-
-    const handleMouseEnter = () => setIsHovered(true);
-    const handleMouseLeave = () => setIsHovered(false);
+    const isAuthenticated = !!getToken();
 
     return (
         <Paper
@@ -23,62 +19,13 @@ const SongCard = ({ cancion, apiUrl, onSongClick, onDetailsClick }) => {
                 cursor: "default",
             }}
         >
-            <Box
+            <Portada
+                src={`${apiUrl}${cancion.portada}`}
+                alt={cancion.titulo}
+                width="100%"
+                height="100%"
                 onClick={() => onSongClick(cancion)}
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-                sx={{
-                    width: "100%",
-                    height: 160,
-                    position: "relative",
-                    backgroundColor: "#eee",
-                    cursor: "pointer",
-                }}
-            >
-                {cancion?.portada ? (
-                    <img
-                        src={`${apiUrl}${cancion.portada}`}
-                        alt={cancion.titulo}
-                        style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                        }}
-                    />
-                ) : (
-                    <Box
-                        sx={{
-                            width: "100%",
-                            height: "100%",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                        }}
-                    >
-                        <MusicNoteIcon sx={{ color: "#9e9e9e" }} />
-                    </Box>
-                )}
-
-                {isHovered && (
-                    <Box
-                        sx={{
-                            position: "absolute",
-                            top: 0,
-                            left: 0,
-                            width: "100%",
-                            height: "100%",
-                            backgroundColor: "rgba(0, 0, 0, 0.4)",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            opacity: 1,
-                            transition: "opacity 0.3s ease",
-                        }}
-                    >
-                        <PlayCircleIcon sx={{ color: "white", fontSize: 40 }} />
-                    </Box>
-                )}
-            </Box>
+            />
 
             <Box sx={{ padding: 2, flexGrow: 1, overflow: "hidden" }}>
                 <Typography

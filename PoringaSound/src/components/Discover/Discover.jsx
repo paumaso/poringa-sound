@@ -10,7 +10,7 @@ import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
 import SongCard from "./components/SongCard";
 import { fetchSongsPreferences, fetchAllSongs } from "../../services/songs";
 
-const Discover = () => {
+const Discover = ({ onDetailsClick }) => {
     const containerRef = useRef(null);
     const [songs, setSongs] = useState([]);
     const [page, setPage] = useState(1);
@@ -89,12 +89,13 @@ const Discover = () => {
     };
 
     return (
-        <Box sx={{ position: "relative", height: "calc(100vh - 74px)" }}>
+        <Box sx={{ position: "relative", height: "calc(100vh - 72px)", }} >
             <Box
                 ref={containerRef}
                 onScroll={handleScroll}
                 sx={{
                     height: "100%",
+                    backgroundColor: "rgba(0,0,0,0.6)",
                     overflowY: "scroll",
                     scrollSnapType: "y mandatory",
                     scrollbarWidth: "none",
@@ -104,13 +105,13 @@ const Discover = () => {
                 }}
             >
                 {songs.map((song, i) => (
-                    songs.map((song, i) => (
-                        <SongCard
-                            key={`${song.id}-${i}`}
-                            song={song}
-                            isActive={i === activeIndex}
-                        />
-                    ))))}
+                    <SongCard
+                        key={`${song.id}-${i}`}
+                        song={song}
+                        isActive={i === activeIndex}
+                        onDetailsClick={onDetailsClick}
+                    />
+                ))}
 
                 {loading && (
                     <Box
@@ -135,15 +136,16 @@ const Discover = () => {
             {/* Botones flotantes */}
             <Box
                 sx={{
-                    position: "fixed",
+                    position: "absolute",
                     right: 16,
-                    top: "50%",
-                    transform: "translateY(-50%)",
+                    top: "45%",
                     display: "flex",
                     flexDirection: "column",
+                    justifyContent: "center",
                     margin: 2,
                     gap: 2,
                     zIndex: 1000,
+                    pointerEvents: "none",
                 }}
             >
                 <IconButton
@@ -152,6 +154,8 @@ const Discover = () => {
                         backgroundColor: "#333",
                         color: "#fff",
                         "&:hover": { backgroundColor: "#555" },
+                        pointerEvents: "auto",
+
                     }}
                 >
                     <ArrowUpward />
@@ -162,6 +166,7 @@ const Discover = () => {
                         backgroundColor: "#333",
                         color: "#fff",
                         "&:hover": { backgroundColor: "#555" },
+                        pointerEvents: "auto",
                     }}
                 >
                     <ArrowDownward />

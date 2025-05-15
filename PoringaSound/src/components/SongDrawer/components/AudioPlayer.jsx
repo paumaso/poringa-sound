@@ -152,7 +152,7 @@ const AudioPlayer = ({ songId, onNextSong }) => {
                         <LikeButton
                             songId={song.id}
                             initialLiked={song.has_liked}
-                            initialLikeCount={song.likes}
+                            initialLikeCount={song.total_likes}
                         />
                     </Box>
                 </Box>

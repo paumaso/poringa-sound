@@ -1,9 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
-import MenuIcon from '@mui/icons-material/Menu';
-import IconButton from "@mui/material/IconButton";
 import LanguageSwitcher from "./components/LanguageSwitcher";
-import InfoDropDown from "./components/InfoDropDown";
 import SearchBar from "./components/SearchBar";
 import MenuDrawer from "./components/MenuDrawer";
 import { Button } from "@mui/material";
@@ -30,16 +27,13 @@ const Navbar = () => {
                     <li>
                         <MenuDrawer open={openDrawer} onClose={() => setOpenDrawer(false)} />
                     </li>
-                    <li>
-                        <InfoDropDown />
-                    </li>
                 </div>
 
                 <div className="flex items-center gap-4">
                     <li>
                         <LanguageSwitcher />
                     </li>
-                    {isAuthenticated && user ? ( // Verifica que el usuario esté autenticado y que los datos del usuario existan
+                    {isAuthenticated && user ? (
                         <>
                             <li>
                                 <AvatarAccount />
@@ -51,6 +45,11 @@ const Navbar = () => {
                                 <Button
                                     variant="outlined"
                                     onClick={() => handleOpenModal("login")}
+                                    sx={{
+                                        fontSize: { xs: "0.8rem", md: "1rem" },
+                                        py: { xs: 0.5, md: 1 },
+                                        px: { xs: 1.5, md: 3 },
+                                    }}
                                 >
                                     {t('Sign In')}
                                 </Button>
@@ -59,6 +58,11 @@ const Navbar = () => {
                                 <Button
                                     variant="contained"
                                     onClick={() => handleOpenModal("register")}
+                                    sx={{
+                                        fontSize: { xs: "0.8rem", md: "1rem" },
+                                        py: { xs: 0.5, md: 1 },
+                                        px: { xs: 1.5, md: 3 },
+                                    }}
                                 >
                                     {t('Sign Up')}
                                 </Button>

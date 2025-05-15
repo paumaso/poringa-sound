@@ -8,6 +8,7 @@ import {
     Rating,
     Chip,
 } from "@mui/material";
+import Portada from "../LazyImages/Portada";
 import LikeButton from "../Interacciones/LikeButton";
 import ComentsBox from "../Interacciones/ComentsBox";
 import { fetchSongById } from "../../services/songs";
@@ -67,16 +68,19 @@ const SongDetails = ({ onSongClick, songId }) => {
                 flexDirection: "column",
             }}>
             <Box sx={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
-                <Box
-                    component="img"
+                <Portada
                     src={`${apiUrl}${song.portada}`}
                     alt={song.titulo}
-                    sx={{
-                        width: { xs: "100%", sm: 240 },
-                        height: { xs: "auto", sm: 240 },
-                        borderRadius: 2,
+                    width="100%"
+                    height={240}
+                    style={{
+                        borderRadius: 8,
                         objectFit: "cover",
-                    }} />
+                        maxWidth: 240,
+                    }}
+                    onClick={() => onSongClick(song)}
+
+                />
 
                 <Box sx={{ flex: 1 }}>
                     <Box>
