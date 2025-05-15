@@ -17,16 +17,21 @@ class CancionController extends Controller
 
         $canciones = Cancion::with([
             'genero:id,nombre',
-            'user:id,nombre',
-        ])->where('active', 1)->inRandomOrder()->paginate($perPage);
+            'user:id,nombre,imagen_perfil',
+        ])
+            ->where('active', 1)
+            ->paginate($perPage);
 
-        return response()->json($canciones, 200);
+        return response()->json([
+            'genero_favorito' => null,
+            'canciones' => $canciones,
+        ], 200);
     }
 
     public function getCancionesOrdenadasPorPreferencia(Request $request)
     {
         $authUserId = auth()->id();
-        $perPage = $request->query('per_page', 20);
+        $perPage = $request->query('per_page', 10);
 
         $generoFavorito = Interaccion::select('canciones.genero_id', DB::raw('count(*) as total'))
             ->join('canciones', 'interacciones.cancion_id', '=', 'canciones.id')
@@ -48,7 +53,7 @@ class CancionController extends Controller
         return response()->json([
             'genero_favorito' => $generoFavorito,
             'canciones' => $canciones,
-        ],);
+        ], 200);
     }
 
     public function getRandomCancion()

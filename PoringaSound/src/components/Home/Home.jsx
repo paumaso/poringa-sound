@@ -11,7 +11,7 @@ import SongCard from "./components/SongCard";
 import { fetchAllSongs, fetchSongsPreferences } from "../../services/songs";
 import { getToken } from "../../services/auth";
 
-const Home = ({ onSongClick, onDetailsClick  }) => {
+const Home = ({ onSongClick, onDetailsClick }) => {
     const [canciones, setCanciones] = useState([]);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -167,7 +167,7 @@ const Home = ({ onSongClick, onDetailsClick  }) => {
                         ) : (
                             canciones.map((cancion, index) => (
                                 <Box
-                                    key={cancion.id || `song-${index}`}
+                                    key={`${cancion.id}-${index}`} 
                                     sx={{ flex: "0 0 auto", m: 1 }}
                                 >
                                     <SongCard

@@ -5,9 +5,10 @@ import {
     Typography,
     IconButton,
 } from "@mui/material";
+import { getToken } from "../../services/auth";
 import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
 import SongCard from "./components/SongCard";
-import { fetchSongsPreferences } from "../../services/songs";
+import { fetchSongsPreferences, fetchAllSongs } from "../../services/songs";
 
 const Discover = () => {
     const containerRef = useRef(null);
@@ -17,14 +18,31 @@ const Discover = () => {
     const [hasMore, setHasMore] = useState(true);
     const [activeIndex, setActiveIndex] = useState(0);
 
+    const MAX_VISIBLE = 10;
+
     const loadSongs = async (pageToLoad = 1) => {
         if (loading || !hasMore) return;
 
         setLoading(true);
         try {
-            const res = await fetchSongsPreferences(pageToLoad, 5);
+            let res;
+            if (!getToken()) {
+                res = await fetchAllSongs(pageToLoad, 5);
+            } else {
+                res = await fetchSongsPreferences(pageToLoad, 5);
+            }
+
             const nuevas = res.canciones.data;
-            setSongs((prev) => [...prev, ...nuevas]);
+
+            setSongs((prev) => {
+                const ids = new Set(prev.map(song => song.id));
+                const nuevasUnicas = nuevas.filter(song => !ids.has(song.id));
+                const actualizadas = [...prev, ...nuevasUnicas];
+
+                const start = Math.max(0, activeIndex - 2);
+                return actualizadas.slice(start, start + MAX_VISIBLE);
+            });
+
             setHasMore(res.canciones.next_page_url !== null);
             setPage(pageToLoad);
         } catch (err) {
@@ -79,11 +97,20 @@ const Discover = () => {
                     height: "100%",
                     overflowY: "scroll",
                     scrollSnapType: "y mandatory",
+                    scrollbarWidth: "none",
+                    "&::-webkit-scrollbar": {
+                        display: "none",
+                    },
                 }}
             >
                 {songs.map((song, i) => (
-                    <SongCard key={song.id} song={song} isActive={i === activeIndex} />
-                ))}
+                    songs.map((song, i) => (
+                        <SongCard
+                            key={`${song.id}-${i}`}
+                            song={song}
+                            isActive={i === activeIndex}
+                        />
+                    ))))}
 
                 {loading && (
                     <Box

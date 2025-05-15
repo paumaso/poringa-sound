@@ -5,12 +5,14 @@ import {
     IconButton,
     Slider,
 } from "@mui/material";
-import { Pause, PlayArrow } from "@mui/icons-material";
+import { getToken } from "../../../services/auth";
+import { Pause, PlayArrow, MusicNote } from "@mui/icons-material";
 import LikeButton from "../../Interacciones/LikeButton";
 import RatingSong from "../../Interacciones/RatingSong";
 
 const SongCard = ({ song, isActive }) => {
     const apiUrl = import.meta.env.VITE_STORAGE_URL;
+    const isAuthenticated = getToken() !== null;
     const audioRef = useRef(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
@@ -51,12 +53,6 @@ const SongCard = ({ song, isActive }) => {
         setCurrentTime(newValue);
     };
 
-    const formatTime = (seconds) => {
-        const minutes = Math.floor(seconds / 60);
-        const secs = Math.floor(seconds % 60).toString().padStart(2, "0");
-        return `${minutes}:${secs}`;
-    };
-
     return (
         <Box
             sx={{
@@ -65,7 +61,6 @@ const SongCard = ({ song, isActive }) => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                backgroundColor: "#121212",
                 px: 2,
             }}
         >
@@ -73,9 +68,9 @@ const SongCard = ({ song, isActive }) => {
                 sx={{
                     width: "100%",
                     maxWidth: 400,
+                    backgroundColor: "gray",
                     borderRadius: 4,
-                    backgroundColor: "#1e1e1e",
-                    boxShadow: 6,
+                    boxShadow: 12,
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
@@ -83,26 +78,65 @@ const SongCard = ({ song, isActive }) => {
                     gap: 2,
                 }}
             >
+
+                {song.portada ? (
+                    <Box
+                        component="img"
+                        src={`${apiUrl}${song.portada}`}
+                        alt={song.titulo}
+                        sx={{
+                            width: "100%",
+                            height: 360,
+                            borderRadius: 2,
+                            objectFit: "cover",
+                            boxShadow: 6,
+                        }}
+                    />
+                ) : (
+                    <Box
+                        sx={{
+                            width: "100%",
+                            height: 360,
+                            borderRadius: 2,
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            boxShadow: 3,
+                        }}
+                    >
+                        <MusicNote sx={{ fontSize: 78, color: "#9e9e9e" }} />
+                    </Box>
+                )}
+
+
                 <Box
-                    component="img"
-                    src={`${apiUrl}${song.portada}`}
-                    alt={song.titulo}
                     sx={{
                         width: "100%",
-                        height: 360,
-                        borderRadius: 2,
-                        objectFit: "cover",
-                        boxShadow: 3,
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
                     }}
-                />
+                >
+                    <Box>
+                        <Typography variant="h6" color="text.primary" sx={{
+                            cursor: "pointer",
+                            transition: "0.5s",
+                            "&:hover": {
+                                textDecoration: "underline",
+                            },
+                        }}>
+                            {song.titulo}
+                        </Typography>
+                        <Typography variant="subtitle2" color="text.secondary">
+                            {song.user?.nombre}
+                        </Typography>
+                    </Box>
 
-                <Box sx={{ textAlign: "center" }}>
-                    <Typography variant="h6" color="white">
-                        {song.titulo}
-                    </Typography>
-                    <Typography variant="subtitle2" color="gray">
-                        {song.user?.nombre}
-                    </Typography>
+                    <LikeButton
+                        songId={song.id}
+                        initialLiked={song.has_liked}
+                        initialLikeCount={song.likes}
+                    />
                 </Box>
 
                 <audio
@@ -118,14 +152,11 @@ const SongCard = ({ song, isActive }) => {
                         value={currentTime}
                         max={duration}
                         onChange={handleSeek}
-                        sx={{ color: "#90caf9" }}
+                        sx={{ color: "primary.main" }}
                     />
-                    <Typography variant="caption" color="white">
-                        {formatTime(currentTime)} / {formatTime(duration)}
-                    </Typography>
                 </Box>
 
-                <IconButton onClick={togglePlay} sx={{ color: "#90caf9" }}>
+                <IconButton onClick={togglePlay} sx={{ color: "primary.main" }}>
                     {isPlaying ? (
                         <Pause fontSize="large" />
                     ) : (
@@ -134,11 +165,6 @@ const SongCard = ({ song, isActive }) => {
                 </IconButton>
 
                 <Box sx={{ display: "flex", gap: 2, mt: 1 }}>
-                    <LikeButton
-                        songId={song.id}
-                        initialLiked={song.has_liked}
-                        initialLikeCount={song.likes}
-                    />
                     <RatingSong
                         songId={song.id}
                         initialRating={song.puntuacion_usuario}

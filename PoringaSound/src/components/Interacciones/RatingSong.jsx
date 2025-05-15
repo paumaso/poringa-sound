@@ -6,18 +6,17 @@ import { getToken } from "../../services/auth";
 import { puntuarCancion } from "../../services/interactions";
 
 const RatingSong = ({ songId, initialRating = 0 }) => {
-    const isAuthenticated = getToken() !== null;
+    const isAuthenticated = !!getToken();
     const [rating, setRating] = useState(initialRating);
     const [pulse, setPulse] = useState(false);
-
     const handleRatingChange = async (_, newValue) => {
-        if (!isAuthenticated || newValue === null) return;
+        if (isAuthenticated || newValue === null) return;
 
         try {
             await puntuarCancion(songId, newValue);
             setRating(newValue);
-            setPulse(true); 
-            setTimeout(() => setPulse(false), 300); 
+            setPulse(true);
+            setTimeout(() => setPulse(false), 300);
         } catch (error) {
             console.error("Error al puntuar la canción:", error);
         }
@@ -31,7 +30,7 @@ const RatingSong = ({ songId, initialRating = 0 }) => {
                         name="song-rating"
                         value={rating}
                         onChange={handleRatingChange}
-                        disabled={!isAuthenticated}
+                        readOnly={!isAuthenticated}
                         icon={
                             <StarIcon
                                 fontSize="inherit"
@@ -39,7 +38,7 @@ const RatingSong = ({ songId, initialRating = 0 }) => {
                                     transition: "transform 0.2s ease, color 0.3s ease",
                                     ...(pulse && {
                                         transform: "scale(1.2)",
-                                        color: "gold", 
+                                        color: "gold",
                                     }),
                                 }}
                             />
@@ -62,7 +61,7 @@ const RatingSong = ({ songId, initialRating = 0 }) => {
                                 color: "#BDBDBD",
                             },
                             "& .MuiRating-iconHover": {
-                                transform: "scale(1.2)", 
+                                transform: "scale(1.2)",
                             },
                         }}
                     />

@@ -16,11 +16,12 @@ import { comentarCancion } from "../../services/interactions";
 
 const ComentsBox = ({ coments = [], songId, onNewComent }) => {
     const apiUrl = import.meta.env.VITE_STORAGE_URL;
+    const isAuthenticated = !!getToken();
+    const user = getUser();
+
     const [comentario, setComentario] = useState("");
     const [sending, setSending] = useState(false);
-    const [comentariosAnimados, setComentariosAnimados] = useState([]); 
-    const isAuthenticated = getToken() !== null;
-    const user = getUser();
+    const [comentariosAnimados, setComentariosAnimados] = useState([]);
 
     const handleSend = async () => {
         if (!comentario.trim()) return;
@@ -121,7 +122,7 @@ const ComentsBox = ({ coments = [], songId, onNewComent }) => {
             >
                 {coments.length > 0 ? (
                     [...coments]
-                        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) 
+                        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
                         .map((coment) => (
                             <Box
                                 key={coment.id}

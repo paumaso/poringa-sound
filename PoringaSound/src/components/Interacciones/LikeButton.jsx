@@ -6,7 +6,7 @@ import { getToken } from "../../services/auth";
 import { likeSong, quitarLike } from "../../services/interactions";
 
 const LikeButton = ({ songId, initialLiked, initialLikeCount }) => {
-    const isAuthenticated = getToken() !== null;
+    const isAuthenticated = !!getToken();
     const [liked, setLiked] = useState(initialLiked);
     const [likeCount, setLikeCount] = useState(initialLikeCount || 0);
     const [pulse, setPulse] = useState(false);
