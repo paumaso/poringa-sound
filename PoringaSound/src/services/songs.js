@@ -139,7 +139,7 @@ export const fetchUpdateSong = async (id, formData) => {
     try {
         const token = getToken();
         const response = await fetch(`${API_URL}/canciones/${id}`, {
-            method: "PUT",
+            method: "POST",
             headers: {
                 Authorization: `Bearer ${token}`,
                 Accept: "application/json",

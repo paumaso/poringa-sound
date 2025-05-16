@@ -14,19 +14,21 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import ShareIcon from "@mui/icons-material/Share";
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
+import NewSongDialog from "./NewSongDialog";
 import EditSongDialog from "./EditSongDialog";
 import DeleteDialog from "../DeleteDialog";
 
-const UserSongs = ({ userId, onSongClick }) => {
+const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
   const apiUrl = import.meta.env.VITE_STORAGE_URL;
 
   const [songs, setSongs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [newSongDialogOpen, setNewSongDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedSong, setSelectedSong] = useState(null);
@@ -41,11 +43,12 @@ const UserSongs = ({ userId, onSongClick }) => {
         setError(err.message);
       } finally {
         setLoading(false);
+        if (onSongsUpdated) onSongsUpdated();
       }
     };
 
     fetchSongs();
-  }, [userId]);
+  }, [reloadSongs, userId, onSongsUpdated]);
 
   const handleEdit = (song) => {
     setSelectedSong(song);
@@ -185,12 +188,12 @@ const UserSongs = ({ userId, onSongClick }) => {
                     <DeleteIcon />
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Compartir">
+                <Tooltip title="Detalles">
                   <IconButton
                     onClick={() => handleShare(song)}
-                    aria-label="Compartir"
+                    aria-label="Detalles"
                   >
-                    <ShareIcon />
+                    <VisibilityIcon />
                   </IconButton>
                 </Tooltip>
               </Box>
@@ -204,8 +207,14 @@ const UserSongs = ({ userId, onSongClick }) => {
         <EditSongDialog
           open={editDialogOpen}
           onClose={handleEditClose}
-          onSave={() => {
+          onSave={(updatedSong) => {
+            setSongs((prevSongs) =>
+              prevSongs.map((song) =>
+                song.id === updatedSong.id ? { ...song, ...updatedSong } : song
+              )
+            );
             setEditDialogOpen(false);
+            setSelectedSong(null);
           }}
           song={selectedSong}
         />

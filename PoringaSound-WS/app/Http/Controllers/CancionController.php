@@ -260,16 +260,24 @@ class CancionController extends Controller
         $archivo = $this->guardarArchivo($request);
         $portada = $this->guardarPortada($request);
 
-        $cancion->update([
+        $data = [
             'titulo' => $request->titulo,
             'user_id' => auth()->user()->id,
             'album_id' => $request->album_id,
             'duracion' => $request->duracion,
-            'archivo' => $archivo,
             'genero_id' => $request->genero_id,
             'active' => $request->active,
-            'portada' => $portada,
-        ]);
+        ];
+
+        if ($archivo !== null) {
+            $data['archivo'] = $archivo;
+        }
+
+        if ($portada !== null) {
+            $data['portada'] = $portada;
+        }
+
+        $cancion->update($data);
 
         return response()->json($cancion, 200);
     }
@@ -299,7 +307,7 @@ class CancionController extends Controller
     private function validateCancion(Request $request)
     {
         $request->validate([
-            'titulo' => 'required|string',
+            'titulo' => 'required|string|max:255',
             'archivo' => 'nullable|file',
             'genero_id' => 'nullable|exists:genero,id',
             'active' => 'nullable|boolean',

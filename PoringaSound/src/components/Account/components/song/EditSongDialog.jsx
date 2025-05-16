@@ -86,15 +86,9 @@ const EditSongDialog = ({ open, onClose, onSave, song }) => {
             if (audioFile) formData.append("archivo", audioFile);
             if (imageFile) formData.append("portada", imageFile);
 
-            console.log("FormData:", formData);
-            console.log(song)
             const response = await fetchUpdateSong(song.id, formData);
 
-            if (response.status !== 200) {
-                throw new Error("Error actualizando canción");
-            }
-
-            onSave();
+            onSave(response);
             onClose();
         } catch (error) {
             console.error("Error al guardar la canción:", error);

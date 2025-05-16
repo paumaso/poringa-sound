@@ -48,7 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}', [CancionController::class, 'getCancionById']);
         Route::get('/user/{id}', [CancionController::class, 'getCancionesByUserId']);
 
-        Route::put('/{id}', [CancionController::class, 'actualizarCancion']);
+        Route::post('/{id}', [CancionController::class, 'actualizarCancion']);
         Route::delete('/{id}', [CancionController::class, 'deleteCancion']);
     });
 
