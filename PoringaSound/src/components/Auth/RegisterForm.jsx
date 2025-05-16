@@ -10,6 +10,7 @@ import { PhotoCamera } from "@mui/icons-material";
 import { registerUser } from "../../services/auth";
 import { Box } from "@mui/material";
 import { useAuth } from "../../context/AuthContext";
+import { usePage } from "../../context/PageContext";
 
 const RegisterForm = ({ onClose, switchToLogin }) => {
   const [nombre, setNombre] = useState("");
@@ -21,6 +22,8 @@ const RegisterForm = ({ onClose, switchToLogin }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { register } = useAuth();
+  const { setActivePage } = usePage();
+  
 
 
   const handleImageChange = (e) => {
@@ -38,6 +41,7 @@ const RegisterForm = ({ onClose, switchToLogin }) => {
 
     try {
       await register(nombre, email, password, image);
+      setActivePage("home");
       onClose();
     } catch (error) {
       setError(error.message || "Credenciales incorrectas.");

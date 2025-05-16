@@ -171,3 +171,20 @@ export const fetchDeleteSong = async (songId) => {
         throw error;
     }
 };
+
+export const fetchGeneros = async () => {
+  try {
+    const token = getToken();
+    const response = await fetch(`${API_URL}/generos/`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await handleResponseError(response);
+    return data;
+  } catch (error) {
+    console.error("Error al obtener géneros:", error);
+    throw error;
+  }
+};

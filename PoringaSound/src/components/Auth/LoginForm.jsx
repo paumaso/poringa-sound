@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { TextField, Button, Typography, Link, Box } from "@mui/material";
 import { useAuth } from "../../context/AuthContext";
+import { usePage } from "../../context/PageContext";
 import { loginUser } from "../../services/auth";
 
 const LoginForm = ({ onClose, switchToRegister }) => {
@@ -9,6 +10,8 @@ const LoginForm = ({ onClose, switchToRegister }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { login } = useAuth();
+  const { setActivePage } = usePage();
+
 
 
   const handleSubmit = async (e) => {
@@ -19,6 +22,7 @@ const LoginForm = ({ onClose, switchToRegister }) => {
     try {
       await login(email, password);
       onClose();
+      setActivePage("home");
     } catch (error) {
       setError(error.message || "Credenciales incorrectas.");
     } finally {

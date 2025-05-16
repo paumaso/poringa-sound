@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchlistasReproduccionByUserId } from "../../../../services/api";
+//import { fetchlistasReproduccionByUserId } from "../../../../services/reproduccion";
 import { 
     CircularProgress,
     Box,
@@ -14,7 +14,7 @@ const UserLists = ({ userId }) => {
     useEffect(() => {
         const fetchLists = async () => {
             try {
-                const data = await fetchlistasReproduccionByUserId(userId);
+                // const data = await fetchlistasReproduccionByUserId(userId);
                 setLists(data.data);
             } catch (err) {
                 setError(err.message);

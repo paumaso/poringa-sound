@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchAlbumsByUserId } from "../../../../services/api";
+// import { fetchAlbumsByUserId } from "../../../../services/albums";
 import { 
     CircularProgress,
     Box,
@@ -14,7 +14,7 @@ const UserAlbums = ({ userId }) => {
     useEffect(() => {
         const fetchAlbums = async () => {
             try {
-                const data = await fetchAlbumsByUserId(userId);
+                // const data = await fetchAlbumsByUserId(userId);
                 setAlbums(data.data);
             } catch (err) {
                 setError(err.message);

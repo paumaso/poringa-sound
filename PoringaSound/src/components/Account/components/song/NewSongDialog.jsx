@@ -6,7 +6,6 @@ import {
     TextField,
     Button,
     Typography,
-    Grid,
     Box,
     CircularProgress,
     Checkbox,
@@ -15,7 +14,7 @@ import {
     IconButton,
 } from "@mui/material";
 import { PhotoCamera, Audiotrack, Close as CloseIcon } from "@mui/icons-material";
-import { fetchGeneros, fetchCreateSong } from "../../../../services/api";
+import { fetchGeneros, fetchCreateSong } from "../../../../services/songs";
 
 const NewSongDialog = ({ open, onClose, onSave }) => {
     const [title, setTitle] = useState("");
@@ -66,10 +65,8 @@ const NewSongDialog = ({ open, onClose, onSave }) => {
             formData.append("titulo", title);
             formData.append("genero_id", genero?.id || "");
             formData.append("active", active ? "1" : "0");
-            formData.append("archivo", audioFile);
-            if (imageFile) {
-                formData.append("portada", imageFile);
-            }
+            if (audioFile) formData.append("archivo", audioFile);
+            if (imageFile) formData.append("portada", imageFile);
 
             const response = await fetchCreateSong(formData);
             if (response.status !== 200) {
@@ -98,7 +95,7 @@ const NewSongDialog = ({ open, onClose, onSave }) => {
 
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-            <Box component="form" onSubmit={handleSubmit}>
+            <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
                 <Box
                     sx={{
                         display: "flex",
@@ -109,10 +106,8 @@ const NewSongDialog = ({ open, onClose, onSave }) => {
                         borderColor: "divider",
                     }}
                 >
-                    <Typography variant="h6" component="div">
-                        Nueva Canción
-                    </Typography>
-                    <IconButton onClick={onClose} sx={{ color: "text.secondary" }}>
+                    <Typography variant="h6">Nueva Canción</Typography>
+                    <IconButton onClick={onClose}>
                         <CloseIcon />
                     </IconButton>
                 </Box>
@@ -124,158 +119,168 @@ const NewSongDialog = ({ open, onClose, onSave }) => {
                         </Typography>
                     )}
 
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} md={8}>
-                            <TextField
-                                label="Título"
-                                width="100%"
-                                fullWidth
-                                variant="outlined"
-                                value={title}
-                                onChange={(e) => setTitle(e.target.value)}
+                    {/* Título y Género */}
+                    <Box
+                        sx={{
+                            display: "flex",
+                            flexDirection: { xs: "column", md: "row" },
+                            gap: 2,
+                            mb: 2,
+                        }}
+                    >
+                        <TextField
+                            label="Título"
+                            fullWidth
+                            variant="outlined"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            required
+                        />
+                        <Autocomplete
+                            options={generosList}
+                            getOptionLabel={(option) => option.nombre || ""}
+                            value={genero}
+                            onChange={(e, newValue) => setGenero(newValue)}
+                            renderInput={(params) => (
+                                <TextField {...params} label="Género" variant="outlined" />
+                            )}
+                            fullWidth
+                        />
+                    </Box>
+
+
+                    {/* Audio e Imagen */}
+                    <Box
+                        sx={{
+                            display: "flex",
+                            flexDirection: { xs: "column", md: "row" },
+                            gap: 2,
+                            mb: 2,
+                        }}
+                    >
+                        {/* Audio */}
+                        <Box
+                            sx={{
+                                border: 1,
+                                borderColor: "divider",
+                                borderRadius: 2,
+                                p: 2,
+                                flex: 1,
+                            }}
+                        >
+                            <input
+                                accept="audio/*"
+                                id="audio-upload-button"
+                                type="file"
+                                style={{ display: "none" }}
+                                onChange={handleAudioChange}
                                 required
                             />
-                        </Grid>
+                            <label htmlFor="audio-upload-button">
+                                <Button
+                                    variant="outlined"
+                                    component="span"
+                                    fullWidth
+                                    startIcon={<Audiotrack />}
+                                >
+                                    Subir audio
+                                </Button>
+                            </label>
 
-                        <Grid item xs={12} md={4}>
-                            <Autocomplete
-                                width="100%"
-
-                                options={generosList}
-                                getOptionLabel={(option) => option.nombre || ""}
-                                value={genero}
-                                onChange={(e, newValue) => setGenero(newValue)}
-                                renderInput={(params) => (
-                                    <TextField {...params} label="Género" variant="outlined" required />
-                                )}
-                            />
-                        </Grid>
-
-                        <Grid item xs={12}>
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        checked={active}
-                                        onChange={(e) => setActive(e.target.checked)}
-                                    />
-                                }
-                                label="¿Quieres que la canción esté pública?"
-                            />
-                        </Grid>
-
-                        <Grid item xs={12} md={6}>
-                            <Box
-                                sx={{
-                                    border: 1,
-                                    borderColor: "divider",
-                                    borderRadius: 2,
-                                    p: 2,
-                                }}
-                            >
-                                <input
-                                    accept="audio/*"
-                                    id="audio-upload-button"
-                                    type="file"
-                                    style={{ display: "none" }}
-                                    onChange={handleAudioChange}
-                                    required
-                                />
-                                <label htmlFor="audio-upload-button">
-                                    <Button
-                                        variant="outlined"
-                                        component="span"
-                                        fullWidth
-                                        startIcon={<Audiotrack />}
-                                    >
-                                        Subir audio
-                                    </Button>
-                                </label>
-
-                                {audioPreview && (
-                                    <Box
-                                        sx={{
-                                            mt: 1,
-                                            display: "flex",
-                                            justifyContent: "space-between",
-                                            alignItems: "center",
+                            {audioPreview && (
+                                <Box
+                                    sx={{
+                                        mt: 1,
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                    }}
+                                >
+                                    <Typography variant="caption" noWrap>
+                                        {audioFile.name}
+                                    </Typography>
+                                    <IconButton
+                                        onClick={() => {
+                                            setAudioFile(null);
+                                            setAudioPreview(null);
                                         }}
                                     >
-                                        <Typography variant="caption" noWrap>
-                                            {audioFile.name}
-                                        </Typography>
-                                        <IconButton
-                                            onClick={() => {
-                                                setAudioFile(null);
-                                                setAudioPreview(null);
-                                            }}
-                                            sx={{ backgroundColor: "rgba(255,255,255,0.7)" }}
-                                        >
-                                            <CloseIcon />
-                                        </IconButton>
-                                    </Box>
-                                )}
-                            </Box>
-                        </Grid>
+                                        <CloseIcon />
+                                    </IconButton>
+                                </Box>
+                            )}
+                        </Box>
 
-                        <Grid item xs={12} md={6}>
-                            <Box
-                                sx={{
-                                    border: 1,
-                                    borderColor: "divider",
-                                    borderRadius: 2,
-                                    p: 2,
-                                    textAlign: "center",
-                                }}
-                            >
-                                <input
-                                    accept="image/*"
-                                    id="image-upload-button"
-                                    type="file"
-                                    style={{ display: "none" }}
-                                    onChange={handleImageChange}
-                                />
-                                <label htmlFor="image-upload-button">
-                                    <Button
-                                        variant="outlined"
-                                        component="span"
-                                        fullWidth
-                                        startIcon={<PhotoCamera />}
+                        {/* Imagen */}
+                        <Box
+                            sx={{
+                                border: 1,
+                                borderColor: "divider",
+                                borderRadius: 2,
+                                p: 2,
+                                flex: 1,
+                                textAlign: "center",
+                            }}
+                        >
+                            <input
+                                accept="image/*"
+                                id="image-upload-button"
+                                type="file"
+                                style={{ display: "none" }}
+                                onChange={handleImageChange}
+                            />
+                            <label htmlFor="image-upload-button">
+                                <Button
+                                    variant="outlined"
+                                    component="span"
+                                    fullWidth
+                                    startIcon={<PhotoCamera />}
+                                >
+                                    Subir imagen
+                                </Button>
+                            </label>
+
+                            {imagePreview && (
+                                <Box sx={{ mt: 1, position: "relative", display: "inline-block" }}>
+                                    <img
+                                        src={imagePreview}
+                                        alt="Preview"
+                                        style={{
+                                            width: "100px",
+                                            height: "100px",
+                                            objectFit: "cover",
+                                            borderRadius: "8px",
+                                        }}
+                                    />
+                                    <IconButton
+                                        onClick={() => {
+                                            setImageFile(null);
+                                            setImagePreview(null);
+                                        }}
+                                        sx={{
+                                            position: "absolute",
+                                            bottom: 0,
+                                            right: 0,
+                                            backgroundColor: "rgba(255, 255, 255, 0.8)",
+                                        }}
                                     >
-                                        Subir imagen
-                                    </Button>
-                                </label>
+                                        <CloseIcon />
+                                    </IconButton>
+                                </Box>
+                            )}
+                        </Box>
+                    </Box>
 
-                                {imagePreview && (
-                                    <Box sx={{ mt: 1, position: "relative", display: "inline-block" }}>
-                                        <img
-                                            src={imagePreview}
-                                            alt="Preview"
-                                            style={{
-                                                width: "100px",
-                                                height: "100px",
-                                                objectFit: "cover",
-                                                borderRadius: "8px",
-                                            }}
-                                        />
-                                        <IconButton
-                                            onClick={() => {
-                                                setImageFile(null);
-                                                setImagePreview(null);
-                                            }}
-                                            sx={{
-                                                position: "absolute",
-                                                bottom: 0,
-                                                right: 0,
-                                                backgroundColor: "rgba(255, 255, 255, 0.8)",
-                                            }}
-                                        >
-                                            <CloseIcon />
-                                        </IconButton>
-                                    </Box>
-                                )}
-                            </Box>
-                        </Grid>
-                    </Grid>
+                    {/* Checkbox */}
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={active}
+                                onChange={(e) => setActive(e.target.checked)}
+                            />
+                        }
+                        label="¿Quieres que la canción esté pública?"
+                    />
                 </DialogContent>
 
                 <DialogActions sx={{ p: 2 }}>

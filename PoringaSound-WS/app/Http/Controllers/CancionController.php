@@ -232,11 +232,13 @@ class CancionController extends Controller
 
     public function actualizarCancion(Request $request, $id)
     {
-        $this->validateCancion($request);
         $cancion = Cancion::find($id);
+        if (!$cancion) return response()->json(['message' => 'Canción no encontrada'], 404);
 
-        if (!$cancion) {
-            return response()->json(['message' => 'Canción no encontrada'], 404);
+        try {
+            $this->validateCancion($request);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
         }
 
         if ($cancion->user_id != auth()->user()->id) {
@@ -297,9 +299,7 @@ class CancionController extends Controller
     private function validateCancion(Request $request)
     {
         $request->validate([
-            'titulo' => 'required|string|max:255',
-            'album_id' => 'nullable|exists:albumes,id',
-            'duracion' => 'nullable|integer',
+            'titulo' => 'required|string',
             'archivo' => 'nullable|file',
             'genero_id' => 'nullable|exists:genero,id',
             'active' => 'nullable|boolean',
