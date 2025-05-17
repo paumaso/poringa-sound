@@ -92,11 +92,18 @@ export const fetchRandomSong = async () => {
     }
 };
 
-export const fetchSongByUserId = async (userId, page = 1, perPage = 10) => {
+export const fetchSongByUserId = async (userId, page = 1, perPage = 10, generoId = "", search = "") => {
     try {
         const token = getToken();
+        const params = new URLSearchParams({
+            page,
+            per_page: perPage,
+        });
+        if (generoId) params.append("genero_id", generoId);
+        if (search) params.append("search", search);
+
         const response = await fetch(
-            `${API_URL}/canciones/user/${userId}?page=${page}&per_page=${perPage}`,
+            `${API_URL}/canciones/user/${userId}?${params.toString()}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,

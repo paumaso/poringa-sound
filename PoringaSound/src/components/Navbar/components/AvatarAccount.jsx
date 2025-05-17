@@ -10,12 +10,13 @@ import {
     ListItemIcon
 } from "@mui/material";
 import { Logout } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import { usePage } from "../../../context/PageContext";
 
 const AvatarAccount = () => {
     const { user, logout } = useAuth();
-    const { setActivePage } = usePage();
+    const navigate = useNavigate(); 
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
 
@@ -31,13 +32,13 @@ const AvatarAccount = () => {
 
     const handleLogout = () => {
         handleMenuClose();
-        setActivePage("");
+        navigate("/");
         logout();
     };
 
     const handleAccountClick = () => {
         handleMenuClose();
-        setActivePage("account");
+        navigate("/account");
     };
 
     const getInitial = (name) => {

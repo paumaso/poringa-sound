@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Dialog,
     DialogTitle,
@@ -9,127 +9,280 @@ import {
     Typography,
     Box,
     IconButton,
+    Autocomplete,
+    Chip,
+    CircularProgress,
+    Snackbar,
+    Alert
 } from "@mui/material";
 import { PhotoCamera } from "@mui/icons-material";
 import CloseIcon from "@mui/icons-material/Close";
+import { fetchSongByUserId } from "../../../../services/songs";
+import { fetchCreateAlbum } from "../../../../services/albums"
+import { getToken } from "../../../../services/auth";
 
-const NewAlbumDialog = ({ open, onClose, onSave }) => {
+const NewAlbumDialog = ({ open, onClose, onSave, userId }) => {
     const [title, setTitle] = useState("");
-    const [releaseDate, setReleaseDate] = useState("");
     const [coverFile, setCoverFile] = useState(null);
     const [coverPreview, setCoverPreview] = useState(null);
+    const [allSongs, setAllSongs] = useState([]);
+    const [selectedSongs, setSelectedSongs] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [searchSongs, setSearchSongs] = useState("");
+    const [loadingSongs, setLoadingSongs] = useState(false);
+    const [successMessage, setSuccessMessage] = useState(null);
+
+    useEffect(() => {
+        if (!open) return;
+
+        const loadSongs = async () => {
+            setLoadingSongs(true);
+            try {
+                const data = await fetchSongByUserId(userId, 1, 50, "", searchSongs);
+                const uniqueSongs = data.data.map(song => ({
+                    ...song,
+                    uniqueKey: `${song.id}_${song.titulo}`
+                }));
+                setAllSongs(uniqueSongs);
+            } catch (err) {
+                console.error("Error cargando canciones:", err);
+                setError("Error al cargar las canciones");
+            } finally {
+                setLoadingSongs(false);
+            }
+        };
+
+        const timer = setTimeout(() => {
+            loadSongs();
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [open, userId, searchSongs]);
 
     const handleCoverChange = (e) => {
         const file = e.target.files[0];
-        if (file) {
+        if (file && file.type.startsWith('image/')) {
             setCoverFile(file);
             setCoverPreview(URL.createObjectURL(file));
+            setError(null);
+        } else {
+            setError("Por favor, sube un archivo de imagen válido");
         }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!title.trim()) return setError("El título es requerido");
+        if (selectedSongs.length === 0) return setError("Selecciona al menos una canción");
+
         setLoading(true);
+        setError(null);
 
         try {
             const formData = new FormData();
-            formData.append("titulo", title);
-            formData.append("fecha_lanzamiento", releaseDate);
-            if (coverFile) {
-                formData.append("portada", coverFile);
-            }
+            formData.append("titulo", title.trim());
+            if (coverFile) formData.append("portada", coverFile);
 
-            await onSave(formData);
+            selectedSongs.forEach((song, index) => {
+                formData.append(`canciones[${index}]`, song.id);
+            });
 
-            setTitle("");
-            setReleaseDate("");
-            setCoverFile(null);
-            setCoverPreview(null);
-
-            onClose();
+            await fetchCreateAlbum(formData);
+            setSuccessMessage("Álbum creado con éxito!");
+            handleClose();
+            onSave?.();
         } catch (error) {
-            console.error("Error al crear el álbum:", error);
-            setError(error.message);
+            setError(error.message || "Error al crear álbum");
         } finally {
             setLoading(false);
         }
     };
 
+    const handleClose = () => {
+        setTitle("");
+        setCoverFile(null);
+        setCoverPreview(null);
+        setSelectedSongs([]);
+        setSearchSongs("");
+        setError(null);
+        onClose();
+    };
+
+    const handleCloseSnackbar = () => {
+        setSuccessMessage(null);
+    };
+
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-            <Box component="form" onSubmit={handleSubmit}>
-                <DialogTitle>
-                    <Typography variant="h6">Nuevo Álbum</Typography>
-                    <IconButton onClick={onClose} sx={{ position: "absolute", right: 8, top: 8 }}>
-                        <CloseIcon />
-                    </IconButton>
-                </DialogTitle>
-                <DialogContent>
-                    {error && (
-                        <Typography color="error" sx={{ mb: 2 }}>
-                            {error}
-                        </Typography>
-                    )}
-                    <TextField
-                        label="Título"
-                        fullWidth
-                        margin="dense"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        required
-                    />
-                    <TextField
-                        label="Fecha de Lanzamiento"
-                        type="date"
-                        fullWidth
-                        margin="dense"
-                        InputLabelProps={{ shrink: true }}
-                        value={releaseDate}
-                        onChange={(e) => setReleaseDate(e.target.value)}
-                        required
-                    />
-                    <Box sx={{ mt: 2 }}>
-                        <input
-                            accept="image/*"
-                            style={{ display: "none" }}
-                            id="cover-upload-button"
-                            type="file"
-                            onChange={handleCoverChange}
+        <>
+            <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+                <Box component="form" onSubmit={handleSubmit}>
+                    <DialogTitle sx={{ m: 0, p: 2 }}>
+                        Nuevo Álbum
+                        <IconButton
+                            aria-label="close"
+                            onClick={handleClose}
+                            sx={{
+                                position: "absolute",
+                                right: 8,
+                                top: 8,
+                                color: (theme) => theme.palette.grey[500],
+                            }}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                    </DialogTitle>
+
+                    <DialogContent dividers>
+                        {error && (
+                            <Typography color="error" sx={{ mb: 2 }}>
+                                {error}
+                            </Typography>
+                        )}
+
+                        <TextField
+                            label="Título"
+                            fullWidth
+                            margin="dense"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            required
+                            error={!title.trim() && error}
                         />
-                        <label htmlFor="cover-upload-button">
-                            <Button
-                                variant="outlined"
-                                component="span"
-                                fullWidth
-                                startIcon={<PhotoCamera />}
-                            >
-                                Subir Portada
-                            </Button>
-                        </label>
-                        {coverPreview && (
-                            <Box sx={{ mt: 2, textAlign: "center" }}>
-                                <img
-                                    src={coverPreview}
-                                    alt="Portada"
-                                    style={{
-                                        maxWidth: "100%",
-                                        maxHeight: "200px",
-                                        borderRadius: "8px",
+
+                        <Box
+                            sx={{
+                                border: 1,
+                                borderColor: "divider",
+                                borderRadius: 2,
+                                p: 2,
+                                textAlign: "center",
+                                mt: 2,
+                            }}
+                        >
+                            <input
+                                accept="image/*"
+                                id="image-upload-button"
+                                type="file"
+                                style={{ display: "none" }}
+                                onChange={handleCoverChange}
+                            />
+                            <label htmlFor="image-upload-button">
+                                <Button
+                                    variant="outlined"
+                                    component="span"
+                                    fullWidth
+                                    startIcon={<PhotoCamera />}
+                                >
+                                    Subir imagen
+                                </Button>
+                            </label>
+
+                            {coverPreview && (
+                                <Box sx={{ mt: 1, position: "relative", display: "inline-block" }}>
+                                    <img
+                                        src={coverPreview}
+                                        alt="Preview"
+                                        style={{
+                                            width: "100px",
+                                            height: "100px",
+                                            objectFit: "cover",
+                                            borderRadius: "8px",
+                                        }}
+                                    />
+                                    <IconButton
+                                        onClick={() => {
+                                            setCoverFile(null);
+                                            setCoverPreview(null);
+                                        }}
+                                        sx={{
+                                            position: "absolute",
+                                            bottom: 0,
+                                            right: 0,
+                                            backgroundColor: "rgba(255, 255, 255, 0.8)",
+                                        }}
+                                    >
+                                        <CloseIcon />
+                                    </IconButton>
+                                </Box>
+                            )}
+                        </Box>
+
+                        <Autocomplete
+                            multiple
+                            options={allSongs}
+                            getOptionLabel={(option) => option.titulo}
+                            filterSelectedOptions
+                            value={selectedSongs}
+                            onChange={(event, newValue) => setSelectedSongs(newValue)}
+                            onInputChange={(event, newInputValue) => {
+                                setSearchSongs(newInputValue);
+                            }}
+                            loading={loadingSongs}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                            getOptionKey={(option) => option.uniqueKey}
+                            renderTags={(value, getTagProps) =>
+                                value.map((option, index) => (
+                                    <Chip
+                                        label={option.titulo}
+                                        {...getTagProps({ index })}
+                                        key={option.uniqueKey}
+                                    />
+                                ))
+                            }
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    variant="outlined"
+                                    margin="normal"
+                                    label="Buscar y seleccionar canciones"
+                                    placeholder="Escribe para buscar..."
+                                    error={selectedSongs.length === 0 && error}
+                                    helperText={selectedSongs.length === 0 && error ? "Selecciona al menos una canción" : ""}
+                                    InputProps={{
+                                        ...params.InputProps,
+                                        endAdornment: (
+                                            <>
+                                                {loadingSongs ? (
+                                                    <CircularProgress color="inherit" size={20} />
+                                                ) : null}
+                                                {params.InputProps.endAdornment}
+                                            </>
+                                        ),
                                     }}
                                 />
-                            </Box>
-                        )}
-                    </Box>
-                </DialogContent>
-                <DialogActions>
-                    <Button type="submit" variant="contained" fullWidth disabled={loading}>
-                        {loading ? "Creando..." : "Crear Álbum"}
-                    </Button>
-                </DialogActions>
-            </Box>
-        </Dialog>
+                            )}
+                            sx={{ mt: 2 }}
+                        />
+                    </DialogContent>
+
+                    <DialogActions>
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            fullWidth
+                            disabled={loading}
+                            sx={{ height: '48px' }}
+                        >
+                            {loading ? <CircularProgress size={24} color="inherit" /> : "Crear Álbum"}
+                        </Button>
+                    </DialogActions>
+                </Box>
+            </Dialog>
+
+            {/* Notificación de éxito */}
+            <Snackbar
+                open={!!successMessage}
+                autoHideDuration={6000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>
+                    {successMessage}
+                </Alert>
+            </Snackbar>
+        </>
     );
 };
 

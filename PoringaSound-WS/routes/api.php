@@ -28,18 +28,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{id}', [AuthController::class, 'updateUser']);
     });
 
-    // Rutas de álbumes
-    Route::prefix('albums')->group(function () {
-        Route::get('/', [AlbumController::class, 'getAllAlbums']);
-        Route::get('/user/{id}', [AlbumController::class, 'getAlbumByUserId']);
-        Route::get('/{id}', [AlbumController::class, 'getAlbumById']);
-        Route::get('/artist/{id}', [AlbumController::class, 'getAlbumsByArtistId']);
-        Route::get('/songs/{id}', [AlbumController::class, 'getAlbumSongs']);
-        Route::post('/', [AlbumController::class, 'createAlbum']);
-        Route::put('/{id}', [AlbumController::class, 'updateAlbum']);
-        Route::delete('/{id}', [AlbumController::class, 'deleteAlbum']);
-    });
-
     // Rutas de canciones
     Route::prefix('canciones')->group(function () {
         Route::get('/', [CancionController::class, 'getAllCanciones']);
@@ -50,6 +38,18 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::post('/{id}', [CancionController::class, 'actualizarCancion']);
         Route::delete('/{id}', [CancionController::class, 'deleteCancion']);
+    });
+
+    // Rutas de álbumes
+    Route::prefix('albums')->group(function () {
+        Route::get('/', [AlbumController::class, 'getAllAlbums']);
+        Route::post('/', [AlbumController::class, 'createAlbum']);
+        Route::get('/user/{id}', [AlbumController::class, 'getAlbumByUserId']);
+        Route::get('/songs/{id}', [AlbumController::class, 'getAlbumSongs']);
+        Route::put('/canciones/{id}', [AlbumController::class, 'updateAlbumCancion']);
+        Route::get('/{id}', [AlbumController::class, 'getAlbumById']);
+        Route::put('/{id}', [AlbumController::class, 'updateAlbum']);
+        Route::delete('/{id}', [AlbumController::class, 'deleteAlbum']);
     });
 
     Route::prefix('interacciones')->group(function () {

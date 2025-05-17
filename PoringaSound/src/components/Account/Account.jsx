@@ -27,13 +27,14 @@ const Account = ({ onEdit, onSongClick }) => {
     const [value, setValue] = useState("one");
     const { user } = useAuth();
     const apiUrl = import.meta.env.VITE_STORAGE_URL;
+
     const [openListDialog, setOpenListDialog] = useState(false);
     const [openSongDialog, setOpenSongDialog] = useState(false);
     const [openAlbumDialog, setOpenAlbumDialog] = useState(false);
 
     const [selectedSong, setSelectedSong] = useState(null);
     const [reloadSongs, setReloadSongs] = useState(false);
-
+    const [reloadAlbums, setReloadAlbums] = useState(false); // Nuevo
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -58,6 +59,11 @@ const Account = ({ onEdit, onSongClick }) => {
 
     const handleSaveAlbum = async () => {
         setOpenAlbumDialog(false);
+        setReloadAlbums(true); // Activar recarga
+    };
+
+    const handleAlbumsUpdated = () => {
+        setReloadAlbums(false);
     };
 
     return (
@@ -74,7 +80,6 @@ const Account = ({ onEdit, onSongClick }) => {
                 <EditIcon />
             </IconButton>
 
-            {/* Contenido principal */}
             <Stack direction="row" spacing={3} alignItems="center">
                 <Avatar
                     src={user?.imagen_perfil ? apiUrl + user.imagen_perfil : ""}
@@ -100,7 +105,6 @@ const Account = ({ onEdit, onSongClick }) => {
                 </Box>
             </Stack>
 
-            {/* Divider */}
             <Divider sx={{ my: 2 }} />
 
             <Box>
@@ -112,7 +116,6 @@ const Account = ({ onEdit, onSongClick }) => {
                         mb: 2,
                     }}
                 >
-                    {/* Tabs alineados a la izquierda */}
                     <Tabs
                         value={value}
                         onChange={handleChange}
@@ -148,7 +151,6 @@ const Account = ({ onEdit, onSongClick }) => {
                         />
                     </Tabs>
 
-                    {/* Botón alineado a la derecha */}
                     <Button
                         variant="contained"
                         startIcon={<AddIcon />}
@@ -168,7 +170,6 @@ const Account = ({ onEdit, onSongClick }) => {
                     </Button>
                 </Box>
 
-                {/* Contenido dinámico basado en el tab seleccionado */}
                 <Box sx={{ mt: 2 }}>
                     {value === "one" && <UserLists userId={user?.id} />}
                     {value === "two" && (
@@ -181,11 +182,17 @@ const Account = ({ onEdit, onSongClick }) => {
                             onSongsUpdated={handleSongsUpdated}
                         />
                     )}
-                    {value === "three" && <UserAlbums userId={user?.id} />}
+                    {value === "three" && (
+                        <UserAlbums
+                            userId={user?.id}
+                            reloadAlbums={reloadAlbums}
+                            onAlbumsUpdated={handleAlbumsUpdated}
+                        />
+                    )}
                 </Box>
             </Box>
 
-            {/* Modals */}
+            {/* Modales */}
             <NewListDialog
                 open={openListDialog}
                 onClose={() => setOpenListDialog(false)}
@@ -200,6 +207,7 @@ const Account = ({ onEdit, onSongClick }) => {
                 open={openAlbumDialog}
                 onClose={() => setOpenAlbumDialog(false)}
                 onSave={handleSaveAlbum}
+                userId={user?.id}
             />
         </Box>
     );

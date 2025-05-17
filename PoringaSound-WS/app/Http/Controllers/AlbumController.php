@@ -2,135 +2,158 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use App\Models\Album;
-use Illuminate\Support\Facades\Date;
+use App\Models\Cancion;
+use Illuminate\Support\Facades\Storage;
 
 class AlbumController extends Controller
 {
-    public function getAllAlbums()
+    public function getAllAlbums(Request $request)
     {
-        return response()->json(Album::with('artista')->get(), 200);
+        $perPage = $request->query('per_page', 10);
+        $titulo = $request->query('titulo');
+
+        $query = Album::with(['user', 'canciones']);
+
+        if ($titulo) {
+            $query->where('titulo', 'like', '%' . $titulo . '%');
+        }
+
+        $albums = $query->paginate($perPage);
+
+        return response()->json($albums, 200);
     }
 
     public function getAlbumById($id)
     {
-        return response()->json(Album::find($id), 200);
-    }
+        $album = Album::with(['user', 'canciones'])->find($id);
 
-    public function getAlbumsByArtistId($id)
-    {
-        return response()->json(Album::where('artista_id', $id)->get(), 200);
-    }
+        if (!$album) {
+            return response()->json(['message' => 'Álbum no encontrado'], 404);
+        }
 
-    public function getAlbumSongs($id)
-    {
-        $album = Album::find($id);
-        return response()->json($album->canciones, 200);
+        return response()->json($album, 200);
     }
 
     public function getAlbumByUserId(Request $request, $userId)
     {
         $perPage = $request->query('per_page', 10);
-        $albums = Album::where('user_id', $userId)->paginate($perPage);
+        $titulo = $request->query('titulo');
+
+        $query = Album::with('canciones')->where('user_id', $userId);
+
+        if ($titulo) {
+            $query->where('titulo', 'like', '%' . $titulo . '%');
+        }
+
+        $albums = $query->paginate($perPage);
+
         return response()->json($albums, 200);
+    }
+
+    public function getAlbumSongs($id)
+    {
+        $album = Album::with('canciones')->find($id);
+
+        if (!$album) {
+            return response()->json(['message' => 'Álbum no encontrado'], 404);
+        }
+
+        return response()->json($album->canciones, 200);
     }
 
     public function createAlbum(Request $request)
     {
-        $this->validateAlbum($request);
-        $portada = $this->guardarPortada($request);
+        $request->validate([
+            'titulo' => 'required|string|max:255',
+            'fecha_lanzamiento' => 'nullable|date',
+            'active' => 'nullable|boolean',
+            'portada' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'canciones' => 'nullable|array',
+            'canciones.*' => 'exists:canciones,id'
+        ]);
+
+        $portada = null;
+        if ($request->hasFile('portada')) {
+            $portadaPath = $request->file('portada')->store('album_covers', 'public');
+            $portada = 'storage/' . $portadaPath;
+        }
 
         $album = Album::create([
+            'user_id' => auth()->id(),
             'titulo' => $request->titulo,
-            'user_id' => auth()->user()->id,
             'fecha_lanzamiento' => $request->fecha_lanzamiento,
             'active' => $request->active ?? false,
             'portada' => $portada,
         ]);
 
-        return response()->json($album, 201);
-    }
+        if ($request->has('canciones')) {
+            $album->canciones()->sync($request->canciones);
+        }
 
+        return response()->json($album->load('canciones'), 201);
+    }
 
     public function updateAlbum(Request $request, $id)
     {
-        $this->validateAlbum($request);
         $album = Album::find($id);
 
-        if ($album->artista_id != auth()->user()->id) {
-            return response()->json(['message' => 'No autorizado'], 401);
+        if (!$album) {
+            return response()->json(['message' => 'Álbum no encontrado'], 404);
         }
 
-        if ($album->portada && $request->hasFile('portada')) {
-            if (Storage::disk('public')->exists($album->portada)) {
-                Storage::disk('public')->delete($album->portada);
-            }
+        if ($album->user_id !== auth()->id()) {
+            return response()->json(['message' => 'No autorizado'], 403);
         }
 
-        $portada = $this->guardarPortada($request);
-        $album->update([
-            'titulo' => $request->titulo,
-            'artista_id' => $request->artista_id,
-            'active' => $request->active ?? false,
-            'fecha_lanzamiento' => $request->fecha_lanzamiento ?? new Date(),
-            'portada' => $portada,
+        $request->validate([
+            'titulo' => 'sometimes|required|string|max:255',
+            'fecha_lanzamiento' => 'nullable|date',
+            'active' => 'nullable|boolean',
+            'portada' => 'nullable|image|mimes:jpeg,png,jpg',
+            'canciones' => 'nullable|array',
+            'canciones.*' => 'exists:canciones,id'
         ]);
 
-        return response()->json($album, 200);
-    }
-
-    public function updateAlbumCancion(Request $request, $id)
-    {
-        $album = Album::find($id);
-
-        if ($album->artista_id != auth()->user()->id) {
-            return response()->json(['message' => 'No autorizado'], 401);
+        if ($request->hasFile('portada')) {
+            if ($album->portada && Storage::disk('public')->exists(str_replace('storage/', '', $album->portada))) {
+                Storage::disk('public')->delete(str_replace('storage/', '', $album->portada));
+            }
+            $portadaPath = $request->file('portada')->store('album_covers', 'public');
+            $album->portada = 'storage/' . $portadaPath;
         }
 
-        $album->canciones = $request->canciones;
+        $album->fill($request->only(['titulo', 'fecha_lanzamiento', 'active']));
         $album->save();
 
-        return response()->json($album, 200);
-    }
+        if ($request->has('canciones')) {
+            $album->canciones()->sync($request->canciones);
+        }
 
+        return response()->json($album->load('canciones'), 200);
+    }
 
     public function deleteAlbum($id)
     {
         $album = Album::find($id);
 
-        if ($album->artista_id != auth()->user()->id) {
-            return response()->json(['message' => 'No autorizado'], 401);
+        if (!$album) {
+            return response()->json(['message' => 'Álbum no encontrado'], 404);
         }
 
-        if ($album->portada) {
-            if (Storage::disk('public')->exists($album->portada)) {
-                Storage::disk('public')->delete($album->portada);
-            }
+        if ($album->user_id !== auth()->id()) {
+            return response()->json(['message' => 'No autorizado'], 403);
         }
+
+        if ($album->portada && Storage::disk('public')->exists(str_replace('storage/', '', $album->portada))) {
+            Storage::disk('public')->delete(str_replace('storage/', '', $album->portada));
+        }
+
+        $album->canciones()->detach();
 
         $album->delete();
-        return response()->json(['message' => 'Album eliminado'], 200);
-    }
 
-    private function validateAlbum(Request $request)
-    {
-        $request->validate([
-            'titulo' => 'required|string|max:255',
-            'fecha_lanzamiento' => 'date',
-            'active' => 'boolean',
-            'portada' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
-    }
-
-    private function guardarPortada(Request $request)
-    {
-        $imagePath = null;
-        if ($request->hasFile('portada')) {
-            $imageName = $request->titulo . '.jpg';
-            $imagePath = $request->file('portada')->storeAs('album_covers', $imageName, 'public');
-        }
-        return $imagePath ? 'storage/' . $imagePath : null;
+        return response()->json(['message' => 'Álbum eliminado'], 200);
     }
 }

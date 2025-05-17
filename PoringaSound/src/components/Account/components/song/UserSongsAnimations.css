@@ -1,0 +1,21 @@
+.song-fade-enter {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+.song-fade-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 200ms ease, transform 200ms ease;
+}
+
+.song-fade-exit {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.song-fade-exit-active {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 200ms ease, transform 200ms ease;
+}

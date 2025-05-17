@@ -25,6 +25,6 @@ class Album extends Model
 
     public function canciones()
     {
-        return $this->hasMany(Cancion::class);
+        return $this->belongsToMany(Cancion::class, 'album_cancion', 'album_id', 'cancion_id');
     }
 }

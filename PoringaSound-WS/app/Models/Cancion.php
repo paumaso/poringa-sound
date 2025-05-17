@@ -32,9 +32,9 @@ class Cancion extends Model
         return $this->belongsTo(Genero::class, 'genero_id', 'id');
     }
 
-    public function album()
+    public function albumes()
     {
-        return $this->belongsTo(Album::class);
+        return $this->belongsToMany(Album::class, 'album_cancion', 'cancion_id', 'album_id');
     }
 
     public function listasReproduccion()

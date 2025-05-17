@@ -196,11 +196,24 @@ class CancionController extends Controller
         $perPage = $request->query('per_page', 10);
         $authUserId = auth()->id();
 
-        $canciones = Cancion::where('user_id', $userId)
-            ->with(['genero:id,nombre', 'user:id,nombre', 'interacciones' => function ($query) use ($authUserId) {
-                $query->where('user_id', $authUserId);
-            }])
-            ->paginate($perPage);
+        $query = Cancion::where('user_id', $userId)
+            ->with([
+                'genero:id,nombre',
+                'user:id,nombre',
+                'interacciones' => function ($query) use ($authUserId) {
+                    $query->where('user_id', $authUserId);
+                }
+            ]);
+
+        if ($request->filled('genero_id')) {
+            $query->where('genero_id', $request->genero_id);
+        }
+
+        if ($request->filled('search')) {
+            $query->where('titulo', 'like', '%' . $request->search . '%');
+        }
+
+        $canciones = $query->paginate($perPage);
 
         return response()->json($canciones, 200);
     }
