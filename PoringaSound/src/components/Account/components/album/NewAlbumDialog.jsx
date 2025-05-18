@@ -11,15 +11,12 @@ import {
     IconButton,
     Autocomplete,
     Chip,
-    CircularProgress,
-    Snackbar,
-    Alert
+    CircularProgress
 } from "@mui/material";
 import { PhotoCamera } from "@mui/icons-material";
 import CloseIcon from "@mui/icons-material/Close";
 import { fetchSongByUserId } from "../../../../services/songs";
 import { fetchCreateAlbum } from "../../../../services/albums"
-import { getToken } from "../../../../services/auth";
 
 const NewAlbumDialog = ({ open, onClose, onSave, userId }) => {
     const [title, setTitle] = useState("");
@@ -31,7 +28,6 @@ const NewAlbumDialog = ({ open, onClose, onSave, userId }) => {
     const [error, setError] = useState(null);
     const [searchSongs, setSearchSongs] = useState("");
     const [loadingSongs, setLoadingSongs] = useState(false);
-    const [successMessage, setSuccessMessage] = useState(null);
 
     useEffect(() => {
         if (!open) return;
@@ -90,7 +86,6 @@ const NewAlbumDialog = ({ open, onClose, onSave, userId }) => {
             });
 
             await fetchCreateAlbum(formData);
-            setSuccessMessage("Álbum creado con éxito!");
             handleClose();
             onSave?.();
         } catch (error) {
@@ -108,10 +103,6 @@ const NewAlbumDialog = ({ open, onClose, onSave, userId }) => {
         setSearchSongs("");
         setError(null);
         onClose();
-    };
-
-    const handleCloseSnackbar = () => {
-        setSuccessMessage(null);
     };
 
     return (
@@ -149,6 +140,53 @@ const NewAlbumDialog = ({ open, onClose, onSave, userId }) => {
                             onChange={(e) => setTitle(e.target.value)}
                             required
                             error={!title.trim() && error}
+                        />
+
+                        <Autocomplete
+                            multiple
+                            options={allSongs}
+                            getOptionLabel={(option) => option.titulo}
+                            filterSelectedOptions
+                            value={selectedSongs}
+                            onChange={(event, newValue) => setSelectedSongs(newValue)}
+                            onInputChange={(event, newInputValue) => {
+                                setSearchSongs(newInputValue);
+                            }}
+                            loading={loadingSongs}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                            getOptionKey={(option) => option.uniqueKey}
+                            renderTags={(value, getTagProps) =>
+                                value.map((option, index) => (
+                                    <Chip
+                                        label={option.titulo}
+                                        {...getTagProps({ index })}
+                                        key={option.uniqueKey}
+                                    />
+                                ))
+                            }
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    variant="outlined"
+                                    margin="normal"
+                                    label="Buscar y seleccionar canciones"
+                                    placeholder="Escribe para buscar..."
+                                    error={selectedSongs.length === 0 && error}
+                                    helperText={selectedSongs.length === 0 && error ? "Selecciona al menos una canción" : ""}
+                                    InputProps={{
+                                        ...params.InputProps,
+                                        endAdornment: (
+                                            <>
+                                                {loadingSongs ? (
+                                                    <CircularProgress color="inherit" size={20} />
+                                                ) : null}
+                                                {params.InputProps.endAdornment}
+                                            </>
+                                        ),
+                                    }}
+                                />
+                            )}
+                            sx={{ mt: 2 }}
                         />
 
                         <Box
@@ -208,53 +246,6 @@ const NewAlbumDialog = ({ open, onClose, onSave, userId }) => {
                                 </Box>
                             )}
                         </Box>
-
-                        <Autocomplete
-                            multiple
-                            options={allSongs}
-                            getOptionLabel={(option) => option.titulo}
-                            filterSelectedOptions
-                            value={selectedSongs}
-                            onChange={(event, newValue) => setSelectedSongs(newValue)}
-                            onInputChange={(event, newInputValue) => {
-                                setSearchSongs(newInputValue);
-                            }}
-                            loading={loadingSongs}
-                            isOptionEqualToValue={(option, value) => option.id === value.id}
-                            getOptionKey={(option) => option.uniqueKey}
-                            renderTags={(value, getTagProps) =>
-                                value.map((option, index) => (
-                                    <Chip
-                                        label={option.titulo}
-                                        {...getTagProps({ index })}
-                                        key={option.uniqueKey}
-                                    />
-                                ))
-                            }
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    variant="outlined"
-                                    margin="normal"
-                                    label="Buscar y seleccionar canciones"
-                                    placeholder="Escribe para buscar..."
-                                    error={selectedSongs.length === 0 && error}
-                                    helperText={selectedSongs.length === 0 && error ? "Selecciona al menos una canción" : ""}
-                                    InputProps={{
-                                        ...params.InputProps,
-                                        endAdornment: (
-                                            <>
-                                                {loadingSongs ? (
-                                                    <CircularProgress color="inherit" size={20} />
-                                                ) : null}
-                                                {params.InputProps.endAdornment}
-                                            </>
-                                        ),
-                                    }}
-                                />
-                            )}
-                            sx={{ mt: 2 }}
-                        />
                     </DialogContent>
 
                     <DialogActions>
@@ -270,18 +261,6 @@ const NewAlbumDialog = ({ open, onClose, onSave, userId }) => {
                     </DialogActions>
                 </Box>
             </Dialog>
-
-            {/* Notificación de éxito */}
-            <Snackbar
-                open={!!successMessage}
-                autoHideDuration={6000}
-                onClose={handleCloseSnackbar}
-                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-            >
-                <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>
-                    {successMessage}
-                </Alert>
-            </Snackbar>
         </>
     );
 };

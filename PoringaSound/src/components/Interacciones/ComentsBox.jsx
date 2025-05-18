@@ -75,9 +75,10 @@ const ComentsBox = ({ coments = [], songId, onNewComent }) => {
                         }}
                     >
                         <Avatar
-                            src={apiUrl + user?.imagen_perfil}
+                            src={user?.imagen_perfil ? apiUrl + user.imagen_perfil : undefined}
                             alt={user?.nombre}
                         />
+
                         <TextField
                             fullWidth
                             placeholder="Escribe un comentario..."
@@ -138,7 +139,7 @@ const ComentsBox = ({ coments = [], songId, onNewComent }) => {
                             >
                                 <Box sx={{ display: "flex", gap: 2, flex: 1 }}>
                                     <Avatar
-                                        src={apiUrl + coment.user?.imagen_perfil}
+                                        src={coment.user?.imagen_perfil ? apiUrl + coment.user?.imagen_perfil : undefined}
                                         alt={coment.user?.nombre}
                                         sx={{ width: 40, height: 40 }}
                                     />

@@ -1,43 +1,132 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
+import { useNavigate } from "react-router-dom";
+import "../UserSongsAnimations.css";
 import {
-    Box, Typography, List, ListItem, ListItemAvatar,
-    Avatar, CircularProgress, IconButton, TextField
+    Box,
+    Typography,
+    List,
+    ListItem,
+    ListItemAvatar,
+    ListItemText,
+    CircularProgress,
+    IconButton,
+    TextField,
+    Tooltip,
+    Collapse,
+    Divider
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import AlbumIcon from "@mui/icons-material/Album";
-import { fetchAlbumsByUserId } from "../../../../services/albums";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
-const UserAlbums = ({ userId }) => {
+import DeleteDialog from "../DeleteDialog";
+import Portada from "../../../LazyImages/Portada";
+import { fetchAlbumsByUserId, fetchDeleteAlbum } from "../../../../services/albums";
+import EditAlbumDialog from "./EditAlbumDialog";
+
+const UserAlbums = ({ userId, reloadAlbums, onAlbumsUpdated }) => {
     const apiUrl = import.meta.env.VITE_STORAGE_URL;
+    const navigate = useNavigate();
+    const nodeRefs = useRef({});
 
     const [albums, setAlbums] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [expandedAlbumId, setExpandedAlbumId] = useState(null);
+    const [initialLoading, setInitialLoading] = useState(true);
     const [error, setError] = useState(null);
-
     const [page, setPage] = useState(1);
     const [perPage] = useState(6);
     const [totalPages, setTotalPages] = useState(1);
     const [search, setSearch] = useState("");
 
-    useEffect(() => {
-        const fetchAlbums = async () => {
-            setLoading(true);
-            try {
-                const data = await fetchAlbumsByUserId(userId, page, perPage, search);
-                setAlbums(data.data);
-                setTotalPages(data.last_page || 1);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchAlbums();
-    }, [userId, page, perPage, search]);
+    const [albumToDelete, setAlbumToDelete] = useState(null);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-    if (loading) {
+    const [editDialogOpen, setEditDialogOpen] = useState(false);
+    const [albumToEdit, setAlbumToEdit] = useState(null);
+
+    const fetchAlbums = async () => {
+        setInitialLoading(true);
+        setError(null);
+        try {
+            const data = await fetchAlbumsByUserId(userId, page, perPage, search);
+            setAlbums(data.data);
+            setTotalPages(data.last_page || 1);
+            if (onAlbumsUpdated) onAlbumsUpdated();
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setInitialLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchAlbums();
+    }, [userId, page, perPage, search, reloadAlbums]);
+
+    const openDeleteDialog = (album) => {
+        setAlbumToDelete(album);
+        setDeleteDialogOpen(true);
+    };
+
+    const closeDeleteDialog = () => {
+        setDeleteDialogOpen(false);
+        setAlbumToDelete(null);
+    };
+
+    const confirmDeleteAlbum = async () => {
+        if (!albumToDelete) return;
+
+        try {
+            await fetchDeleteAlbum(albumToDelete.id);
+            setAlbums((prev) => prev.filter((a) => a.id !== albumToDelete.id));
+            if (onAlbumsUpdated) onAlbumsUpdated();
+        } catch (error) {
+            console.error("Error al eliminar álbum:", error);
+        } finally {
+            closeDeleteDialog();
+        }
+    };
+
+    const handleEdit = (album) => {
+        setAlbumToEdit(album);
+        setEditDialogOpen(true);
+    };
+
+    const handleEditClose = () => {
+        setEditDialogOpen(false);
+        setAlbumToEdit(null);
+    };
+
+    const handleEditSave = (updatedAlbum) => {
+        setAlbums((prev) =>
+            prev.map((a) => (a.id === updatedAlbum.id ? { ...a, ...updatedAlbum } : a))
+        );
+        setEditDialogOpen(false);
+        setAlbumToEdit(null);
+    };
+
+    const handleDelete = (album) => {
+        openDeleteDialog(album);
+    };
+
+    const handleView = (album) => {
+        alert(`Ver detalles del álbum: ${album.titulo}`);
+    };
+
+    const handleSongView = (song) => {
+        navigate(`/song/${song.id}`);
+    };
+
+    const toggleExpand = (albumId) => {
+        setExpandedAlbumId(expandedAlbumId === albumId ? null : albumId);
+    };
+
+    if (initialLoading) {
         return <Box display="flex" justifyContent="center" p={3}><CircularProgress /></Box>;
     }
 
@@ -57,74 +146,169 @@ const UserAlbums = ({ userId }) => {
             </Box>
 
             {albums.length === 0 ? (
-                <Typography>No hay álbumes disponibles.</Typography>
+                <Box sx={{ textAlign: "center" }}>
+                    <Typography>No hay álbumes disponibles.</Typography>
+                </Box>
             ) : (
                 <List>
-                    {albums.map((album) => (
-                        <ListItem key={album.id}>
-                            <ListItemAvatar>
-                                <Avatar
-                                    variant="rounded"
-                                    src={album.portada ? `${apiUrl}${album.portada}` : undefined}
-                                    sx={{ width: 64, height: 64, bgcolor: "#f5f5f5" }}
+                    <TransitionGroup>
+                        {albums.map((album) => {
+                            if (!nodeRefs.current[album.id]) {
+                                nodeRefs.current[album.id] = React.createRef();
+                            }
+                            const ref = nodeRefs.current[album.id];
+                            const isExpanded = expandedAlbumId === album.id;
+
+                            return (
+                                <CSSTransition
+                                    key={album.id}
+                                    timeout={200}
+                                    classNames="song-fade"
+                                    nodeRef={ref}
                                 >
-                                    {!album.portada && <AlbumIcon />}
-                                </Avatar>
-                            </ListItemAvatar>
-                            <Box sx={{ ml: 2 }}>
-                                <Typography variant="body1">{album.titulo}</Typography>
-                            </Box>
-                        </ListItem>
-                    ))}
+                                    <div ref={ref}>
+                                        <ListItem
+                                            key={album.id}
+                                            sx={{
+                                                alignItems: "flex-start",
+                                                flexDirection: "column",
+                                                borderBottom: "1px solid #eee"
+                                            }}
+                                        >
+                                            <Box display="flex" width="100%">
+                                                <ListItemAvatar>
+                                                    <Box sx={{ width: 64, height: 64 }}>
+                                                        <Portada
+                                                            src={album.portada ? `${apiUrl}${album.portada}` : undefined}
+                                                            alt={album.titulo}
+                                                            width="100%"
+                                                            height="100%"
+                                                            hover={false}
+                                                        />
+                                                    </Box>
+                                                </ListItemAvatar>
+                                                <Box sx={{ flex: 1, ml: 2 }}>
+                                                    <Typography variant="h6">{album.titulo}</Typography>
+                                                </Box>
+                                                <Box display="flex" gap={1} alignItems="center">
+                                                    <Tooltip title={isExpanded ? "Ocultar canciones" : "Mostrar canciones"}>
+                                                        <IconButton onClick={() => toggleExpand(album.id)}>
+                                                            {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                    <Tooltip title="Editar">
+                                                        <IconButton onClick={() => handleEdit(album)}>
+                                                            <EditIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                    <Tooltip title="Eliminar">
+                                                        <IconButton onClick={() => handleDelete(album)}>
+                                                            <DeleteIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                    <Tooltip title="Detalles">
+                                                        <IconButton onClick={() => handleView(album)}>
+                                                            <VisibilityIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                </Box>
+                                            </Box>
+
+                                            <Collapse in={isExpanded} timeout="auto" unmountOnExit sx={{ width: "100%", mt: 1 }}>
+                                                {album.canciones?.length > 0 ? (
+                                                    <List dense disablePadding>
+                                                        {album.canciones.map((cancion) => (
+                                                            <React.Fragment key={cancion.id}>
+                                                                <ListItem sx={{ pl: 7, alignItems: "center" }}>
+                                                                    <Box sx={{ width: 48, height: 48, mr: 2 }}>
+                                                                        <Portada
+                                                                            src={cancion.portada ? `${apiUrl}${cancion.portada}` : undefined}
+                                                                            alt={cancion.titulo}
+                                                                            width="100%"
+                                                                            height="100%"
+                                                                            hover={true}
+                                                                            onClick={() => handleSongView(cancion)}
+                                                                        />
+                                                                    </Box>
+                                                                    <ListItemText
+                                                                        primary={cancion.titulo}
+                                                                        secondary={cancion.genero_id || "Sin género"}
+                                                                        sx={{ flex: 1 }}
+                                                                    />
+                                                                    <Tooltip title="Detalles de la canción">
+                                                                        <IconButton onClick={() => handleSongView(cancion)}>
+                                                                            <VisibilityIcon fontSize="small" />
+                                                                        </IconButton>
+                                                                    </Tooltip>
+                                                                </ListItem>
+                                                                <Divider variant="inset" component="li" />
+                                                            </React.Fragment>
+                                                        ))}
+                                                    </List>
+                                                ) : (
+                                                    <Typography variant="body2" color="text.secondary" ml={7}>
+                                                        Este álbum no tiene canciones.
+                                                    </Typography>
+                                                )}
+                                            </Collapse>
+                                        </ListItem>
+                                    </div>
+                                </CSSTransition>
+                            );
+                        })}
+                    </TransitionGroup>
                 </List>
             )}
 
             <Box
                 sx={{
-                    position: "sticky",
+                    position: "fixed",
                     bottom: 0,
-                    backgroundColor: "white",
-                    py: 2,
-                    mt: 4,
-                    zIndex: 10,
+                    left: 0,
+                    width: "100%",
+                    backgroundColor: "#fff",
+                    borderTop: "1px solid #e0e0e0",
                     display: "flex",
                     justifyContent: "center",
+                    alignItems: "center",
+                    py: 1,
+                    zIndex: 999,
                 }}
             >
-                <Box
-                    sx={{
-                        position: "fixed",
-                        bottom: 0,
-                        left: 0,
-                        width: "100%",
-                        backgroundColor: "#fff",
-                        borderTop: "1px solid #e0e0e0",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        py: 1,
-                        zIndex: 999,
-                    }}
+                <IconButton
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                    size="large"
                 >
-                    <IconButton
-                        onClick={() => setPage((p) => Math.max(1, p - 1))}
-                        disabled={page === 1}
-                        size="large"
-                    >
-                        <ChevronLeftIcon />
-                    </IconButton>
-                    <Typography sx={{ mx: 2 }}>
-                        Página {page} de {totalPages}
-                    </Typography>
-                    <IconButton
-                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                        disabled={page === totalPages}
-                        size="large"
-                    >
-                        <ChevronRightIcon />
-                    </IconButton>
-                </Box>
+                    <ChevronLeftIcon />
+                </IconButton>
+                <Typography sx={{ mx: 2 }}>
+                    Página {page} de {totalPages}
+                </Typography>
+                <IconButton
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={page === totalPages}
+                    size="large"
+                >
+                    <ChevronRightIcon />
+                </IconButton>
             </Box>
+
+            <DeleteDialog
+                open={deleteDialogOpen}
+                onClose={closeDeleteDialog}
+                onConfirm={confirmDeleteAlbum}
+                text={`¿Estás seguro que deseas eliminar el álbum "${albumToDelete?.titulo}"? Esta acción no se puede deshacer.`}
+            />
+
+            {/* Diálogo de edición */}
+            <EditAlbumDialog
+                open={editDialogOpen}
+                onClose={handleEditClose}
+                onSave={handleEditSave}
+                album={albumToEdit}
+                userId={userId}
+            />
         </Box>
     );
 };

@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { useTheme } from "@mui/material/styles";
+import { useAuth } from "../../context/AuthContext";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import {
     Avatar,
     Box,
@@ -13,18 +16,14 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import AlbumIcon from "@mui/icons-material/Album";
-import QueueMusicIcon from "@mui/icons-material/QueueMusic";
 import AddIcon from "@mui/icons-material/Add";
-import { useAuth } from "../../context/AuthContext";
 import UserSongs from "./components/song/UserSongs.jsx";
-import UserLists from "./components/list/UserLists.jsx";
 import UserAlbums from "./components/album/UserAlbums.jsx";
 import NewSongDialog from "./components/song/NewSongDialog.jsx";
 import NewAlbumDialog from "./components/album/NewAlbumDialog.jsx";
-import NewListDialog from "./components/list/NewListDialog.jsx";
 
 const Account = ({ onEdit, onSongClick }) => {
-    const [value, setValue] = useState("one");
+    const [value, setValue] = useState("two");
     const { user } = useAuth();
     const apiUrl = import.meta.env.VITE_STORAGE_URL;
 
@@ -34,7 +33,10 @@ const Account = ({ onEdit, onSongClick }) => {
 
     const [selectedSong, setSelectedSong] = useState(null);
     const [reloadSongs, setReloadSongs] = useState(false);
-    const [reloadAlbums, setReloadAlbums] = useState(false); // Nuevo
+    const [reloadAlbums, setReloadAlbums] = useState(false);
+
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -59,7 +61,7 @@ const Account = ({ onEdit, onSongClick }) => {
 
     const handleSaveAlbum = async () => {
         setOpenAlbumDialog(false);
-        setReloadAlbums(true); // Activar recarga
+        setReloadAlbums(true);
     };
 
     const handleAlbumsUpdated = () => {
@@ -123,15 +125,6 @@ const Account = ({ onEdit, onSongClick }) => {
                         indicatorColor="primary"
                     >
                         <Tab
-                            value="one"
-                            label={
-                                <Box display="flex" alignItems="center" gap={1}>
-                                    <QueueMusicIcon />
-                                    <Typography>Listas</Typography>
-                                </Box>
-                            }
-                        />
-                        <Tab
                             value="two"
                             label={
                                 <Box display="flex" alignItems="center" gap={1}>
@@ -155,23 +148,19 @@ const Account = ({ onEdit, onSongClick }) => {
                         variant="contained"
                         startIcon={<AddIcon />}
                         onClick={() => {
-                            if (value === "one") {
-                                setOpenListDialog(true);
-                            } else if (value === "two") {
+                            if (value === "two") {
                                 setOpenSongDialog(true);
                             } else if (value === "three") {
                                 setOpenAlbumDialog(true);
                             }
                         }}
                     >
-                        {value === "one" && "New List"}
                         {value === "two" && "New Song"}
                         {value === "three" && "New Album"}
                     </Button>
                 </Box>
 
                 <Box sx={{ mt: 2 }}>
-                    {value === "one" && <UserLists userId={user?.id} />}
                     {value === "two" && (
                         <UserSongs
                             userId={user?.id}
@@ -192,12 +181,6 @@ const Account = ({ onEdit, onSongClick }) => {
                 </Box>
             </Box>
 
-            {/* Modales */}
-            <NewListDialog
-                open={openListDialog}
-                onClose={() => setOpenListDialog(false)}
-                onSave={handleSaveList}
-            />
             <NewSongDialog
                 open={openSongDialog}
                 onClose={() => setOpenSongDialog(false)}

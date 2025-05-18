@@ -12,20 +12,21 @@ import Portada from "../LazyImages/Portada";
 import LikeButton from "../Interacciones/LikeButton";
 import ComentsBox from "../Interacciones/ComentsBox";
 import { fetchSongById } from "../../services/songs";
+import { useParams } from "react-router-dom";
 
-const SongDetails = ({ onSongClick, songId }) => {
+const SongDetails = ({ onSongClick }) => {
+    const { id } = useParams(); // ⬅️ obtenemos el ID desde la URL
     const [song, setSong] = useState(null);
     const [loading, setLoading] = useState(true);
     const [coments, setComents] = useState([]);
-
     const apiUrl = import.meta.env.VITE_STORAGE_URL;
 
     useEffect(() => {
         const loadData = async () => {
             try {
-                const data = await fetchSongById(songId);
+                const data = await fetchSongById(id);
                 setSong(data);
-                onSongClick(data);
+                onSongClick?.(data); // solo si está definido
                 setComents(data.comentarios || []);
             } catch (err) {
                 console.error("Error al cargar la canción:", err);
@@ -34,10 +35,10 @@ const SongDetails = ({ onSongClick, songId }) => {
             }
         };
 
-        if (songId) {
+        if (id) {
             loadData();
         }
-    }, [songId]);
+    }, [id]);
 
     if (loading) {
         return (
@@ -78,8 +79,7 @@ const SongDetails = ({ onSongClick, songId }) => {
                         objectFit: "cover",
                         maxWidth: 240,
                     }}
-                    onClick={() => onSongClick(song)}
-
+                    onClick={() => onSongClick?.(song)}
                 />
 
                 <Box sx={{ flex: 1 }}>

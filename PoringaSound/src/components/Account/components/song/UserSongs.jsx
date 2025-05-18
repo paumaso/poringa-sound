@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
-import "./UserSongsAnimations.css";
+import Portada from "../../../LazyImages/Portada";
+import "../UserSongsAnimations.css";
 import { fetchSongByUserId, fetchDeleteSong, fetchGeneros } from "../../../../services/songs";
 import {
   CircularProgress,
@@ -9,20 +11,18 @@ import {
   List,
   ListItem,
   ListItemAvatar,
-  Avatar,
   Chip,
   IconButton,
   Tooltip,
   TextField,
-  MenuItem,
-  Button
+  MenuItem
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import EditSongDialog from "./EditSongDialog";
@@ -30,22 +30,20 @@ import DeleteDialog from "../DeleteDialog";
 
 const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
   const apiUrl = import.meta.env.VITE_STORAGE_URL;
-  const nodeRefs = useRef({});
+  const navigate = useNavigate(); // ✅
 
+  const nodeRefs = useRef({});
   const [songs, setSongs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedSong, setSelectedSong] = useState(null);
-
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(6);
   const [totalPages, setTotalPages] = useState(1);
   const [generos, setGeneros] = useState([]);
   const [generoId, setGeneroId] = useState("");
-
   const [search, setSearch] = useState("");
 
   useEffect(() => {
@@ -68,6 +66,7 @@ const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
 
     fetchSongs();
   }, [reloadSongs, userId, page, perPage, generoId, search, onSongsUpdated]);
+
   const handleEdit = (song) => {
     setSelectedSong(song);
     setEditDialogOpen(true);
@@ -77,7 +76,6 @@ const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
     setEditDialogOpen(false);
     setSelectedSong(null);
   };
-
 
   const handleDeleteClick = (song) => {
     setSelectedSong(song);
@@ -91,7 +89,6 @@ const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
         setSongs((prevSongs) =>
           prevSongs.filter((song) => song.id !== selectedSong.id)
         );
-        console.log("Canción eliminada:", selectedSong);
       }
     } catch (error) {
       console.error("Error al eliminar la canción:", error);
@@ -106,8 +103,8 @@ const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
     setSelectedSong(null);
   };
 
-  const handleShare = (song) => {
-    console.log("Compartir canción:", song);
+  const handleDetailsClick = (song) => {
+    navigate(`/song/${song.id}`); // ✅ Ir a detalles
   };
 
   if (loading) {
@@ -162,7 +159,8 @@ const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
             scrollbarWidth: "none",
           }}
           className="hide-scrollbar"
-        >          <TransitionGroup>
+        >
+          <TransitionGroup>
             {songs.map((song) => {
               if (!nodeRefs.current[song.id]) {
                 nodeRefs.current[song.id] = React.createRef();
@@ -188,20 +186,18 @@ const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
                           cursor: "pointer",
                         }}
                       >
-                        <Avatar
-                          variant="rounded"
-                          sx={{
-                            width: 64,
-                            height: 64,
-                            backgroundColor: "#f0f0f0",
-                          }}
-                          src={apiUrl + song.portada || undefined}
+                        <Portada
+                          src={song.portada ? apiUrl + song.portada : null}
                           alt={song.titulo}
-                        >
-                          {!song.portada && (
-                            <MusicNoteIcon sx={{ color: "#9e9e9e" }} />
-                          )}
-                        </Avatar>
+                          icon={<MusicNoteIcon sx={{ color: "#9e9e9e" }} />}
+                          width="100%"
+                          height="100%"
+                          sx={{
+                            borderRadius: 2,
+                            objectFit: "cover",
+                            bgcolor: "#f0f0f0"
+                          }}
+                        />
                         <Box
                           className="hover-overlay"
                           sx={{
@@ -219,9 +215,7 @@ const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
                             borderRadius: "8px",
                           }}
                         >
-                          <PlayCircleIcon
-                            sx={{ color: "white", fontSize: 40 }}
-                          />
+                          <PlayCircleIcon sx={{ color: "white", fontSize: 40 }} />
                         </Box>
                       </Box>
                     </ListItemAvatar>
@@ -231,33 +225,24 @@ const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
                     </Box>
                     <Box display="flex" gap={1} alignItems="center">
                       <Tooltip title="Editar">
-                        <IconButton
-                          onClick={() => handleEdit(song)}
-                          aria-label="Editar"
-                        >
+                        <IconButton onClick={() => handleEdit(song)} aria-label="Editar">
                           <EditIcon />
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Eliminar">
-                        <IconButton
-                          onClick={() => handleDeleteClick(song)}
-                          aria-label="Eliminar"
-                        >
+                        <IconButton onClick={() => handleDeleteClick(song)} aria-label="Eliminar">
                           <DeleteIcon />
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Detalles">
-                        <IconButton
-                          onClick={() => handleShare(song)}
-                          aria-label="Detalles"
-                        >
+                        <IconButton onClick={() => handleDetailsClick(song)} aria-label="Detalles">
                           <VisibilityIcon />
                         </IconButton>
                       </Tooltip>
                     </Box>
                   </ListItem>
                 </CSSTransition>
-              )
+              );
             })}
           </TransitionGroup>
         </List>
@@ -265,52 +250,38 @@ const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
 
       <Box
         sx={{
-          position: "sticky",
+          position: "fixed",
           bottom: 0,
-          backgroundColor: "white",
-          py: 2,
-          mt: 4,
-          zIndex: 10,
+          left: 0,
+          width: "100%",
+          backgroundColor: "#fff",
+          borderTop: "1px solid #e0e0e0",
           display: "flex",
           justifyContent: "center",
+          alignItems: "center",
+          py: 1,
+          zIndex: 999,
         }}
       >
-        <Box
-          sx={{
-            position: "fixed",
-            bottom: 0,
-            left: 0,
-            width: "100%",
-            backgroundColor: "#fff",
-            borderTop: "1px solid #e0e0e0",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            py: 1,
-            zIndex: 999,
-          }}
+        <IconButton
+          onClick={() => setPage((p) => Math.max(1, p - 1))}
+          disabled={page === 1}
+          size="large"
         >
-          <IconButton
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
-            size="large"
-          >
-            <ChevronLeftIcon />
-          </IconButton>
-          <Typography sx={{ mx: 2 }}>
-            Página {page} de {totalPages}
-          </Typography>
-          <IconButton
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            disabled={page === totalPages}
-            size="large"
-          >
-            <ChevronRightIcon />
-          </IconButton>
-        </Box>
+          <ChevronLeftIcon />
+        </IconButton>
+        <Typography sx={{ mx: 2 }}>
+          Página {page} de {totalPages}
+        </Typography>
+        <IconButton
+          onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+          disabled={page === totalPages}
+          size="large"
+        >
+          <ChevronRightIcon />
+        </IconButton>
       </Box>
 
-      {/* Modal para Editar una cancion */}
       {selectedSong && (
         <EditSongDialog
           open={editDialogOpen}
@@ -328,7 +299,6 @@ const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
         />
       )}
 
-      {/* Modal de confirmación para eliminar */}
       <DeleteDialog
         open={deleteDialogOpen}
         onClose={handleDeleteCancel}
