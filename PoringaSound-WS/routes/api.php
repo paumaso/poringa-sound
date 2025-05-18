@@ -13,6 +13,8 @@ Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 Route::get('public/canciones/random-list', [CancionController::class, 'getCancionesOrdenRandom']);
 Route::get('public/canciones/random', [CancionController::class, 'getRandomCancion']);
+Route::get('public/albums/random', [AlbumController::class, 'getAllAlbums']);
+Route::get('public/artistas/random', [AuthController::class, 'getUsersWithActiveSongs']);
 
 Route::get('public/interacciones/total-likes/{id}', [InteraccionController::class, 'getTotalLikes']);
 Route::get('public/interacciones/avg-puntuaciones/{id}', [InteraccionController::class, 'getMediaPuntuacion']);

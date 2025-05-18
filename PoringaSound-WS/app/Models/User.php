@@ -44,4 +44,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Interaccion::class);
     }
+
+    public function canciones()
+{
+    return $this->hasMany(Cancion::class);
 }
+}
+

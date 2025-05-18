@@ -71,7 +71,7 @@ export const logoutUser = () => {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
-          
+
         },
       });
       Cookies.remove("token");
@@ -81,6 +81,33 @@ export const logoutUser = () => {
     console.error("Error al cerrar sesión:", error);
   }
 
+};
+
+export const fetchUsersWithActiveSongs = async ({ page = 1, perPage = 10, query = "" } = {}) => {
+  try {
+    const params = new URLSearchParams();
+    params.append("page", page);
+    params.append("per_page", perPage);
+    if (query) params.append("query", query);
+
+    const response = await fetch(`${API_URL}/public/artistas/random?${params.toString()}`, {
+      method: "GET",
+      headers: {
+        "Accept": "application/json",
+      },
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      return data;
+    } else {
+      throw new Error(data.message || "Error al obtener los usuarios");
+    }
+  } catch (error) {
+    console.error("Error al obtener los usuarios:", error);
+    throw error;
+  }
 };
 
 export const getToken = () => {

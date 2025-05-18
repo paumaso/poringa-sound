@@ -25,11 +25,13 @@ const PoringaSound = () => {
     };
 
     return (
-        <div>
+        <div style={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden" }}>
             <Navbar />
 
             <div
                 style={{
+                    flexGrow: 1,
+                    overflowY: "auto",
                     marginRight: drawerOpen ? "400px" : "0",
                     transition: "margin-right 0.4s ease",
                 }}
@@ -39,7 +41,6 @@ const PoringaSound = () => {
                     <Route path="/discover" element={<Discover onDetailsClick={handleSongDetailsClick} />} />
                     <Route path="/account" element={<Account onSongClick={handleSongClick} onDetailsClick={handleSongDetailsClick} />} />
                     <Route path="/song/:id" element={<SongDetails onSongClick={handleSongClick} onDetailsClick={handleSongDetailsClick} songId={selectedSong?.id} />} />
-                    {/* Agrega más rutas según necesites */}
                 </Routes>
             </div>
 

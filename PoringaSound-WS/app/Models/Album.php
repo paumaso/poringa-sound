@@ -23,6 +23,11 @@ class Album extends Model
         'canciones' => 'array',
     ];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function canciones()
     {
         return $this->belongsToMany(Cancion::class, 'album_cancion', 'album_id', 'cancion_id');

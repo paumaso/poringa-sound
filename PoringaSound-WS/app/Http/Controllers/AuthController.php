@@ -10,6 +10,28 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    public function getUsersWithActiveSongs(Request $request)
+    {
+        $perPage = $request->query('per_page', 10);
+        $query = $request->query('query');
+
+        $usersQuery = User::whereHas('canciones', function ($q) {
+            $q->where('active', true);
+        })
+            ->with(['canciones' => function ($q) {
+                $q->where('active', true);
+            }])
+            ->inRandomOrder();
+
+        if ($query) {
+            $usersQuery->where('nombre', 'like', "%$query%");
+        }
+
+        $users = $usersQuery->paginate($perPage);
+
+        return response()->json($users, 200);
+    }
+
     public function register(Request $request)
     {
         $request->validate([
