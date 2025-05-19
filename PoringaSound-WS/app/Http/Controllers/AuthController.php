@@ -32,6 +32,24 @@ class AuthController extends Controller
         return response()->json($users, 200);
     }
 
+    public function getUserById(Request $request, $id)
+    {
+        $perPage = $request->query('per_page', 10);
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'Usuario no encontrado'], 404);
+        }
+
+        $canciones = $user->canciones()
+            ->where('active', true)
+            ->with('user')
+            ->paginate($perPage);
+
+        $user->canciones = $canciones;
+        return response()->json($user, 200);
+    }
+
     public function register(Request $request)
     {
         $request->validate([

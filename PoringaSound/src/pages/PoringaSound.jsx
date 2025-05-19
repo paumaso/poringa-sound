@@ -6,7 +6,10 @@ import SongDrawer from "../components/SongDrawer/SongDrawer";
 import Home from "../components/Home/Home";
 import Discover from "../components/Discover/Discover";
 import Account from "../components/Account/Account";
-import SongDetails from "../components/SongDetails/SongDetails";
+import AllSongs from "../components/AllSongs/AllSongs";
+import SongDetails from "../components/Details/SongDetails/SongDetails";
+import AlbumDetails from "../components/Details/AlbumDetails/AlbumDetails";
+import ArtistDetails from "../components/Details/ArtistDetalls/ArtistDetails";
 
 const PoringaSound = () => {
     const { activePage, setActivePage } = usePage();
@@ -40,7 +43,10 @@ const PoringaSound = () => {
                     <Route path="/" element={<Home onSongClick={handleSongClick} onDetailsClick={handleSongDetailsClick} />} />
                     <Route path="/discover" element={<Discover onDetailsClick={handleSongDetailsClick} />} />
                     <Route path="/account" element={<Account onSongClick={handleSongClick} onDetailsClick={handleSongDetailsClick} />} />
-                    <Route path="/song/:id" element={<SongDetails onSongClick={handleSongClick} onDetailsClick={handleSongDetailsClick} songId={selectedSong?.id} />} />
+                    <Route path="/song/:id" element={<SongDetails onSongClick={handleSongClick} onDetailsClick={handleSongDetailsClick} />} />
+                    <Route path="/album/:id" element={<AlbumDetails onSongClick={handleSongClick} onDetailsClick={handleSongDetailsClick} />} />
+                    <Route path="/artist/:id" element={<ArtistDetails onSongClick={handleSongClick} onDetailsClick={handleSongDetailsClick} />} />
+                    <Route path="/songs" element={<AllSongs onSongClick={handleSongClick} onDetailsClick={handleSongDetailsClick}/>}/>
                 </Routes>
             </div>
 

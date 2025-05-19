@@ -25,14 +25,17 @@ class AlbumController extends Controller
         return response()->json($albums, 200);
     }
 
-    public function getAlbumById($id)
+    public function getAlbumById(Request $request, $id)
     {
-        $album = Album::with(['user', 'canciones'])->find($id);
+        $perPage = $request->query('per_page', 10);
+        $album = Album::with('user')->find($id);
 
         if (!$album) {
             return response()->json(['message' => 'Álbum no encontrado'], 404);
         }
 
+        $canciones = $album->canciones()->with('user')->paginate($perPage);
+        $album->canciones = $canciones;
         return response()->json($album, 200);
     }
 

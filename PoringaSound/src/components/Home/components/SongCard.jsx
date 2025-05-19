@@ -24,7 +24,6 @@ const SongCard = ({ cancion, apiUrl, onSongClick, onDetailsClick }) => {
             elevation={3}
             sx={{
                 width: { xs: 120, sm: 140, md: 160 },
-                minWidth: { xs: 140, sm: 180 },
                 height: "auto",
                 display: "flex",
                 flexDirection: "column",

@@ -18,7 +18,6 @@ const AlbumCard = ({ album, apiUrl }) => {
             onClick={handleClick}
             sx={{
                 width: { xs: 120, sm: 140, md: 160 },
-                minWidth: 140,
                 borderRadius: 2,
                 overflow: "hidden",
                 cursor: "pointer",

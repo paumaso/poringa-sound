@@ -12,11 +12,20 @@ const handleResponseError = async (response) => {
     return response.json();
 };
 
-export const fetchAllSongs = async (page = 1, perPage = 10) => {
+export const fetchAllSongs = async ({ page = 1, perPage = 10, query = "", genero_id = "", artista = "", orden = "nombre", direccion = "asc" } = {}) => {
     try {
         const token = getToken();
+        const params = new URLSearchParams();
+        params.append("page", page);
+        params.append("per_page", perPage);
+        if (query) params.append("query", query);
+        if (genero_id) params.append("genero_id", genero_id);
+        if (artista) params.append("artista", artista);
+        if (orden) params.append("orden", orden);
+        if (direccion) params.append("direccion", direccion);
+
         const response = await fetch(
-            `${API_URL}/public/canciones/random-list?page=${page}&per_page=${perPage}`,
+            `${API_URL}/public/canciones/all?${params.toString()}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -180,18 +189,18 @@ export const fetchDeleteSong = async (songId) => {
 };
 
 export const fetchGeneros = async () => {
-  try {
-    const token = getToken();
-    const response = await fetch(`${API_URL}/generos/`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    try {
+        const token = getToken();
+        const response = await fetch(`${API_URL}/generos/`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
 
-    const data = await handleResponseError(response);
-    return data;
-  } catch (error) {
-    console.error("Error al obtener géneros:", error);
-    throw error;
-  }
+        const data = await handleResponseError(response);
+        return data;
+    } catch (error) {
+        console.error("Error al obtener géneros:", error);
+        throw error;
+    }
 };

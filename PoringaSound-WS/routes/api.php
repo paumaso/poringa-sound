@@ -11,14 +11,14 @@ use App\Http\Controllers\GenerosController;
 // Rutas públicas
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
-Route::get('public/canciones/random-list', [CancionController::class, 'getCancionesOrdenRandom']);
+Route::get('public/canciones/all', [CancionController::class, 'getCancionesFiltradas']);
 Route::get('public/canciones/random', [CancionController::class, 'getRandomCancion']);
-Route::get('public/albums/random', [AlbumController::class, 'getAllAlbums']);
-Route::get('public/artistas/random', [AuthController::class, 'getUsersWithActiveSongs']);
+Route::get('public/albums/all', [AlbumController::class, 'getAllAlbums']);
+Route::get('public/artistas/all', [AuthController::class, 'getUsersWithActiveSongs']);
 
-Route::get('public/interacciones/total-likes/{id}', [InteraccionController::class, 'getTotalLikes']);
-Route::get('public/interacciones/avg-puntuaciones/{id}', [InteraccionController::class, 'getMediaPuntuacion']);
 Route::get('public/canciones/{id}', [CancionController::class, 'getCancionById']);
+Route::get('public/albums/{id}', [AlbumController::class, 'getAlbumById']);
+Route::get('public/artistas/{id}', [AuthController::class, 'getUserById']);
 
 // Rutas protegidas por autenticación
 Route::middleware('auth:sanctum')->group(function () {

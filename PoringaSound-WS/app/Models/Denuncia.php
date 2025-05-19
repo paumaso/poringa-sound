@@ -10,7 +10,10 @@ class Denuncia extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'cancion_id', 'motivo', 'estado',
+        'user_id', 
+        'cancion_id', 
+        'motivo', 
+        'estado',
     ];
 
     public function usuario()

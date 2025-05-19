@@ -11,18 +11,53 @@ use App\Models\Cancion;
 
 class CancionController extends Controller
 {
-    public function getCancionesOrdenRandom(Request $request)
+    public function getCancionesFiltradas(Request $request)
     {
         $perPage = $request->query('per_page', 10);
+        $queryParam = $request->query('query');
+        $generoId = $request->query('genero_id');
+        $artista = $request->query('artista');
+        $orden = $request->query('orden', 'nombre');
+        $direccion = $request->query('direccion', 'asc');
 
         $canciones = Cancion::with([
             'genero:id,nombre',
             'user:id,nombre,imagen_perfil',
             'interacciones'
         ])
-            ->where('active', 1)
-            ->inRandomOrder()
-            ->paginate($perPage);
+            ->where('active', 1);
+
+        if ($queryParam) {
+            $canciones->where('titulo', 'like', "%$queryParam%");
+        }
+        if ($generoId) {
+            $canciones->where('genero_id', $generoId);
+        }
+        if ($artista) {
+            $canciones->whereHas('user', function ($q) use ($artista) {
+                $q->where('nombre', 'like', "%$artista%");
+            });
+        }
+
+        if ($orden === 'nombre') {
+            $canciones->orderBy('titulo', $direccion);
+        } elseif ($orden === 'artista') {
+            $canciones->orderBy(
+                \App\Models\User::select('nombre')
+                    ->whereColumn('users.id', 'canciones.user_id')
+                    ->limit(1),
+                $direccion
+            );
+        } elseif ($orden === 'likes') {
+            $canciones->withCount(['interacciones as likes_count' => function ($q) {
+                $q->where('tipo', 'like');
+            }])->orderBy('likes_count', $direccion);
+        } elseif ($orden === 'interacciones') {
+            $canciones->withCount(['interacciones as interacciones_count'])
+                ->orderBy('interacciones_count', $direccion);
+        }
+
+        $canciones = $canciones->paginate($perPage);
 
         $canciones->getCollection()->transform(function ($cancion) {
             $totalLikes = $cancion->interacciones->where('tipo', 'like')->count();
@@ -37,7 +72,6 @@ class CancionController extends Controller
         });
 
         return response()->json([
-            'genero_favorito' => null,
             'canciones' => $canciones,
         ], 200);
     }

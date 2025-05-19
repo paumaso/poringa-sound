@@ -1,14 +1,22 @@
 import React from "react";
 import { Box, Tooltip, Typography } from "@mui/material";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { useNavigate } from "react-router-dom";
 import 'react-lazy-load-image-component/src/effects/blur.css';
 
-const ArtistCard = ({ artist, apiUrl, onClick }) => {
+const ArtistCard = ({ artist, apiUrl }) => {
+    const navigate = useNavigate();
+
+    const handleClick = () => {
+        if (artist?.id) {
+            navigate(`/artist/${artist.id}`);
+        }
+    };
     const imageUrl = artist.imagen_perfil ? `${apiUrl}${artist.imagen_perfil}` : undefined;
 
     return (
         <Box
-            onClick={onClick}
+            onClick={handleClick}
             sx={{
                 cursor: "pointer",
                 display: "flex",
@@ -21,8 +29,8 @@ const ArtistCard = ({ artist, apiUrl, onClick }) => {
         >
             <Box
                 sx={{
-                    width: 80,
-                    height: 80,
+                    width: 100,
+                    height: 100,
                     borderRadius: "50%",
                     overflow: "hidden",
                     boxShadow: 2,

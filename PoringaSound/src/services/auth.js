@@ -90,7 +90,7 @@ export const fetchUsersWithActiveSongs = async ({ page = 1, perPage = 10, query 
     params.append("per_page", perPage);
     if (query) params.append("query", query);
 
-    const response = await fetch(`${API_URL}/public/artistas/random?${params.toString()}`, {
+    const response = await fetch(`${API_URL}/public/artistas/all?${params.toString()}`, {
       method: "GET",
       headers: {
         "Accept": "application/json",
@@ -106,6 +106,32 @@ export const fetchUsersWithActiveSongs = async ({ page = 1, perPage = 10, query 
     }
   } catch (error) {
     console.error("Error al obtener los usuarios:", error);
+    throw error;
+  }
+};
+
+export const fetchUserById = async (id, page = 1, perPage = 10) => {
+  try {
+    const params = new URLSearchParams();
+    params.append("page", page);
+    params.append("per_page", perPage);
+
+    const response = await fetch(`${API_URL}/public/artistas/${id}?${params.toString()}`, {
+      method: "GET",
+      headers: {
+        "Accept": "application/json",
+      },
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      return data;
+    } else {
+      throw new Error(data.message || "Error al obtener el usuario");
+    }
+  } catch (error) {
+    console.error("Error al obtener el usuario:", error);
     throw error;
   }
 };

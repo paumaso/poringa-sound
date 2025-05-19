@@ -18,7 +18,7 @@ export const fetchAllAlbums = async (page = 1, perPage = 10, titulo = "") => {
         const params = new URLSearchParams({ page, per_page: perPage });
         if (titulo) params.append("titulo", titulo);
 
-        const response = await fetch(`${API_URL}/public/albums/random?${params.toString()}`, {
+        const response = await fetch(`${API_URL}/public/albums/all?${params.toString()}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 Accept: "application/json",
@@ -50,10 +50,11 @@ export const fetchAlbumsByUserId = async (userId, page = 1, perPage = 10, titulo
     }
 };
 
-export const fetchAlbumById = async (id) => {
+export const fetchAlbumById = async (id, page = 1, perPage = 10) => {
     try {
         const token = getToken();
-        const response = await fetch(`${API_URL}/albums/${id}`, {
+        const params = new URLSearchParams({ page, per_page: perPage });
+        const response = await fetch(`${API_URL}/public/albums/${id}?${params.toString()}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 Accept: "application/json",
