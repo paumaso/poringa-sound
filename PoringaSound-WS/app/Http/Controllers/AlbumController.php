@@ -11,18 +11,26 @@ class AlbumController extends Controller
 {
     public function getAllAlbums(Request $request)
     {
-        $perPage = $request->query('per_page', 10);
-        $titulo = $request->query('titulo');
+        $query =  Album::with('user');
 
-        $query = Album::with(['user', 'canciones']);
-
-        if ($titulo) {
-            $query->where('titulo', 'like', '%' . $titulo . '%');
+        if ($request->has('titulo') && $request->titulo !== '') {
+            $query->where('titulo', 'like', '%' . $request->titulo . '%');
         }
 
+        if ($request->has('artista') && $request->artista !== '') {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('nombre', 'like', '%' . $request->artista . '%');
+            });
+        }
+
+        $orden = $request->get('orden', 'titulo');
+        $direccion = $request->get('direccion', 'asc');
+        $query->orderBy($orden, $direccion);
+
+        $perPage = $request->get('perPage', 10);
         $albums = $query->paginate($perPage);
 
-        return response()->json($albums, 200);
+        return response()->json(['albums' => $albums]);
     }
 
     public function getAlbumById(Request $request, $id)
@@ -53,17 +61,6 @@ class AlbumController extends Controller
         $albums = $query->paginate($perPage);
 
         return response()->json($albums, 200);
-    }
-
-    public function getAlbumSongs($id)
-    {
-        $album = Album::with('canciones')->find($id);
-
-        if (!$album) {
-            return response()->json(['message' => 'Álbum no encontrado'], 404);
-        }
-
-        return response()->json($album->canciones, 200);
     }
 
     public function createAlbum(Request $request)

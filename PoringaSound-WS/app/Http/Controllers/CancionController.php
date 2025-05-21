@@ -11,7 +11,7 @@ use App\Models\Cancion;
 
 class CancionController extends Controller
 {
-    public function getCancionesFiltradas(Request $request)
+    public function getAllCanciones(Request $request)
     {
         $perPage = $request->query('per_page', 10);
         $queryParam = $request->query('query');

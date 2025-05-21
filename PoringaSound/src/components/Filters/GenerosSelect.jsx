@@ -10,7 +10,7 @@ const GeneroSelect = ({ value, onChange }) => {
         const loadGeneros = async () => {
             try {
                 const data = await fetchGeneros();
-                setGeneros(data.generos || data); // Ajusta según tu backend
+                setGeneros(data.generos || data);
             } catch (e) {
                 setGeneros([]);
             } finally {

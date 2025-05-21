@@ -1,30 +1,37 @@
 import * as React from 'react';
 import { useTranslation } from "react-i18next";
-import { usePage } from "../../../context/PageContext";
 import { useNavigate } from "react-router-dom";
-import TravelExploreIcon from '@mui/icons-material/TravelExplore';
-import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
-import List from '@mui/material/List';
-import Divider from '@mui/material/Divider';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import HomeIcon from '@mui/icons-material/Home';
-import IconButton from '@mui/material/IconButton';
+import { useAuth } from "../../../context/AuthContext";
+
+import {
+    Box,
+    Drawer,
+    List,
+    Divider,
+    ListItem,
+    ListItemButton,
+    ListItemIcon,
+    ListItemText,
+    IconButton,
+    Typography,
+    Tooltip
+} from '@mui/material';
+
 import MenuIcon from '@mui/icons-material/Menu';
-import Typography from '@mui/material/Typography';
+import HomeIcon from '@mui/icons-material/Home';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import AlbumIcon from '@mui/icons-material/Album';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import TravelExploreIcon from '@mui/icons-material/TravelExplore';
+
 import logo from "../../../assets/logo.png";
 
-export default function MenuDrawer() {
+export default function MenuDrawer({ onOpenAuthModal }) {
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
     const [open, setOpen] = React.useState(false);
-    const { setActivePage } = usePage();
+    const { isAuthenticated } = useAuth();
+
 
     const toggleDrawer = (newOpen) => () => {
         setOpen(newOpen);
@@ -42,7 +49,7 @@ export default function MenuDrawer() {
 
             <List>
                 <ListItem disablePadding>
-                    <ListItemButton onClick={() =>  navigate("/")}>
+                    <ListItemButton onClick={() => navigate("/")}>
                         <ListItemIcon>
                             <HomeIcon />
                         </ListItemIcon>
@@ -51,12 +58,29 @@ export default function MenuDrawer() {
                 </ListItem>
 
                 <ListItem disablePadding>
-                    <ListItemButton onClick={() => navigate("/discover")}>
-                        <ListItemIcon>
-                            <TravelExploreIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Discover" />
-                    </ListItemButton>
+                    {isAuthenticated ? (
+                        <ListItemButton onClick={() => navigate("/discover")}>
+                            <ListItemIcon>
+                                <TravelExploreIcon />
+                            </ListItemIcon>
+                            <ListItemText primary={t("Descubrir")} />
+                        </ListItemButton>
+                    ) : (
+                        <Tooltip title="Solo para usuarios con sesión iniciada" arrow>
+                            <ListItemButton
+                                onClick={e => {
+                                    e.preventDefault();
+                                    if (onOpenAuthModal) onOpenAuthModal("login");
+                                }}
+                                sx={{ opacity: 0.7 }}
+                            >
+                                <ListItemIcon>
+                                    <TravelExploreIcon />
+                                </ListItemIcon>
+                                <ListItemText primary={t("Descubrir")} />
+                            </ListItemButton>
+                        </Tooltip>
+                    )}
                 </ListItem>
 
             </List>
@@ -81,7 +105,7 @@ export default function MenuDrawer() {
                     </ListItemButton>
                 </ListItem>
                 <ListItem disablePadding>
-                    <ListItemButton onClick={() =>  navigate("/artists")}>
+                    <ListItemButton onClick={() => navigate("/artists")}>
                         <ListItemIcon>
                             <PeopleAltIcon />
                         </ListItemIcon>

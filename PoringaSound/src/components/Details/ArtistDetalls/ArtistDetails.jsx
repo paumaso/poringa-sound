@@ -13,7 +13,7 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { fetchUserById } from "../../../services/auth";
 import { useParams } from "react-router-dom";
-import SongCard from "../../Home/components/SongCard";
+import SongCard from "../../Cards/SongCard";
 
 const ArtistDetails = ({ onSongClick, onDetailsClick }) => {
     const { id } = useParams();

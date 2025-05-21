@@ -1,18 +1,23 @@
 import React, { useState } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { usePage } from "../context/PageContext";
+import { useAuth } from "../context/AuthContext";
+
 import Navbar from "../components/Navbar/Navbar";
 import SongDrawer from "../components/SongDrawer/SongDrawer";
-import Home from "../components/Home/Home";
+import Home from "./Home";
 import Discover from "../components/Discover/Discover";
-import Account from "../components/Account/Account";
-import AllSongs from "../components/AllSongs/AllSongs";
+import Account from "./Account";
+import AllSongs from "./AllSongs";
 import SongDetails from "../components/Details/SongDetails/SongDetails";
 import AlbumDetails from "../components/Details/AlbumDetails/AlbumDetails";
 import ArtistDetails from "../components/Details/ArtistDetalls/ArtistDetails";
+import AllAlbums from "./AllAlbums";
+import AllArtistas from "./AllArtistas";
 
 const PoringaSound = () => {
-    const { activePage, setActivePage } = usePage();
+    const { isAuthenticated } = useAuth();
+
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [selectedSong, setSelectedSong] = useState(null);
     const [currentSong, setCurrentSong] = useState(null);
@@ -20,11 +25,6 @@ const PoringaSound = () => {
     const handleSongClick = (song) => {
         setCurrentSong(song);
         setDrawerOpen(true);
-    };
-
-    const handleSongDetailsClick = (song) => {
-        setSelectedSong(song);
-        navigate(`/song/${song.id}`);
     };
 
     return (
@@ -40,13 +40,20 @@ const PoringaSound = () => {
                 }}
             >
                 <Routes>
-                    <Route path="/" element={<Home onSongClick={handleSongClick} onDetailsClick={handleSongDetailsClick} />} />
-                    <Route path="/discover" element={<Discover onDetailsClick={handleSongDetailsClick} />} />
-                    <Route path="/account" element={<Account onSongClick={handleSongClick} onDetailsClick={handleSongDetailsClick} />} />
-                    <Route path="/song/:id" element={<SongDetails onSongClick={handleSongClick} onDetailsClick={handleSongDetailsClick} />} />
-                    <Route path="/album/:id" element={<AlbumDetails onSongClick={handleSongClick} onDetailsClick={handleSongDetailsClick} />} />
-                    <Route path="/artist/:id" element={<ArtistDetails onSongClick={handleSongClick} onDetailsClick={handleSongDetailsClick} />} />
-                    <Route path="/songs" element={<AllSongs onSongClick={handleSongClick} onDetailsClick={handleSongDetailsClick}/>}/>
+                    <Route path="/" element={<Home onSongClick={handleSongClick} />} />
+                    {isAuthenticated && (
+                        <Route path="/discover" element={<Discover />} />
+                    )}
+                    {isAuthenticated && (
+                        <Route path="/account" element={<Account onSongClick={handleSongClick} />} />
+                    )}
+                    <Route path="/song/:id" element={<SongDetails onSongClick={handleSongClick} />} />
+                    <Route path="/album/:id" element={<AlbumDetails onSongClick={handleSongClick} />} />
+                    <Route path="/artist/:id" element={<ArtistDetails onSongClick={handleSongClick} />} />
+                    <Route path="/songs" element={<AllSongs onSongClick={handleSongClick} />} />
+                    <Route path="/albums" element={<AllAlbums />} />
+                    <Route path="/artists" element={<AllArtistas />}></Route>
+
                 </Routes>
             </div>
 

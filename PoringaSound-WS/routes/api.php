@@ -11,10 +11,10 @@ use App\Http\Controllers\GenerosController;
 // Rutas públicas
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
-Route::get('public/canciones/all', [CancionController::class, 'getCancionesFiltradas']);
+Route::get('public/canciones/all', [CancionController::class, 'getAllCanciones']);
 Route::get('public/canciones/random', [CancionController::class, 'getRandomCancion']);
 Route::get('public/albums/all', [AlbumController::class, 'getAllAlbums']);
-Route::get('public/artistas/all', [AuthController::class, 'getUsersWithActiveSongs']);
+Route::get('public/artistas/all', [AuthController::class, 'getAllArtistas']);
 
 Route::get('public/canciones/{id}', [CancionController::class, 'getCancionById']);
 Route::get('public/albums/{id}', [AlbumController::class, 'getAlbumById']);

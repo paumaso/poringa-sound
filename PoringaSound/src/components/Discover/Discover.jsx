@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import {
     Box,
     CircularProgress,
@@ -9,6 +9,9 @@ import { getToken } from "../../services/auth";
 import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
 import SongCard from "./components/SongCard";
 import { fetchSongsPreferences, fetchAllSongs } from "../../services/songs";
+import debounce from "lodash.debounce";
+
+const MAX_VISIBLE = 10;
 
 const Discover = ({ onDetailsClick }) => {
     const containerRef = useRef(null);
@@ -18,9 +21,7 @@ const Discover = ({ onDetailsClick }) => {
     const [hasMore, setHasMore] = useState(true);
     const [activeIndex, setActiveIndex] = useState(0);
 
-    const MAX_VISIBLE = 10;
-
-    const loadSongs = async (pageToLoad = 1) => {
+    const loadSongs = useCallback(async (pageToLoad = 1) => {
         if (loading || !hasMore) return;
 
         setLoading(true);
@@ -32,39 +33,57 @@ const Discover = ({ onDetailsClick }) => {
                 res = await fetchSongsPreferences(pageToLoad, 5);
             }
 
-            const nuevas = res.canciones.data;
+            const nuevas = res.canciones?.data || [];
 
             setSongs((prev) => {
                 const ids = new Set(prev.map(song => song.id));
                 const nuevasUnicas = nuevas.filter(song => !ids.has(song.id));
-                const actualizadas = [...prev, ...nuevasUnicas];
-
-                const start = Math.max(0, activeIndex - 2);
-                return actualizadas.slice(start, start + MAX_VISIBLE);
+                return [...prev, ...nuevasUnicas];
             });
 
-            setHasMore(res.canciones.next_page_url !== null);
+            setHasMore(res.canciones?.next_page_url !== null);
             setPage(pageToLoad);
         } catch (err) {
             console.error("Error al cargar canciones:", err);
         } finally {
             setLoading(false);
         }
-    };
+    }, [loading, hasMore]);
 
     useEffect(() => {
         loadSongs(1);
-    }, []);
+    }, [loadSongs]);
 
-    const handleScroll = (e) => {
-        const el = e.target;
-        const index = Math.round(el.scrollTop / el.clientHeight);
-        setActiveIndex(index);
+    const handleScroll = useCallback(
+        debounce((e) => {
+            const el = e.target;
+            const index = Math.round(el.scrollTop / el.clientHeight);
+            setActiveIndex(index);
 
-        if (el.scrollTop + el.clientHeight >= el.scrollHeight - 100) {
-            loadSongs(page + 1);
+            if (
+                el.scrollTop + el.clientHeight >= el.scrollHeight - 100 &&
+                !loading &&
+                hasMore
+            ) {
+                loadSongs(page + 1);
+            }
+        }, 200),
+        [page, loading, hasMore, loadSongs]
+    );
+
+    useEffect(() => {
+        const container = containerRef.current;
+        if (container) {
+            container.addEventListener("scroll", handleScroll);
         }
-    };
+
+        return () => {
+            if (container) {
+                container.removeEventListener("scroll", handleScroll);
+            }
+            handleScroll.cancel();
+        };
+    }, [handleScroll]);
 
     const scrollToIndex = (index) => {
         if (containerRef.current) {
@@ -88,29 +107,39 @@ const Discover = ({ onDetailsClick }) => {
         }
     };
 
+    const showEndOverlay = !loading && !hasMore && activeIndex === songs.length - 1;
+
     return (
-        <Box sx={{ position: "relative", height: "calc(100vh - 72px)", }} >
+        <Box sx={{ position: "relative", height: "calc(100vh - 72px)", bgcolor: "#111" }}>
             <Box
                 ref={containerRef}
-                onScroll={handleScroll}
                 sx={{
                     height: "100%",
-                    backgroundColor: "rgba(0,0,0,0.6)",
                     overflowY: "scroll",
                     scrollSnapType: "y mandatory",
                     scrollbarWidth: "none",
-                    "&::-webkit-scrollbar": {
-                        display: "none",
-                    },
+                    "&::-webkit-scrollbar": { display: "none" },
+                    position: "relative",
                 }}
             >
                 {songs.map((song, i) => (
-                    <SongCard
+                    <Box
                         key={`${song.id}-${i}`}
-                        song={song}
-                        isActive={i === activeIndex}
-                        onDetailsClick={onDetailsClick}
-                    />
+                        sx={{
+                            height: "100vh",
+                            width: "100%",
+                            scrollSnapAlign: "start",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                        }}
+                    >
+                        <SongCard
+                            song={song}
+                            isActive={i === activeIndex}
+                            onDetailsClick={onDetailsClick}
+                        />
+                    </Box>
                 ))}
 
                 {loading && (
@@ -120,20 +149,47 @@ const Discover = ({ onDetailsClick }) => {
                             display: "flex",
                             justifyContent: "center",
                             alignItems: "center",
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            width: "100%",
+                            zIndex: 10,
                         }}
                     >
                         <CircularProgress sx={{ color: "#fff" }} />
                     </Box>
                 )}
 
-                {!hasMore && !loading && songs.length === 0 && (
-                    <Typography color="white" align="center" mt={4}>
-                        No hay canciones disponibles.
-                    </Typography>
+                {showEndOverlay && (
+                    <Box
+                        sx={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            width: "100%",
+                            height: "100%",
+                            bgcolor: "rgba(0,0,0,0.85)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            zIndex: 2000,
+                            textAlign: "center",
+                            px: 2,
+                        }}
+                    >
+                        <Box>
+                            <Typography variant="h4" color="white" fontWeight={700} mb={2}>
+                                🎉 ¡Ya has descubierto todas las canciones!
+                            </Typography>
+                            <Typography color="white" fontSize={18}>
+                                Vuelve más tarde para descubrir nuevas canciones.
+                            </Typography>
+                        </Box>
+                    </Box>
                 )}
             </Box>
 
-            {/* Botones flotantes */}
+            {/* Botones de navegación */}
             <Box
                 sx={{
                     position: "absolute",
@@ -141,8 +197,6 @@ const Discover = ({ onDetailsClick }) => {
                     top: "45%",
                     display: "flex",
                     flexDirection: "column",
-                    justifyContent: "center",
-                    margin: 2,
                     gap: 2,
                     zIndex: 1000,
                     pointerEvents: "none",
@@ -155,11 +209,12 @@ const Discover = ({ onDetailsClick }) => {
                         color: "#fff",
                         "&:hover": { backgroundColor: "#555" },
                         pointerEvents: "auto",
-
                     }}
+                    disabled={activeIndex === 0}
                 >
                     <ArrowUpward />
                 </IconButton>
+
                 <IconButton
                     onClick={handleNext}
                     sx={{
@@ -168,6 +223,7 @@ const Discover = ({ onDetailsClick }) => {
                         "&:hover": { backgroundColor: "#555" },
                         pointerEvents: "auto",
                     }}
+                    disabled={activeIndex >= songs.length - 1}
                 >
                     <ArrowDownward />
                 </IconButton>

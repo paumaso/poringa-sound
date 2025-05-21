@@ -12,11 +12,24 @@ const handleResponseError = async (response) => {
     return response.json();
 };
 
-export const fetchAllAlbums = async (page = 1, perPage = 10, titulo = "") => {
+export const fetchAllAlbums = async ({
+    page = 1,
+    perPage = 10,
+    titulo = "",
+    artista = "",
+    orden = "titulo",
+    direccion = "asc"
+} = {}) => {
     try {
         const token = getToken();
-        const params = new URLSearchParams({ page, per_page: perPage });
+        const params = new URLSearchParams({
+            page,
+            per_page: perPage,
+            orden,
+            direccion,
+        });
         if (titulo) params.append("titulo", titulo);
+        if (artista) params.append("artista", artista);
 
         const response = await fetch(`${API_URL}/public/albums/all?${params.toString()}`, {
             headers: {

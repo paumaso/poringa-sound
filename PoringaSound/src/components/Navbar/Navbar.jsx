@@ -25,7 +25,7 @@ const Navbar = () => {
             <ul className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     <li>
-                        <MenuDrawer open={openDrawer} onClose={() => setOpenDrawer(false)} />
+                        <MenuDrawer open={openDrawer} onClose={() => setOpenDrawer(false)} onOpenAuthModal={handleOpenModal} />
                     </li>
                 </div>
 

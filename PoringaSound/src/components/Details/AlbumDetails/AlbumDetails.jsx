@@ -14,7 +14,7 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import Portada from "../../LazyImages/Portada";
 import { fetchAlbumById } from "../../../services/albums";
-import SongCard from "../../Home/components/SongCard";
+import SongCard from "../../Cards/SongCard";
 
 const AlbumDetails = ({ onSongClick, onDetailsClick }) => {
     const { id } = useParams();

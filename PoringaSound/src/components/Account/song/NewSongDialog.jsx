@@ -14,7 +14,7 @@ import {
     IconButton,
 } from "@mui/material";
 import { PhotoCamera, Audiotrack, Close as CloseIcon } from "@mui/icons-material";
-import { fetchGeneros, fetchCreateSong } from "../../../../services/songs";
+import { fetchGeneros, fetchCreateSong } from "../../../services/songs";
 
 const NewSongDialog = ({ open, onClose, onSave }) => {
     const [title, setTitle] = useState("");

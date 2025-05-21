@@ -83,12 +83,22 @@ export const logoutUser = () => {
 
 };
 
-export const fetchUsersWithActiveSongs = async ({ page = 1, perPage = 10, query = "" } = {}) => {
+export const fetchUsersWithActiveSongs = async ({
+  page = 1,
+  perPage = 10,
+  query = "",
+  orden = "nombre",
+  direccion = "asc",
+  tipo = ""
+} = {}) => {
   try {
     const params = new URLSearchParams();
     params.append("page", page);
     params.append("per_page", perPage);
     if (query) params.append("query", query);
+    if (orden) params.append("orden", orden);
+    if (direccion) params.append("direccion", direccion);
+    if (tipo) params.append("tipo", tipo);
 
     const response = await fetch(`${API_URL}/public/artistas/all?${params.toString()}`, {
       method: "GET",

@@ -14,7 +14,7 @@ import {
     CircularProgress,
 } from "@mui/material";
 import { PhotoCamera, Audiotrack, Close as CloseIcon } from "@mui/icons-material";
-import { fetchGeneros, fetchUpdateSong } from "../../../../services/songs";
+import { fetchGeneros, fetchUpdateSong } from "../../../services/songs";
 
 const EditSongDialog = ({ open, onClose, onSave, song }) => {
     const [title, setTitle] = useState("");

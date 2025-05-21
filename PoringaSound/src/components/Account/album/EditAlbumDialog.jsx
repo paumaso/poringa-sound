@@ -15,8 +15,8 @@ import {
 } from "@mui/material";
 import { PhotoCamera } from "@mui/icons-material";
 import CloseIcon from "@mui/icons-material/Close";
-import { fetchSongByUserId } from "../../../../services/songs";
-import { fetchUpdateAlbum } from "../../../../services/albums";
+import { fetchSongByUserId } from "../../../services/songs";
+import { fetchUpdateAlbum } from "../../../services/albums";
 
 const EditAlbumDialog = ({ open, onClose, onSave, album, userId }) => {
     const [title, setTitle] = useState("");

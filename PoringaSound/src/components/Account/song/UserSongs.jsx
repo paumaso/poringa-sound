@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
-import Portada from "../../../LazyImages/Portada";
+import Portada from "../../LazyImages/Portada";
 import "../UserSongsAnimations.css";
-import { fetchSongByUserId, fetchDeleteSong, fetchGeneros } from "../../../../services/songs";
+import { fetchSongByUserId, fetchDeleteSong, fetchGeneros } from "../../../services/songs";
 import {
   CircularProgress,
   Box,

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../context/AuthContext.jsx";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import {
     Avatar,
@@ -17,10 +17,10 @@ import EditIcon from "@mui/icons-material/Edit";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import AlbumIcon from "@mui/icons-material/Album";
 import AddIcon from "@mui/icons-material/Add";
-import UserSongs from "./components/song/UserSongs.jsx";
-import UserAlbums from "./components/album/UserAlbums.jsx";
-import NewSongDialog from "./components/song/NewSongDialog.jsx";
-import NewAlbumDialog from "./components/album/NewAlbumDialog.jsx";
+import UserSongs from "../components/Account/song/UserSongs.jsx";
+import UserAlbums from "../components/Account/album/UserAlbums.jsx";
+import NewSongDialog from "../components/Account/song/NewSongDialog.jsx";
+import NewAlbumDialog from "../components/Account/album/NewAlbumDialog.jsx";
 
 const Account = ({ onEdit, onSongClick }) => {
     const [value, setValue] = useState("two");

@@ -25,8 +25,8 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
 import DeleteDialog from "../DeleteDialog";
-import Portada from "../../../LazyImages/Portada";
-import { fetchAlbumsByUserId, fetchDeleteAlbum } from "../../../../services/albums";
+import Portada from "../../LazyImages/Portada";
+import { fetchAlbumsByUserId, fetchDeleteAlbum } from "../../../services/albums";
 import EditAlbumDialog from "./EditAlbumDialog";
 
 const UserAlbums = ({ userId, reloadAlbums, onAlbumsUpdated }) => {

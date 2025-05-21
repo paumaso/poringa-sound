@@ -6,15 +6,15 @@ import {
     Box,
 } from "@mui/material";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
-import { fetchAllSongs, fetchSongsPreferences } from "../../services/songs";
-import { fetchAllAlbums } from "../../services/albums";
-import { getToken, fetchUsersWithActiveSongs } from "../../services/auth";
+import { fetchAllSongs, fetchSongsPreferences } from "../services/songs";
+import { fetchAllAlbums } from "../services/albums";
+import { getToken, fetchUsersWithActiveSongs } from "../services/auth";
+import { useNavigate } from "react-router-dom";
 
-import SongCard from "./components/SongCard";
-import AlbumCard from "./components/AlbumCard";
-import ArtistCard from "./components/ArtistCard";
+import SongCard from "../components/Cards/SongCard";
+import AlbumCard from "../components/Cards/AlbumCard";
+import ArtistCard from "../components/Cards/ArtistCard";
 
-// --- Estilos ---
 const scrollContainerStyles = {
     display: "flex",
     overflowX: "auto",
@@ -32,30 +32,30 @@ const iconButtonStyles = {
     left: {
         display: { xs: "none", sm: "flex" },
         position: "absolute",
-        left: 10,
+        left: 5,
         top: "50%",
         transform: "translateY(-50%)",
         zIndex: 2,
-        boxShadow: 2,
-        width: 40,
-        height: 40,
+        boxShadow: 1,
+        width: 48,
+        height: 48,
         borderRadius: "50%",
-        backgroundColor: "#f0f0f0",
-        "&:hover": { backgroundColor: "#e0e0e0" },
+        backgroundColor: "#ffffffee",
+        "&:hover": { backgroundColor: "#f1f1f1" },
     },
     right: {
         display: { xs: "none", sm: "flex" },
         position: "absolute",
-        right: 10,
+        right: 5,
         top: "50%",
         transform: "translateY(-50%)",
         zIndex: 2,
-        boxShadow: 2,
-        width: 40,
-        height: 40,
+        boxShadow: 1,
+        width: 48,
+        height: 48,
         borderRadius: "50%",
-        backgroundColor: "white",
-        "&:hover": { backgroundColor: "#e0e0e0" },
+        backgroundColor: "#ffffffee",
+        "&:hover": { backgroundColor: "#f1f1f1" },
     },
 };
 
@@ -70,12 +70,11 @@ const spinnerContainer = {
 const itemBoxStyles = {
     flex: "0 0 auto",
     scrollSnapAlign: "start",
-    m: 1,
+    width: { xs: 140, sm: 160, md: 180 },
 };
 
 // --- Componente principal ---
 const Home = ({ onSongClick, onDetailsClick }) => {
-    // --- Estados ---
     const [canciones, setCanciones] = useState([]);
     const [albums, setAlbums] = useState([]);
     const [artistas, setArtistas] = useState([]);
@@ -85,15 +84,14 @@ const Home = ({ onSongClick, onDetailsClick }) => {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
 
-    // --- Refs para scroll ---
     const scrollRefSongs = useRef(null);
     const scrollRefAlbums = useRef(null);
     const scrollRefArtists = useRef(null);
 
     const apiUrl = import.meta.env.VITE_STORAGE_URL;
+    const navigate = useNavigate();
     const scrollByAmount = 300;
 
-    // --- Funciones de scroll ---
     const smoothScroll = (element, target, duration = 400) => {
         const start = element.scrollLeft;
         const change = target - start;
@@ -117,19 +115,17 @@ const Home = ({ onSongClick, onDetailsClick }) => {
         const target = ref.current.scrollLeft + offset;
         smoothScroll(ref.current, target);
 
-        // Paginación automática para canciones
         if (ref === scrollRefSongs && direction === "right" && page < totalPages) {
             const maxScroll = ref.current.scrollWidth - ref.current.clientWidth;
             if (target >= maxScroll - 50) setPage(prev => prev + 1);
         }
     };
 
-    // --- Fetchers ---
     const fetchCanciones = async () => {
         setLoading(true);
         try {
             const token = getToken();
-            const data = token ? await fetchSongsPreferences(page) : await fetchAllSongs(page);
+            const data = await fetchAllSongs({ page, perPage: 12, orden: "interacciones", direccion: "desc" });
             setCanciones(data?.canciones?.data ?? data?.data ?? []);
             setTotalPages(data?.last_page ?? 1);
         } catch (e) {
@@ -141,8 +137,8 @@ const Home = ({ onSongClick, onDetailsClick }) => {
     const fetchAlbumsData = async () => {
         setAlbumsLoading(true);
         try {
-            const data = await fetchAllAlbums(1, 12);
-            setAlbums(data?.data || []);
+            const data = await fetchAllAlbums({ page: 1, perPage: 12 });
+            setAlbums(data?.albums?.data || data?.data || []);
         } catch (e) {
             console.error("Error fetching albums:", e);
         }
@@ -160,56 +156,62 @@ const Home = ({ onSongClick, onDetailsClick }) => {
         setArtistasLoading(false);
     };
 
-    // --- useEffect ---
     useEffect(() => {
         fetchCanciones();
         fetchAlbumsData();
         fetchArtistas();
     }, [page]);
 
-    // --- Renderizado de secciones ---
     const renderSection = (title, items, loading, CardComponent, scrollRef, scrollLeft, scrollRight) => (
-        <Box position="relative" width="100%" mb={4}>
-            <Box m={2}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" px={2} mt={2} mb={1}>
-                    <Typography variant="h6">{title}</Typography>
-                    <Typography
-                        variant="body2"
-                        sx={{ cursor: "pointer", fontWeight: 400, '&:hover': { textDecoration: "underline" } }}
-                        onClick={() => console.log(`Ver todos: ${title}`)}
-                    >
-                        Ver todos
-                    </Typography>
-                </Box>
-                <IconButton onClick={scrollLeft} sx={iconButtonStyles.left}>
-                    <ArrowBackIos />
-                </IconButton>
-                <Box ref={scrollRef} sx={scrollContainerStyles}>
-                    {loading ? (
-                        <Box sx={spinnerContainer}><CircularProgress /></Box>
-                    ) : (
-                        items.map((item) => (
-                            <Box key={item.id} sx={itemBoxStyles}>
-                                <CardComponent
-                                    {...(title === 'Canciones'
-                                        ? { cancion: item, onSongClick, onDetailsClick }
-                                        : title === 'Álbumes'
+        <Box position="relative" width="100%" mb={4} px={{ xs: 1, sm: 3 }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" px={1} mt={3} mb={2}>
+                <Typography variant="h5" fontWeight={500}>
+                    {title}
+                </Typography>
+                <Typography
+                    variant="body2"
+                    sx={{
+                        cursor: "pointer",
+                        fontWeight: 500,
+                        color: "primary.main",
+                        '&:hover': { textDecoration: "underline" },
+                    }}
+                    onClick={() => {
+                        if (title === "Canciones") navigate("/songs");
+                        else if (title === "Álbumes") navigate("/albums");
+                        else if (title === "Artistas") navigate("/artists");
+                    }}
+                >
+                    Ver todos
+                </Typography>
+            </Box>
+            <IconButton onClick={scrollLeft} sx={iconButtonStyles.left}>
+                <ArrowBackIos />
+            </IconButton>
+            <Box ref={scrollRef} sx={scrollContainerStyles}>
+                {loading ? (
+                    <Box sx={spinnerContainer}><CircularProgress /></Box>
+                ) : (
+                    items.map((item) => (
+                        <Box key={item.id} sx={itemBoxStyles}>
+                            <CardComponent
+                                {...(title === 'Canciones'
+                                    ? { cancion: item, onSongClick, onDetailsClick }
+                                    : title === 'Álbumes'
                                         ? { album: item }
                                         : { artist: item })}
-                                    apiUrl={apiUrl}
-                                />
-                            </Box>
-                        ))
-                    )}
-                </Box>
-                <IconButton onClick={scrollRight} sx={iconButtonStyles.right}>
-                    <ArrowForwardIos />
-                </IconButton>
+                                apiUrl={apiUrl}
+                            />
+                        </Box>
+                    ))
+                )}
             </Box>
+            <IconButton onClick={scrollRight} sx={iconButtonStyles.right}>
+                <ArrowForwardIos />
+            </IconButton>
         </Box>
     );
 
-    // --- Render principal ---
     return (
         <Box width="100%">
             {renderSection("Canciones", canciones, loading, SongCard, scrollRefSongs,

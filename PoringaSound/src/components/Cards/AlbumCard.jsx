@@ -1,27 +1,19 @@
-import {
-    Paper,
-    Box,
-    Typography,
-    Avatar,
-    Stack
-} from "@mui/material";
+import { Paper, Box, Typography, Stack, Avatar, useTheme } from "@mui/material";
+import Portada from "../LazyImages/Portada";
 import { useNavigate } from "react-router-dom";
-import { getToken } from "../../../services/auth";
-import Portada from "../../LazyImages/Portada";
+import InfoButton from "../Filters/InfoButton";
 
-const SongCard = ({ cancion, apiUrl, onSongClick, onDetailsClick }) => {
-    const isAuthenticated = !!getToken();
+const AlbumCard = ({ album, apiUrl }) => {
     const navigate = useNavigate();
+    const theme = useTheme();
 
-    const handleTitleClick = () => {
-        if (onDetailsClick && cancion?.id) {
-            navigate(`/song/${cancion.id}`);
-        }
-    };
+    const avatarSrc = album.user?.imagen_perfil ? `${apiUrl}${album.user.imagen_perfil}` : null;
+    const artistInitial = album.user?.nombre?.charAt(0).toUpperCase() || "?";
 
     return (
         <Paper
             elevation={3}
+            onClick={() => navigate(`/album/${album.id}`)} 
             sx={{
                 width: { xs: 120, sm: 140, md: 160 },
                 height: "auto",
@@ -29,7 +21,7 @@ const SongCard = ({ cancion, apiUrl, onSongClick, onDetailsClick }) => {
                 flexDirection: "column",
                 borderRadius: 2,
                 overflow: "hidden",
-                cursor: "default",
+                cursor: "pointer",
                 transition: "transform 0.2s ease",
                 "&:hover": {
                     transform: "scale(1.02)",
@@ -41,46 +33,56 @@ const SongCard = ({ cancion, apiUrl, onSongClick, onDetailsClick }) => {
                     width: "100%",
                     aspectRatio: "1 / 1",
                     position: "relative",
-                    cursor: "pointer",
+                    backgroundColor: "#eee",
                 }}
-                onClick={() => onSongClick(cancion)}
             >
                 <Portada
-                    src={`${apiUrl}${cancion.portada}`}
-                    alt={cancion.titulo}
+                    src={`${apiUrl}${album.portada}`}
+                    alt={album.titulo}
                     width="100%"
                     height="100%"
+                    hover={false}
                     style={{ objectFit: "cover" }}
                 />
             </Box>
 
-            <Box sx={{ px: 1.5, py: 1, flexGrow: 1 }}>
+            <Box sx={{ px: 1, py: 0.75, flexGrow: 1 }}>
                 <Typography
                     variant="subtitle1"
-                    onClick={handleTitleClick}
                     sx={{
                         fontWeight: 500,
                         fontSize: { xs: "0.85rem", sm: "0.95rem" },
                         lineHeight: 1.2,
-                        cursor: "pointer",
                         mb: 0.5,
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
-                        "&:hover": {
-                            textDecoration: "underline",
-                        },
                     }}
                 >
-                    {cancion?.titulo || "Título desconocido"}
+                    {album.titulo}
                 </Typography>
 
                 <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0 }}>
-                    <Avatar
-                        src={cancion.user.imagen_perfil ? `${apiUrl}${cancion.user.imagen_perfil}` : undefined}
-                        alt={cancion.user.nombre}
-                        sx={{ width: 26, height: 26, flexShrink: 0 }}
-                    />
+                    {avatarSrc ? (
+                        <Avatar
+                            src={avatarSrc}
+                            alt={album.user?.nombre}
+                            sx={{ width: 26, height: 26 }}
+                        />
+                    ) : (
+                        <Avatar
+                            sx={{
+                                width: 26,
+                                height: 26,
+                                bgcolor: theme.palette.primary.main,
+                                fontSize: "0.75rem",
+                                fontWeight: 600,
+                            }}
+                        >
+                            {artistInitial}
+                        </Avatar>
+                    )}
+
                     <Typography
                         variant="body2"
                         color="text.secondary"
@@ -93,12 +95,19 @@ const SongCard = ({ cancion, apiUrl, onSongClick, onDetailsClick }) => {
                             flexGrow: 1,
                         }}
                     >
-                        {cancion?.user?.nombre || "Artista desconocido"}
+                        {album.user?.nombre || "Autor desconocido"}
                     </Typography>
+
+                    <InfoButton
+                        onClick={() => navigate(`/album/${album.id}`)}
+                        label="Detalles del álbum"
+                        color="primary"
+                        size="small"
+                    />
                 </Stack>
             </Box>
         </Paper>
     );
 };
 
-export default SongCard;
+export default AlbumCard;
