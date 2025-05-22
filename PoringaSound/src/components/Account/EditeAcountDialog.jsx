@@ -49,16 +49,17 @@ const EditAccountDialog = ({ open, onClose, user, onSave }) => {
         setLoading(true);
 
         try {
-            const updatedUser = await editUser(user.id, {
-                nombre,
-                email,
-                password,
-                imagenPerfil: image,
-            });
-            if (onSave) onSave(updatedUser);
-            onClose();
-        } catch (err) {
-            setError(err.message || "Error updating account.");
+            const formData = new FormData();
+            formData.append('nombre', nombre);
+            formData.append('email', email);
+            if (password) formData.append('password', password);
+            if (image) formData.append('imagen_perfil', image);
+
+            const updatedUser = await editUser(user.id, formData);
+            onSave?.(updatedUser);
+            onClose?.();
+        } catch (error) {
+            setError(error.message || 'Error al actualizar usuario');
         } finally {
             setLoading(false);
         }

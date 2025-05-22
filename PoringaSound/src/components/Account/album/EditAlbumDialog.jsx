@@ -11,7 +11,8 @@ import {
     IconButton,
     Autocomplete,
     Chip,
-    CircularProgress
+    CircularProgress,
+    Alert,
 } from "@mui/material";
 import { PhotoCamera } from "@mui/icons-material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -142,9 +143,9 @@ const EditAlbumDialog = ({ open, onClose, onSave, album, userId }) => {
 
                 <DialogContent dividers>
                     {error && (
-                        <Typography color="error" sx={{ mb: 2 }}>
+                        <Alert severity="error" sx={{ mb: 2 }}>
                             {error}
-                        </Typography>
+                        </Alert>
                     )}
 
                     <TextField

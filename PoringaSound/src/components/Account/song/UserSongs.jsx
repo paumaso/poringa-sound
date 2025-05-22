@@ -112,14 +112,6 @@ const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
     navigate(`/song/${song.id}`);
   };
 
-  if (loading) {
-    return (
-      <Box display="flex" justifyContent="center" p={3}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-
   if (error) {
     return (
       <Box p={3}>
@@ -155,9 +147,15 @@ const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
       </Box>
 
       {songs.length === 0 ? (
-        <Typography component="div" variant="body1" color="textSecondary">
-          No hay canciones disponibles.
-        </Typography>
+        loading ? (
+          <Box sx={{ textAlign: "center", p: 2 }}>
+            <CircularProgress size={30} />
+          </Box>
+        ) : (
+          <Box sx={{ textAlign: "center" }}>
+            <Typography>No hay canciones disponibles.</Typography>
+          </Box>
+        )
       ) : (
         <List
           style={{

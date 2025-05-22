@@ -1,96 +1,87 @@
 import Cookies from "js-cookie";
 const API_URL = import.meta.env.VITE_API_URL;
 
-export const registerUser = async (nombre, email, password, imagenPerfil) => {
+export const registerUser = async (formData) => {
   try {
-    const formData = new FormData();
-    formData.append("nombre", nombre);
-    formData.append("email", email);
-    formData.append("password", password);
-
-    if (imagenPerfil) {
-      formData.append("imagen_perfil", imagenPerfil);
-    }
-
     const response = await fetch(`${API_URL}/register`, {
       method: 'POST',
+      headers: { 'Accept': 'application/json' },
       body: formData,
-      headers: {
-        'Accept': 'application/json',
-      },
     });
 
     const data = await response.json();
 
-    if (response.ok) {
-      Cookies.set("token", data.token, { expires: 1 });
-      return { token: data.token, user: data.user };
-    } else {
-      throw new Error(data.message || 'Error al registrar el usuario');
+    if (!response.ok) {
+      throw new Error(data.message || 'Error en registro');
     }
+
+    Cookies.set('token', data.token, { expires: 1 });
+
+    return { token: data.token, user: data.user };
   } catch (error) {
-    console.error("Error al registrar el usuario:", error);
-    throw error;
+    console.error('Register error:', error.message);
+    throw new Error(error.message || 'Error al registrar');
   }
 };
 
-export const editUser = async (userId, { nombre, email, password, imagenPerfil }) => {
-  try {
-    const token = getToken();
-    const formData = new FormData();
-    if (nombre) formData.append("nombre", nombre);
-    if (email) formData.append("email", email);
-    if (password) formData.append("password", password);
-    if (imagenPerfil) formData.append("imagen_perfil", imagenPerfil);
+export const editUser = async (userId, formData) => {
+  const token = getToken();
 
+  try {
     const response = await fetch(`${API_URL}/user/${userId}`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Accept": "application/json",
-        Authorization: `Bearer ${token}`,
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`
       },
-      body: formData,
+      body: formData
     });
 
     const data = await response.json();
 
-    if (response.ok) {
-      sessionStorage.setItem("user", JSON.stringify(data.user));
-      return data.user;
-    } else {
-      throw new Error(data.message || "Error updating user");
+    if (!response.ok) {
+      throw new Error(data.message || 'Error al actualizar usuario');
     }
+
+    sessionStorage.setItem('user', JSON.stringify(data.user));
+    return data.user;
   } catch (error) {
-    console.error("Error updating user:", error);
-    throw error;
+    console.error('Error updating user:', error.message);
+    throw new Error(error.message || 'Error al actualizar');
   }
 };
 
 export const loginUser = async (email, password) => {
-  try {
-    const formData = new FormData();
-    formData.append("email", email);
-    formData.append("password", password);
+  const formData = new FormData();
+  formData.append('email', email);
+  formData.append('password', password);
 
+  try {
     const response = await fetch(`${API_URL}/login`, {
       method: 'POST',
-      body: formData,
-      headers: {
-        'Accept': 'application/json',
-      },
+      headers: { 'Accept': 'application/json' },
+      body: formData
     });
 
     const data = await response.json();
 
-    if (response.ok) {
-      Cookies.set("token", data.token, { expires: 1 });
-      sessionStorage.setItem("user", JSON.stringify(data.user));
-      return { token: data.token, user: data.user };
-    } else {
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('Credenciales incorrectas');
+      }
       throw new Error(data.message || 'Error al iniciar sesión');
     }
+
+    Cookies.set('token', data.token, {
+      expires: 1,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'Strict'
+    });
+
+    sessionStorage.setItem('user', JSON.stringify(data.user));
+    return { token: data.token, user: data.user };
   } catch (error) {
-    console.error("Error al iniciar sesión:", error);
+    console.error('Login error:', error.message);
     throw error;
   }
 };
@@ -185,4 +176,29 @@ export const getToken = () => {
 export const getUser = () => {
   const user = sessionStorage.getItem("user");
   return user ? JSON.parse(user) : null;
+};
+
+export const getMe = async () => {
+  const token = getToken();
+
+  try {
+    const response = await fetch(`${API_URL}/me`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Error al obtener el usuario');
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error en getMe:", error);
+    throw error;
+  }
 };

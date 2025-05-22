@@ -12,6 +12,7 @@ import {
     FormControlLabel,
     Autocomplete,
     IconButton,
+    Alert
 } from "@mui/material";
 import { PhotoCamera, Audiotrack, Close as CloseIcon } from "@mui/icons-material";
 import { fetchGeneros, fetchCreateSong } from "../../../services/songs";
@@ -27,6 +28,10 @@ const NewSongDialog = ({ open, onClose, onSave }) => {
     const [active, setActive] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+
+    useEffect(() => {
+        if (!open) resetForm();
+    }, [open]);
 
     useEffect(() => {
         const loadGeneros = async () => {
@@ -60,24 +65,25 @@ const NewSongDialog = ({ open, onClose, onSave }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+        setError(null);
+
         try {
             const formData = new FormData();
             formData.append("titulo", title);
             formData.append("genero_id", genero?.id || "");
             formData.append("active", active ? "1" : "0");
+
             if (audioFile) formData.append("archivo", audioFile);
             if (imageFile) formData.append("portada", imageFile);
 
-            const response = await fetchCreateSong(formData);
-            if (response.status !== 200) {
-                resetForm();
-            }
+            await fetchCreateSong(formData);
 
-            onSave();
-            onClose();
+            resetForm();
+            onSave?.();
+            onClose?.();
         } catch (error) {
             console.error("Error al crear la canción:", error);
-            setError(error.message);
+            setError(error.message || "Error al crear la canción");
         } finally {
             setLoading(false);
         }
@@ -114,9 +120,9 @@ const NewSongDialog = ({ open, onClose, onSave }) => {
 
                 <DialogContent dividers>
                     {error && (
-                        <Typography color="error" sx={{ mb: 2, textAlign: "center" }}>
+                        <Alert severity="error" sx={{ mb: 2 }}>
                             {error}
-                        </Typography>
+                        </Alert>
                     )}
 
                     {/* Título y Género */}
@@ -154,8 +160,9 @@ const NewSongDialog = ({ open, onClose, onSave }) => {
                         sx={{
                             display: "flex",
                             flexDirection: { xs: "column", md: "row" },
-                            gap: 2,
+                            gap: 5,
                             mb: 2,
+                            flexWrap: "wrap",
                         }}
                     >
                         {/* Audio */}
@@ -165,7 +172,11 @@ const NewSongDialog = ({ open, onClose, onSave }) => {
                                 borderColor: "divider",
                                 borderRadius: 2,
                                 p: 2,
-                                flex: 1,
+                                width: 400,
+                                minWidth: 400,
+                                maxWidth: 400,
+                                wordBreak: "break-word",
+                                overflowWrap: "break-word",
                             }}
                         >
                             <input
@@ -218,7 +229,9 @@ const NewSongDialog = ({ open, onClose, onSave }) => {
                                 borderColor: "divider",
                                 borderRadius: 2,
                                 p: 2,
-                                flex: 1,
+                                width: 400,
+                                minWidth: 400,
+                                maxWidth: 400,
                                 textAlign: "center",
                             }}
                         >

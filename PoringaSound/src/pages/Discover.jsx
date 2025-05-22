@@ -5,7 +5,7 @@ import SongCard from "../components/Discover/SongCard";
 import { fetchDiscoverSongs } from "../services/songs";
 import { FixedSizeList as List } from "react-window";
 
-const ITEM_HEIGHT = window.innerHeight; // O usa un valor fijo si prefieres
+const ITEM_HEIGHT = window.innerHeight;
 
 const Discover = ({ onDetailsClick }) => {
     const [songs, setSongs] = useState([]);
@@ -14,7 +14,6 @@ const Discover = ({ onDetailsClick }) => {
     const [hasMore, setHasMore] = useState(true);
     const [activeIndex, setActiveIndex] = useState(0);
 
-    // Cargar canciones
     const loadSongs = useCallback(async (pageToLoad = 1) => {
         if (loading || !hasMore) return;
         setLoading(true);
@@ -33,10 +32,8 @@ const Discover = ({ onDetailsClick }) => {
 
     useEffect(() => {
         loadSongs(1);
-        // eslint-disable-next-line
     }, []);
 
-    // Scroll a una canción concreta
     const listRef = React.useRef();
 
     const handleNext = () => {
@@ -53,12 +50,11 @@ const Discover = ({ onDetailsClick }) => {
         }
     };
 
-    // Cargar más canciones cuando el usuario llega al final
     const handleItemsRendered = ({ visibleStopIndex }) => {
         if (
             hasMore &&
             !loading &&
-            visibleStopIndex >= songs.length - 2 // Carga más cuando quedan 2
+            visibleStopIndex >= songs.length - 2
         ) {
             loadSongs(page + 1);
         }

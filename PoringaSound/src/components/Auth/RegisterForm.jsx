@@ -39,22 +39,16 @@ const RegisterForm = ({ onClose, switchToLogin }) => {
     setError(null);
 
     try {
-      await register(nombre, email, password, image);
-      setActivePage("home");
+      const formData = new FormData();
+      formData.append('nombre', nombre);
+      formData.append('email', email);
+      formData.append('password', password);
+      if (imagenPerfil) formData.append('imagen_perfil', imagenPerfil);
+      const { token, user } = await register(formData);
       onClose();
+      setActivePage("home");
     } catch (error) {
-      if (error.response && error.response.status === 422 && error.response.data.errors) {
-        const errors = error.response.data.errors;
-        setError(
-          Object.values(errors)
-            .flat()
-            .join(" ")
-        );
-      } else if (error.response && error.response.data && error.response.data.message) {
-        setError(error.response.data.message);
-      } else {
-        setError(error.message || "Error desconocido.");
-      }
+      setError(error.message || 'Error al registrar');
     } finally {
       setLoading(false);
     }

@@ -34,9 +34,9 @@ const UserAlbums = ({ userId, reloadAlbums, onAlbumsUpdated }) => {
     const navigate = useNavigate();
     const nodeRefs = useRef({});
 
+    const [loading, setLoading] = useState();
     const [albums, setAlbums] = useState([]);
     const [expandedAlbumId, setExpandedAlbumId] = useState(null);
-    const [initialLoading, setInitialLoading] = useState(true);
     const [error, setError] = useState(null);
     const [page, setPage] = useState(1);
     const [perPage] = useState(6);
@@ -50,7 +50,7 @@ const UserAlbums = ({ userId, reloadAlbums, onAlbumsUpdated }) => {
     const [albumToEdit, setAlbumToEdit] = useState(null);
 
     const fetchAlbums = async () => {
-        setInitialLoading(true);
+        setLoading(true);
         setError(null);
         try {
             const data = await fetchAlbumsByUserId(userId, page, perPage, search);
@@ -60,7 +60,7 @@ const UserAlbums = ({ userId, reloadAlbums, onAlbumsUpdated }) => {
         } catch (err) {
             setError(err.message);
         } finally {
-            setInitialLoading(false);
+            setLoading(false);
         }
     };
 
@@ -126,10 +126,6 @@ const UserAlbums = ({ userId, reloadAlbums, onAlbumsUpdated }) => {
         setExpandedAlbumId(expandedAlbumId === albumId ? null : albumId);
     };
 
-    if (initialLoading) {
-        return <Box display="flex" justifyContent="center" p={3}><CircularProgress /></Box>;
-    }
-
     if (error) {
         return <Box p={3}><Typography color="error">{error}</Typography></Box>;
     }
@@ -146,11 +142,25 @@ const UserAlbums = ({ userId, reloadAlbums, onAlbumsUpdated }) => {
             </Box>
 
             {albums.length === 0 ? (
-                <Box sx={{ textAlign: "center" }}>
-                    <Typography>No hay álbumes disponibles.</Typography>
-                </Box>
+                loading ? (
+                    <Box sx={{ textAlign: "center", p: 2 }}>
+                        <CircularProgress size={30} />
+                    </Box>
+                ) : (
+                    <Box sx={{ textAlign: "center" }}>
+                        <Typography>No hay canciones disponibles.</Typography>
+                    </Box>
+                )
             ) : (
-                <List>
+                <List
+                    style={{
+                        maxHeight: "500px",
+                        overflowY: "auto",
+                        minHeight: "200px",
+                        scrollbarWidth: "none",
+                    }}
+                    className="hide-scrollbar"
+                >
                     <TransitionGroup>
                         {albums.map((album) => {
                             if (!nodeRefs.current[album.id]) {

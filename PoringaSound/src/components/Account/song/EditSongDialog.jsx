@@ -12,6 +12,7 @@ import {
     IconButton,
     Box,
     CircularProgress,
+    Alert
 } from "@mui/material";
 import { PhotoCamera, Audiotrack, Close as CloseIcon } from "@mui/icons-material";
 import { fetchGeneros, fetchUpdateSong } from "../../../services/songs";
@@ -121,9 +122,9 @@ const EditSongDialog = ({ open, onClose, onSave, song }) => {
 
                 <DialogContent dividers>
                     {error && (
-                        <Typography color="error" sx={{ mb: 2, textAlign: "center" }}>
+                        <Alert severity="error" sx={{ mb: 2 }}>
                             {error}
-                        </Typography>
+                        </Alert>
                     )}
 
                     <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 2 }}>

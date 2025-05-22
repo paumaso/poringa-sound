@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { usePage } from "../context/PageContext";
 import { useAuth } from "../context/AuthContext";
+import AdminRoute from "../components/Routes/AdminRoutes";
 
 import Navbar from "../components/Navbar/Navbar";
 import SongDrawer from "../components/SongDrawer/SongDrawer";
@@ -16,11 +17,13 @@ import AllAlbums from "./AllAlbums";
 import AllArtistas from "./AllArtistas";
 
 const PoringaSound = () => {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, user } = useAuth();
 
     const [drawerOpen, setDrawerOpen] = useState(false);
-    const [selectedSong, setSelectedSong] = useState(null);
     const [currentSong, setCurrentSong] = useState(null);
+
+    const hideDrawerRoutes = ["/discover", "/admin"];
+    const shouldShowDrawer = !hideDrawerRoutes.includes(window.location.pathname);
 
     const handleSongClick = (song) => {
         setCurrentSong(song);
@@ -54,10 +57,21 @@ const PoringaSound = () => {
                     <Route path="/albums" element={<AllAlbums />} />
                     <Route path="/artists" element={<AllArtistas />}></Route>
 
+                    <Route
+                        path="/admin"
+                        element={
+                            <AdminRoute>
+                                {/* Aquí va el componente o página solo para admins */}
+                                <AdminPage />
+                            </AdminRoute>
+                        }
+                    />
                 </Routes>
             </div>
 
-            {window.location.pathname !== "/discover" && (
+
+
+            {shouldShowDrawer && (
                 <SongDrawer
                     open={drawerOpen}
                     onDrawerToggle={setDrawerOpen}

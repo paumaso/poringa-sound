@@ -146,11 +146,10 @@ export const fetchCreateSong = async (formData) => {
             body: formData,
         });
 
-        const data = await handleResponseError(response);
-        return data;
+        return await handleResponseError(response);
     } catch (error) {
         console.error("Error al crear la canción:", error);
-        throw error;
+        throw new Error(error.message || "Error al crear la canción");
     }
 };
 
@@ -165,10 +164,11 @@ export const fetchUpdateSong = async (id, formData) => {
             },
             body: formData,
         });
+
         return await handleResponseError(response);
     } catch (error) {
         console.error("Error al actualizar canción:", error);
-        throw error;
+        throw new Error(error.message || "Error al actualizar canción");
     }
 };
 
@@ -183,11 +183,10 @@ export const fetchDeleteSong = async (songId) => {
             },
         });
 
-        const data = await handleResponseError(response);
-        return data;
+        return await handleResponseError(response);
     } catch (error) {
         console.error("Error al eliminar la canción:", error);
-        throw error;
+        throw new Error(error.message || "Error al eliminar la canción");
     }
 };
 

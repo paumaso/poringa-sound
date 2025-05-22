@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { TextField, Button, Typography, Link, Box } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Typography,
+  Link,
+  Box,
+  Alert,
+} from "@mui/material";
 import { useAuth } from "../../context/AuthContext";
 import { usePage } from "../../context/PageContext";
 import { loginUser } from "../../services/auth";
@@ -9,7 +16,6 @@ const LoginForm = ({ onClose, switchToRegister }) => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { login } = useAuth();
   const { setActivePage } = usePage();
 
   const handleSubmit = async (e) => {
@@ -18,26 +24,11 @@ const LoginForm = ({ onClose, switchToRegister }) => {
     setError(null);
 
     try {
-      await login(email, password);
+      const { token, user } = await loginUser(email, password);
       onClose();
       setActivePage("home");
     } catch (error) {
-      if (error.response && error.response.data) {
-        if (error.response.status === 422 && error.response.data.errors) {
-          const errors = error.response.data.errors;
-          setError(
-            Object.values(errors)
-              .flat()
-              .join(" ")
-          );
-        } else if (error.response.data.message) {
-          setError(error.response.data.message);
-        } else {
-          setError("Error desconocido.");
-        }
-      } else {
-        setError(error.message || "Credenciales incorrectas.");
-      }
+      setError(error.message || 'Error al iniciar sesión');
     } finally {
       setLoading(false);
     }

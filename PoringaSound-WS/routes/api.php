@@ -5,7 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\CancionController;
 use App\Http\Controllers\InteraccionController;
-use App\Http\Controllers\ListaReproduccionController;
+use App\Http\Controllers\DenunciaController;
 use App\Http\Controllers\GenerosController;
 
 // Rutas públicas
@@ -24,7 +24,8 @@ Route::get('public/artistas/{id}', [AuthController::class, 'getUserById']);
 Route::middleware('auth:sanctum')->group(function () {
     // Rutas de autenticación
     Route::post('logout', [AuthController::class, 'logout']);
-
+    Route::get('me', [AuthController::class, 'getMe']);
+    
     // user
     Route::prefix('user')->group(function () {
         Route::post('/{id}', [AuthController::class, 'updateUser']);
@@ -61,9 +62,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/comentario', [InteraccionController::class, 'comentarCancion']);
     });
 
-    // Rutas de listas de reproducción
-    Route::prefix('listasReproduccion')->group(function () {
-        Route::get('/user/{id}', [ListaReproduccionController::class, 'getListasReproduccionByUserId']);
+    Route::prefix('denuncias')->group(function () {
+        Route::post('/', [DenunciaController::class, 'createDenuncia']);
+
+        Route::middleware('admin-only')->group(function () {
+            Route::get('/', [DenunciaController::class, 'getDenuncias']);
+            Route::post('/{id}/aceptar', [DenunciaController::class, 'aceptarDenuncia']);
+            Route::post('/{id}/rechazar', [DenunciaController::class, 'rechazarDenuncia']);
+        });
     });
 
     Route::prefix('generos')->group(function () {
