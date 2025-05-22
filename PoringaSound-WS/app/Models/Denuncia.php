@@ -10,19 +10,20 @@ class Denuncia extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 
-        'cancion_id', 
-        'motivo', 
+        'user_id',
+        'denunciable_id',
+        'denunciable_type',
+        'motivo',
         'estado',
     ];
 
     public function usuario()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function cancion()
+    public function denunciable()
     {
-        return $this->belongsTo(Cancion::class);
+        return $this->morphTo();
     }
 }

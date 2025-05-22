@@ -22,7 +22,7 @@ class CreateCancionesTable extends Migration
             $table->string('archivo');
             $table->string('portada')->nullable();
             $table->integer('duracion')->nullable();
-            $table->foreignId('genero_id')->constrained('genero')->onDelete('cascade');
+            $table->foreignId('genero_id')->constrained('generos')->onDelete('cascade');
             $table->timestamps();
         });
     }

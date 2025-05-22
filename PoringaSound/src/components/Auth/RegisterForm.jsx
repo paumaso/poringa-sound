@@ -3,6 +3,8 @@ import { TextField } from "@mui/material";
 import { Button } from "@mui/material";
 import { Typography } from "@mui/material";
 import { Divider } from "@mui/material";
+import { Alert } from "@mui/material";
+
 import { IconButton } from "@mui/material";
 import { Link } from "@mui/material";
 import { Grid } from "@mui/material";
@@ -18,13 +20,10 @@ const RegisterForm = ({ onClose, switchToLogin }) => {
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { register } = useAuth();
   const { setActivePage } = usePage();
-  
-
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -44,27 +43,37 @@ const RegisterForm = ({ onClose, switchToLogin }) => {
       setActivePage("home");
       onClose();
     } catch (error) {
-      setError(error.message || "Credenciales incorrectas.");
+      if (error.response && error.response.status === 422 && error.response.data.errors) {
+        const errors = error.response.data.errors;
+        setError(
+          Object.values(errors)
+            .flat()
+            .join(" ")
+        );
+      } else if (error.response && error.response.data && error.response.data.message) {
+        setError(error.response.data.message);
+      } else {
+        setError(error.message || "Error desconocido.");
+      }
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+    <Box component="form" onSubmit={handleSubmit} sx={{  }}>
       {error && (
-        <Typography color="error" sx={{ mb: 2, textAlign: "center" }}>
+        <Alert severity="error" sx={{ mb: 2 }}>
           {error}
-        </Typography>
+        </Alert>
       )}
 
-      <Grid container spacing={2} alignItems="center">
+      <Grid container spacing={3} alignItems="center">
         <Grid item xs={9}>
           <TextField
             label="Nombre"
             fullWidth
             margin="normal"
-            required
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
           />
@@ -98,7 +107,6 @@ const RegisterForm = ({ onClose, switchToLogin }) => {
         type="email"
         fullWidth
         margin="normal"
-        required
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
@@ -108,19 +116,8 @@ const RegisterForm = ({ onClose, switchToLogin }) => {
         type="password"
         fullWidth
         margin="normal"
-        required
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-      />
-
-      <TextField
-        label="Confirmar Contraseña"
-        type="password"
-        fullWidth
-        margin="normal"
-        required
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
       />
 
       <Button
@@ -135,7 +132,7 @@ const RegisterForm = ({ onClose, switchToLogin }) => {
 
       <Typography sx={{ mt: 2, textAlign: "center" }}>
         ¿Ya tienes cuenta?{" "}
-        <Link component="button" onClick={switchToLogin} sx={{ cursor: "pointer" }}>
+        <Link component="button" type="button" onClick={switchToLogin} sx={{ cursor: "pointer" }}>
           Inicia sesión
         </Link>
       </Typography>

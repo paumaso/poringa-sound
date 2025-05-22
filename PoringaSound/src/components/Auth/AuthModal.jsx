@@ -5,7 +5,7 @@ import RegisterForm from "./RegisterForm";
 import LoginForm from "./LoginForm";
 import logo from "../../assets/logo.png";
 
-const AuthModal = ({  open, onClose, activeForm, setActiveForm }) => {
+const AuthModal = ({ open, onClose, activeForm, setActiveForm }) => {
     const [fadeIn, setFadeIn] = useState(true);
 
     const switchForm = (form) => {
@@ -49,17 +49,19 @@ const AuthModal = ({  open, onClose, activeForm, setActiveForm }) => {
                     </IconButton>
                 </Box>
 
-                <Box sx={{ p: 3 }}>
+                <Box sx={{ p: 2 }}>
                     <Fade in={fadeIn} timeout={500}>
-                        <Grow  in={fadeIn} timeout={500}>
+                        <Grow in={fadeIn} timeout={500}>
                             <div>
                                 {activeForm === "register" ? (
                                     <RegisterForm
+                                        key="register"
                                         onClose={onClose}
                                         switchToLogin={() => switchForm("login")}
                                     />
                                 ) : (
                                     <LoginForm
+                                        key="login"
                                         onClose={onClose}
                                         switchToRegister={() => switchForm("register")}
                                     />

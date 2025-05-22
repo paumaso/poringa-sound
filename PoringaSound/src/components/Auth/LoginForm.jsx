@@ -12,8 +12,6 @@ const LoginForm = ({ onClose, switchToRegister }) => {
   const { login } = useAuth();
   const { setActivePage } = usePage();
 
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -24,7 +22,22 @@ const LoginForm = ({ onClose, switchToRegister }) => {
       onClose();
       setActivePage("home");
     } catch (error) {
-      setError(error.message || "Credenciales incorrectas.");
+      if (error.response && error.response.data) {
+        if (error.response.status === 422 && error.response.data.errors) {
+          const errors = error.response.data.errors;
+          setError(
+            Object.values(errors)
+              .flat()
+              .join(" ")
+          );
+        } else if (error.response.data.message) {
+          setError(error.response.data.message);
+        } else {
+          setError("Error desconocido.");
+        }
+      } else {
+        setError(error.message || "Credenciales incorrectas.");
+      }
     } finally {
       setLoading(false);
     }
@@ -33,9 +46,9 @@ const LoginForm = ({ onClose, switchToRegister }) => {
   return (
     <Box component="form" onSubmit={handleSubmit}>
       {error && (
-        <Typography color="error" sx={{ textAlign: "center" }}>
+        <Alert severity="error" sx={{ mb: 2 }}>
           {error}
-        </Typography>
+        </Alert>
       )}
 
       <TextField
@@ -43,7 +56,6 @@ const LoginForm = ({ onClose, switchToRegister }) => {
         type="email"
         fullWidth
         margin="normal"
-        required
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
@@ -53,7 +65,6 @@ const LoginForm = ({ onClose, switchToRegister }) => {
         type="password"
         fullWidth
         margin="normal"
-        required
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
@@ -70,7 +81,7 @@ const LoginForm = ({ onClose, switchToRegister }) => {
 
       <Typography sx={{ mt: 2, textAlign: "center" }}>
         ¿No tienes cuenta?{" "}
-        <Link component="button" onClick={switchToRegister} sx={{ cursor: "pointer" }}>
+        <Link component="button" type="button" onClick={switchToRegister} sx={{ cursor: "pointer" }}>
           Regístrate
         </Link>
       </Typography>

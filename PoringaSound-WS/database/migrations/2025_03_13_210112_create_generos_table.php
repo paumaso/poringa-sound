@@ -13,7 +13,7 @@ class CreateGenerosTable extends Migration
      */
     public function up()
     {
-        Schema::create('genero', function (Blueprint $table) {
+        Schema::create('generos', function (Blueprint $table) {
             $table->id();
             $table->string('nombre', 100)->unique();
             $table->timestamps();
