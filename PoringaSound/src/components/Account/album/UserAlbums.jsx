@@ -24,6 +24,8 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
+import Search from "../../Filters/Serch";
+import PaginationBar from "../../Filters/PaginationBar";
 import DeleteDialog from "../DeleteDialog";
 import Portada from "../../LazyImages/Portada";
 import { fetchAlbumsByUserId, fetchDeleteAlbum } from "../../../services/albums";
@@ -137,11 +139,11 @@ const UserAlbums = ({ userId, reloadAlbums, onAlbumsUpdated }) => {
     return (
         <Box sx={{ p: 2 }}>
             <Box display="flex" gap={2} mb={2} alignItems="center">
-                <TextField
-                    label="Buscar álbum"
+                <Search
                     value={search}
-                    onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                    size="small"
+                    onChange={e => { setSearch(e.target.value); setPage(1); }}
+                    placeholder="Buscar álbum"
+                    sx={{ minWidth: 180, maxWidth: 220, bgcolor: "#fff", borderRadius: 2, boxShadow: 1 }}
                 />
             </Box>
 
@@ -260,39 +262,11 @@ const UserAlbums = ({ userId, reloadAlbums, onAlbumsUpdated }) => {
                 </List>
             )}
 
-            <Box
-                sx={{
-                    position: "fixed",
-                    bottom: 0,
-                    left: 0,
-                    width: "100%",
-                    backgroundColor: "#fff",
-                    borderTop: "1px solid #e0e0e0",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    py: 1,
-                    zIndex: 999,
-                }}
-            >
-                <IconButton
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    disabled={page === 1}
-                    size="large"
-                >
-                    <ChevronLeftIcon />
-                </IconButton>
-                <Typography sx={{ mx: 2 }}>
-                    Página {page} de {totalPages}
-                </Typography>
-                <IconButton
-                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                    disabled={page === totalPages}
-                    size="large"
-                >
-                    <ChevronRightIcon />
-                </IconButton>
-            </Box>
+            <PaginationBar
+                page={page}
+                totalPages={totalPages}
+                onPageChange={setPage}
+            />
 
             <DeleteDialog
                 open={deleteDialogOpen}

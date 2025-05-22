@@ -7,9 +7,9 @@ import {
     Slider,
 } from "@mui/material";
 import { Pause, PlayArrow, MusicNote } from "@mui/icons-material";
-import Portada from "../../LazyImages/Portada";
-import LikeButton from "../../Interacciones/LikeButton";
-import RatingSong from "../../Interacciones/RatingSong";
+import Portada from "../LazyImages/Portada";
+import LikeButton from "../Interacciones/LikeButton";
+import RatingSong from "../Interacciones/RatingSong";
 
 const SongCard = ({ song, isActive, onDetailsClick }) => {
     const apiUrl = import.meta.env.VITE_STORAGE_URL;

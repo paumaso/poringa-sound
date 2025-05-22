@@ -76,7 +76,7 @@ class CancionController extends Controller
         ], 200);
     }
 
-    public function getCancionesOrdenadasPorPreferencia(Request $request)
+    public function discover(Request $request)
     {
         $authUserId = auth()->id();
         $perPage = $request->query('per_page', 10);
@@ -126,6 +126,48 @@ class CancionController extends Controller
             'genero_favorito' => $generoFavorito,
             'canciones' => $canciones,
         ], 200);
+    }
+
+    public function getCancionesByUserId(Request $request, $userId)
+    {
+        $perPage = $request->query('per_page', 10);
+        $authUserId = auth()->id();
+
+        $query = Cancion::where('user_id', $userId)
+            ->with([
+                'genero:id,nombre',
+                'user:id,nombre',
+                'interacciones' => function ($query) use ($authUserId) {
+                    $query->where('user_id', $authUserId);
+                }
+            ]);
+
+        $queryParam = $request->query('query');
+        if ($queryParam) {
+            $query->where('titulo', 'like', "%$queryParam%");
+        }
+
+        $generoId = $request->query('genero_id');
+        if ($generoId) {
+            $query->where('genero_id', $generoId);
+        }
+
+        $orden = $request->query('orden', 'nombre');
+        $direccion = $request->query('direccion', 'asc');
+        if ($orden === 'nombre') {
+            $query->orderBy('titulo', $direccion);
+        } elseif ($orden === 'likes') {
+            $query->withCount(['interacciones as likes_count' => function ($q) {
+                $q->where('tipo', 'like');
+            }])->orderBy('likes_count', $direccion);
+        } elseif ($orden === 'interacciones') {
+            $query->withCount(['interacciones as interacciones_count'])
+                ->orderBy('interacciones_count', $direccion);
+        }
+
+        $canciones = $query->paginate($perPage);
+
+        return response()->json($canciones, 200);
     }
 
     public function getRandomCancion()
@@ -180,8 +222,8 @@ class CancionController extends Controller
 
         $withRelations = [
             'genero:id,nombre',
-            'user:id,nombre',
-            'comentarios',
+            'user:id,nombre,imagen_perfil',
+            'comentarios.user:id,nombre,imagen_perfil',
         ];
 
         if ($authUserId) {
@@ -190,27 +232,20 @@ class CancionController extends Controller
             };
         }
 
-        $cancion = Cancion::where('id', $cancionId)
-            ->with($withRelations)
-            ->first();
+        $cancion = \App\Models\Cancion::with($withRelations)->find($cancionId);
 
         if (!$cancion) {
             return response()->json(['message' => 'Canción no encontrada'], 404);
         }
 
-        $totalLikes = $cancion->interacciones()
-            ->where('tipo', 'like')
-            ->count();
-
-        $mediaPuntuacion = $cancion->interacciones()
-            ->where('tipo', 'puntuacion')
-            ->avg('puntuacion');
+        $totalLikes = $cancion->interacciones()->where('tipo', 'like')->count();
+        $mediaPuntuacion = $cancion->interacciones()->where('tipo', 'puntuacion')->avg('puntuacion');
 
         $cancion->total_likes = $totalLikes;
-        $cancion->media_puntuacion = round($mediaPuntuacion, 2);
+        $cancion->media_puntuacion = $mediaPuntuacion ? round($mediaPuntuacion, 2) : null;
 
         if ($authUserId) {
-            $interacciones = $cancion->interacciones;
+            $interacciones = $cancion->interacciones ?? collect();
 
             $cancion->has_liked = $interacciones->firstWhere('tipo', 'like') !== null;
             $cancion->puntuacion_usuario = optional($interacciones->firstWhere('tipo', 'puntuacion'))->puntuacion;
@@ -222,34 +257,6 @@ class CancionController extends Controller
         }
 
         return response()->json($cancion, 200);
-    }
-
-
-    public function getCancionesByUserId(Request $request, $userId)
-    {
-        $perPage = $request->query('per_page', 10);
-        $authUserId = auth()->id();
-
-        $query = Cancion::where('user_id', $userId)
-            ->with([
-                'genero:id,nombre',
-                'user:id,nombre',
-                'interacciones' => function ($query) use ($authUserId) {
-                    $query->where('user_id', $authUserId);
-                }
-            ]);
-
-        if ($request->filled('genero_id')) {
-            $query->where('genero_id', $request->genero_id);
-        }
-
-        if ($request->filled('search')) {
-            $query->where('titulo', 'like', '%' . $request->search . '%');
-        }
-
-        $canciones = $query->paginate($perPage);
-
-        return response()->json($canciones, 200);
     }
 
     public function createCancion(Request $request)

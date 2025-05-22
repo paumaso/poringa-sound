@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import Portada from "../../LazyImages/Portada";
 import "../UserSongsAnimations.css";
-import { fetchSongByUserId, fetchDeleteSong, fetchGeneros } from "../../../services/songs";
+import { fetchSongByUserId, fetchDeleteSong } from "../../../services/songs";
 import {
   CircularProgress,
   Box,
@@ -14,12 +14,7 @@ import {
   Chip,
   IconButton,
   Tooltip,
-  TextField,
-  MenuItem
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -28,9 +23,16 @@ import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import EditSongDialog from "./EditSongDialog";
 import DeleteDialog from "../DeleteDialog";
 
+// Importa tus filtros personalizados
+import Search from "../../Filters/Serch";
+import GeneroSelect from "../../Filters/GenerosSelect";
+import OrdenSelect from "../../Filters/OrdenSelect";
+import DireccionSelect from "../../Filters/DireccionSelect";
+import PaginationBar from "../../Filters/PaginationBar";
+
 const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
   const apiUrl = import.meta.env.VITE_STORAGE_URL;
-  const navigate = useNavigate(); // ✅
+  const navigate = useNavigate();
 
   const nodeRefs = useRef({});
   const [songs, setSongs] = useState([]);
@@ -40,20 +42,25 @@ const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedSong, setSelectedSong] = useState(null);
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(6);
+  const [perPage] = useState(6);
   const [totalPages, setTotalPages] = useState(1);
-  const [generos, setGeneros] = useState([]);
+
+  // Filtros
   const [generoId, setGeneroId] = useState("");
   const [search, setSearch] = useState("");
-
-  useEffect(() => {
-    fetchGeneros().then(setGeneros);
-  }, []);
+  const [orden, setOrden] = useState("nombre");
+  const [direccion, setDireccion] = useState("asc");
 
   useEffect(() => {
     const fetchSongs = async () => {
+      setLoading(true);
       try {
-        const data = await fetchSongByUserId(userId, page, perPage, generoId, search);
+        const data = await fetchSongByUserId(
+          userId,
+          page,
+          perPage,
+          { generoId, query: search, orden, direccion }
+        );
         setSongs(data.data);
         setTotalPages(data.last_page || 1);
       } catch (err) {
@@ -65,7 +72,7 @@ const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
     };
 
     fetchSongs();
-  }, [reloadSongs, userId, page, perPage, generoId, search, onSongsUpdated]);
+  }, [reloadSongs, userId, page, perPage, generoId, search, orden, direccion, onSongsUpdated]);
 
   const handleEdit = (song) => {
     setSelectedSong(song);
@@ -104,7 +111,7 @@ const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
   };
 
   const handleDetailsClick = (song) => {
-    navigate(`/song/${song.id}`); // ✅ Ir a detalles
+    navigate(`/song/${song.id}`);
   };
 
   if (loading) {
@@ -125,27 +132,30 @@ const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
 
   return (
     <Box sx={{ p: 1, position: "relative" }}>
-      <Box display="flex" gap={2} mb={2} alignItems="center">
-        <TextField
-          label="Buscar"
+      <Box display="flex" gap={2} mb={2} alignItems="center" flexWrap="wrap">
+        <Search
           value={search}
           onChange={e => { setSearch(e.target.value); setPage(1); }}
-          size="small"
+          placeholder="Buscar canción"
+          sx={{ minWidth: 180, maxWidth: 220, bgcolor: "#fff", borderRadius: 2, boxShadow: 1 }}
         />
-        <TextField
-          select
-          label="Género"
+        <GeneroSelect
           value={generoId}
           onChange={e => { setGeneroId(e.target.value); setPage(1); }}
-          size="small"
-          sx={{ minWidth: 120 }}
-        >
-          <MenuItem value="">Todos</MenuItem>
-          {generos.map(g => (
-            <MenuItem key={g.id} value={g.id}>{g.nombre}</MenuItem>
-          ))}
-        </TextField>
+          sx={{ minWidth: 140, bgcolor: "#fff", borderRadius: 2, boxShadow: 1 }}
+        />
+        <OrdenSelect
+          value={orden}
+          onChange={e => { setOrden(e.target.value); setPage(1); }}
+          sx={{ minWidth: 140, bgcolor: "#fff", borderRadius: 2, boxShadow: 1 }}
+        />
+        <DireccionSelect
+          value={direccion}
+          onChange={e => { setDireccion(e.target.value); setPage(1); }}
+          sx={{ minWidth: 120, bgcolor: "#fff", borderRadius: 2, boxShadow: 1 }}
+        />
       </Box>
+
       {songs.length === 0 ? (
         <Typography component="div" variant="body1" color="textSecondary">
           No hay canciones disponibles.
@@ -248,39 +258,11 @@ const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
         </List>
       )}
 
-      <Box
-        sx={{
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          width: "100%",
-          backgroundColor: "#fff",
-          borderTop: "1px solid #e0e0e0",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          py: 1,
-          zIndex: 999,
-        }}
-      >
-        <IconButton
-          onClick={() => setPage((p) => Math.max(1, p - 1))}
-          disabled={page === 1}
-          size="large"
-        >
-          <ChevronLeftIcon />
-        </IconButton>
-        <Typography sx={{ mx: 2 }}>
-          Página {page} de {totalPages}
-        </Typography>
-        <IconButton
-          onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-          disabled={page === totalPages}
-          size="large"
-        >
-          <ChevronRightIcon />
-        </IconButton>
-      </Box>
+      <PaginationBar
+        page={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+      />
 
       {selectedSong && (
         <EditSongDialog

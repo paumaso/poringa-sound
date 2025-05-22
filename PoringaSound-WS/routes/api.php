@@ -33,7 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Rutas de canciones
     Route::prefix('canciones')->group(function () {
         Route::get('/', [CancionController::class, 'getAllCanciones']);
-        Route::get('/preferencia', [CancionController::class, 'getCancionesOrdenadasPorPreferencia']);
+        Route::get('/discover', [CancionController::class, 'discover']);
         Route::post('/', [CancionController::class, 'createCancion']);
         Route::get('/{id}', [CancionController::class, 'getCancionById']);
         Route::get('/user/{id}', [CancionController::class, 'getCancionesByUserId']);

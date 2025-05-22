@@ -6,7 +6,7 @@ import {
     Box,
 } from "@mui/material";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
-import { fetchAllSongs, fetchSongsPreferences } from "../services/songs";
+import { fetchAllSongs } from "../services/songs";
 import { fetchAllAlbums } from "../services/albums";
 import { getToken, fetchUsersWithActiveSongs } from "../services/auth";
 import { useNavigate } from "react-router-dom";

@@ -40,11 +40,11 @@ export const fetchAllSongs = async ({ page = 1, perPage = 10, query = "", genero
     }
 };
 
-export const fetchSongsPreferences = async (page = 1, perPage = 10) => {
+export const fetchDiscoverSongs = async (page = 1, perPage = 10) => {
     try {
         const token = getToken();
         const response = await fetch(
-            `${API_URL}/canciones/preferencia?page=${page}&per_page=${perPage}`,
+            `${API_URL}/canciones/discover?page=${page}&per_page=${perPage}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -54,10 +54,10 @@ export const fetchSongsPreferences = async (page = 1, perPage = 10) => {
         );
         return await handleResponseError(response);
     } catch (error) {
-        console.error("Error al obtener canciones:", error);
+        console.error("Error al obtener canciones de discover:", error);
         throw error;
     }
-}
+};
 
 export const fetchSongById = async (id) => {
     try {
@@ -101,7 +101,12 @@ export const fetchRandomSong = async () => {
     }
 };
 
-export const fetchSongByUserId = async (userId, page = 1, perPage = 10, generoId = "", search = "") => {
+export const fetchSongByUserId = async (
+    userId,
+    page = 1,
+    perPage = 10,
+    { generoId = "", query = "", orden = "nombre", direccion = "asc" } = {}
+) => {
     try {
         const token = getToken();
         const params = new URLSearchParams({
@@ -109,7 +114,9 @@ export const fetchSongByUserId = async (userId, page = 1, perPage = 10, generoId
             per_page: perPage,
         });
         if (generoId) params.append("genero_id", generoId);
-        if (search) params.append("search", search);
+        if (query) params.append("query", query);
+        if (orden) params.append("orden", orden);
+        if (direccion) params.append("direccion", direccion);
 
         const response = await fetch(
             `${API_URL}/canciones/user/${userId}?${params.toString()}`,
@@ -120,11 +127,7 @@ export const fetchSongByUserId = async (userId, page = 1, perPage = 10, generoId
                 },
             }
         );
-        if (!response.ok) {
-            throw new Error(`Error: ${response.status} - ${response.statusText}`);
-        }
-        const data = await handleResponseError(response);
-        return data;
+        return await handleResponseError(response);
     } catch (error) {
         console.error("Error al obtener canciones por usuario:", error);
         throw error;

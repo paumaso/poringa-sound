@@ -6,7 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import Navbar from "../components/Navbar/Navbar";
 import SongDrawer from "../components/SongDrawer/SongDrawer";
 import Home from "./Home";
-import Discover from "../components/Discover/Discover";
+import Discover from "./Discover";
 import Account from "./Account";
 import AllSongs from "./AllSongs";
 import SongDetails from "../components/Details/SongDetails/SongDetails";
