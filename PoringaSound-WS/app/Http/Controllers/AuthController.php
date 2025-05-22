@@ -62,20 +62,24 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
+        $messages = [
+            'email.unique' => 'This email is already registered.',
+        ];
+
         $request->validate([
             'nombre' => 'required|string|max:255',
             'email' => 'required|string|email|unique:users',
             'password' => 'required|string|min:6',
             'tipo' => 'in:usuario',
             'imagen_perfil' => 'nullable|image|mimes:jpeg,png,jpg',
-        ]);
+        ], $messages);
 
         $image = $this->guardarImagenPerfil($request);
 
         $user = User::create([
             'nombre' => $request->nombre,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'password' => \Illuminate\Support\Facades\Hash::make($request->password),
             'tipo' => $request->tipo ?? 'usuario',
             'imagen_perfil' => $image,
         ]);

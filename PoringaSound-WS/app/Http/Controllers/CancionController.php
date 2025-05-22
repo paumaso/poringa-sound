@@ -332,6 +332,7 @@ class CancionController extends Controller
         }
 
         $cancion->update($data);
+        $cancion->load('genero');
 
         return response()->json($cancion, 200);
     }
@@ -363,7 +364,7 @@ class CancionController extends Controller
         $request->validate([
             'titulo' => 'required|string|max:255',
             'archivo' => 'nullable|file',
-            'genero_id' => 'nullable|exists:genero,id',
+            'genero_id' => 'nullable|exists:generos,id',
             'active' => 'nullable|boolean',
             'portada' => 'nullable|image',
         ]);

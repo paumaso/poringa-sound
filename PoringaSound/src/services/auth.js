@@ -34,6 +34,38 @@ export const registerUser = async (nombre, email, password, imagenPerfil) => {
   }
 };
 
+export const editUser = async (userId, { nombre, email, password, imagenPerfil }) => {
+  try {
+    const token = getToken();
+    const formData = new FormData();
+    if (nombre) formData.append("nombre", nombre);
+    if (email) formData.append("email", email);
+    if (password) formData.append("password", password);
+    if (imagenPerfil) formData.append("imagen_perfil", imagenPerfil);
+
+    const response = await fetch(`${API_URL}/user/${userId}`, {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      sessionStorage.setItem("user", JSON.stringify(data.user));
+      return data.user;
+    } else {
+      throw new Error(data.message || "Error updating user");
+    }
+  } catch (error) {
+    console.error("Error updating user:", error);
+    throw error;
+  }
+};
+
 export const loginUser = async (email, password) => {
   try {
     const formData = new FormData();

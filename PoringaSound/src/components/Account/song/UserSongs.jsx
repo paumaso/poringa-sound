@@ -67,13 +67,11 @@ const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
         setError(err.message);
       } finally {
         setLoading(false);
-        if (onSongsUpdated) onSongsUpdated();
       }
     };
 
     fetchSongs();
-  }, [reloadSongs, userId, page, perPage, generoId, search, orden, direccion, onSongsUpdated]);
-
+  }, [userId, page, perPage, generoId, search, orden, direccion, reloadSongs]);
   const handleEdit = (song) => {
     setSelectedSong(song);
     setEditDialogOpen(true);
@@ -269,9 +267,18 @@ const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
           open={editDialogOpen}
           onClose={handleEditClose}
           onSave={(updatedSong) => {
+            let generoObj = updatedSong.genero;
+            if (!generoObj && updatedSong.genero_id) {
+              const generoList = songs.find(s => s.id === selectedSong.id)?.genero
+                ? [songs.find(s => s.id === selectedSong.id).genero]
+                : [];
+              generoObj = generoList.find(g => g.id === updatedSong.genero_id) || { nombre: "Desconocido" };
+            }
             setSongs((prevSongs) =>
               prevSongs.map((song) =>
-                song.id === updatedSong.id ? { ...song, ...updatedSong } : song
+                song.id === updatedSong.id
+                  ? { ...song, ...updatedSong, genero: generoObj }
+                  : song
               )
             );
             setEditDialogOpen(false);

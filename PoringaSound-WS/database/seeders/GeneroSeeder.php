@@ -27,6 +27,6 @@ class GeneroSeeder extends Seeder
             ['nombre' => 'Metal'],
         ];
 
-        DB::table('genero')->insert($genero);
+        DB::table('generos')->insert($genero);
     }
 }

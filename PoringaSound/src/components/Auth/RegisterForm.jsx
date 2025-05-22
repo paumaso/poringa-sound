@@ -61,7 +61,7 @@ const RegisterForm = ({ onClose, switchToLogin }) => {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{  }}>
+    <Box component="form" onSubmit={handleSubmit} sx={{}}>
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {error}

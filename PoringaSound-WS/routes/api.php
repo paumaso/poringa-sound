@@ -27,7 +27,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // user
     Route::prefix('user')->group(function () {
-        Route::put('/{id}', [AuthController::class, 'updateUser']);
+        Route::post('/{id}', [AuthController::class, 'updateUser']);
     });
 
     // Rutas de canciones
