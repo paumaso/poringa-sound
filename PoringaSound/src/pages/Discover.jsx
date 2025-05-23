@@ -62,7 +62,7 @@ const Discover = ({ onDetailsClick }) => {
     };
 
     return (
-        <Box sx={{ position: "relative", height: "calc(100vh - 72px)", bgcolor: "#111" }}>
+        <Box sx={{ position: "relative", bgcolor: "#111" }}>
             <List
                 height={window.innerHeight - 72}
                 itemCount={songs.length}
@@ -77,7 +77,6 @@ const Discover = ({ onDetailsClick }) => {
                         key={songs[index]?.id || index}
                         style={style}
                         sx={{
-                            height: "calc(100vh - 72px)",
                             width: "100%",
                             scrollSnapAlign: "start",
                             display: "flex",

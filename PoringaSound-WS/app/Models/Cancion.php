@@ -51,4 +51,9 @@ class Cancion extends Model
     {
         return $this->hasMany(Interaccion::class)->where('tipo', 'comentario')->with('user:id,nombre,imagen_perfil');
     }
+
+    public function denuncias()
+    {
+        return $this->morphMany(\App\Models\Denuncia::class, 'denunciable');
+    }
 }

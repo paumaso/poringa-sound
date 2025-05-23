@@ -11,7 +11,9 @@ class ListaReproduccion extends Model
     protected $table = 'listas_reproduccion';
 
     protected $fillable = [
-        'user_id', 'nombre', 'canciones_ids',
+        'user_id',
+        'nombre',
+        'canciones_ids',
     ];
 
     protected $casts = [

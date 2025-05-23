@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { 
     Card,
     CardContent,
@@ -9,7 +9,9 @@ import DenunciaActions from "./DenunciaActions";
 
 const DenunciaCard = ({ denuncia, onAction }) => {
   const { motivo, estado, usuario, denunciable_type, denunciable_id } = denuncia;
-
+  useEffect(() => {
+    console.log("DenunciaCard props:", denuncia);
+  } , [denuncia]);
   return (
     <Card sx={{ mb: 2 }}>
       <CardContent>
@@ -20,10 +22,7 @@ const DenunciaCard = ({ denuncia, onAction }) => {
           Estado: <strong>{estado}</strong>
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Usuario: {usuario?.name || "Anónimo"}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Contenido: {denunciable_type} #{denunciable_id}
+          Usuario: {usuario?.nombre || "Anónimo"}
         </Typography>
 
         {estado === "pendiente" && (

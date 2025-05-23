@@ -67,7 +67,7 @@ const Portada = ({
                                 opacity: 1,
                             }}
                         >
-                            <PlayCircleIcon sx={{ color: "white", fontSize: 48 }} />
+                            <PlayCircleIcon sx={{ color: "white", fontSize: 48, cursor: "pointer" }} />
                         </Box>
                     )}
                 </>

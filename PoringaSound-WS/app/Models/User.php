@@ -46,8 +46,7 @@ class User extends Authenticatable
     }
 
     public function canciones()
-{
-    return $this->hasMany(Cancion::class);
+    {
+        return $this->hasMany(Cancion::class);
+    }
 }
-}
-

@@ -9,10 +9,12 @@ const RatingSong = ({ songId, initialRating = 0 }) => {
     const isAuthenticated = !!getToken();
     const [rating, setRating] = useState(initialRating);
     const [pulse, setPulse] = useState(false);
-    const handleRatingChange = async (_, newValue) => {
+
+    const handleRatingChange = async (newValue) => {
         if (isAuthenticated || newValue === null) return;
 
         try {
+            console.log("Puntuando canción con ID:", songId, "con valor:", newValue);
             await puntuarCancion(songId, newValue);
             setRating(newValue);
             setPulse(true);

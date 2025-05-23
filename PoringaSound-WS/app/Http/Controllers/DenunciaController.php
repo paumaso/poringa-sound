@@ -10,8 +10,6 @@ class DenunciaController extends Controller
 {
     public function getDenuncias(Request $request)
     {
-        $this->authorize('admin-only');
-
         $perPage = $request->get('per_page', 10);
         $denuncias = Denuncia::with(['usuario', 'denunciable'])->paginate($perPage);
 
@@ -26,10 +24,21 @@ class DenunciaController extends Controller
             'motivo' => 'required|string|max:1000',
         ]);
 
+        $map = [
+            'cancion' => \App\Models\Cancion::class,
+            'comentario' => \App\Models\Interaccion::class,
+        ];
+
+        $tipo = strtolower($request->denunciable_type);
+
+        if (!isset($map[$tipo])) {
+            return response()->json(['error' => 'Tipo de denuncia no válido'], 400);
+        }
+
         $denuncia = Denuncia::create([
-            'user_id' => Auth::id(),
+            'user_id' => auth()->id(),
             'denunciable_id' => $request->denunciable_id,
-            'denunciable_type' => $request->denunciable_type,
+            'denunciable_type' => $map[$tipo],
             'motivo' => $request->motivo,
             'estado' => 'pendiente',
         ]);
@@ -39,8 +48,6 @@ class DenunciaController extends Controller
 
     public function aceptarDenuncia($id)
     {
-        $this->authorize('admin-only');
-
         $denuncia = Denuncia::findOrFail($id);
         $denunciado = $denuncia->denunciable;
 
@@ -54,8 +61,6 @@ class DenunciaController extends Controller
 
     public function rechazarDenuncia($id)
     {
-        $this->authorize('admin-only');
-
         $denuncia = Denuncia::findOrFail($id);
         $denuncia->estado = 'rechazada';
         $denuncia->save();

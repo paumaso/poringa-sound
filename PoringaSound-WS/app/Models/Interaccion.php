@@ -27,4 +27,9 @@ class Interaccion extends Model
     {
         return $this->belongsTo(Cancion::class);
     }
+
+    public function denuncias()
+    {
+        return $this->morphMany(Denuncia::class, 'denunciable');
+    }
 }

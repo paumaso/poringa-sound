@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Log;
 
 class AdminMiddleware
 {
@@ -19,7 +20,10 @@ class AdminMiddleware
     {
         $user = auth()->user();
 
-        if (!$user || $user->tipo !== 'admin') {
+        Log::warning('AdminMiddleware: Usuario sin permisos. Tipo: ' . $user->tipo);
+
+        if (!$user || $user->tipo != 'admin') {
+            Log::warning('AdminMiddleware: Usuario sin permisos. Tipo: ' . $user->tipo);
             return response()->json(['error' => 'No autorizado'], 403);
         }
 

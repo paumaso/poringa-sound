@@ -7,9 +7,10 @@ export const createDenuncia = async ({ denunciable_id, denunciable_type, motivo 
     const response = await fetch(`${API_URL}/denuncias`, {
       method: "POST",
       headers: {
-        "Accept": "application/json",
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
+
       },
       body: JSON.stringify({ denunciable_id, denunciable_type, motivo }),
     });
@@ -25,11 +26,10 @@ export const createDenuncia = async ({ denunciable_id, denunciable_type, motivo 
 export const fetchDenuncias = async (page = 1, perPage = 10) => {
   try {
     const token = getToken();
-    console.log(token)
     const response = await fetch(`${API_URL}/denuncias?page=${page}&per_page=${perPage}`, {
       headers: {
-        "Authorization": `Bearer ${token}`,
-        "Accept": "application/json",
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
       },
     });
 
