@@ -25,7 +25,6 @@ const EditSongDialog = ({ open, onClose, onSave, song }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // Archivos y previews
     const [audioFile, setAudioFile] = useState(null);
     const [audioPreview, setAudioPreview] = useState(null);
     const [imageFile, setImageFile] = useState(null);
@@ -55,8 +54,22 @@ const EditSongDialog = ({ open, onClose, onSave, song }) => {
             setImageFile(null);
             setImagePreview(song.portadaUrl || null);
             setError(null);
+        } else {
+            // Si no hay canción, limpiar formulario
+            resetForm();
         }
     }, [song]);
+
+    const resetForm = () => {
+        setTitle("");
+        setGenero(null);
+        setActive(false);
+        setAudioFile(null);
+        setAudioPreview(null);
+        setImageFile(null);
+        setImagePreview(null);
+        setError(null);
+    };
 
     const handleAudioChange = (e) => {
         const file = e.target.files[0];
@@ -93,7 +106,7 @@ const EditSongDialog = ({ open, onClose, onSave, song }) => {
             onClose();
         } catch (error) {
             console.error("Error al guardar la canción:", error);
-            setError(error.message || "Error inesperado");
+            setError(error?.message || "Error inesperado");
         } finally {
             setLoading(false);
         }
@@ -127,7 +140,7 @@ const EditSongDialog = ({ open, onClose, onSave, song }) => {
                         </Alert>
                     )}
 
-                    <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 2 }}>
+                    <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 2, mb: 2 }}>
                         <TextField
                             label="Título"
                             fullWidth
@@ -149,40 +162,45 @@ const EditSongDialog = ({ open, onClose, onSave, song }) => {
                         />
                     </Box>
 
+                    {/* Audio e Imagen */}
                     <Box
                         sx={{
-                            mt: 3,
                             display: "flex",
                             flexDirection: { xs: "column", md: "row" },
-                            gap: 2,
+                            gap: 5,
+                            mb: 2,
+                            flexWrap: "wrap",
                         }}
                     >
-                        {/* Audio upload */}
+                        {/* Audio */}
                         <Box
                             sx={{
                                 border: 1,
                                 borderColor: "divider",
                                 borderRadius: 2,
                                 p: 2,
-                                flex: 1,
-                                position: "relative",
+                                width: 400,
+                                minWidth: 400,
+                                maxWidth: 400,
+                                wordBreak: "break-word",
+                                overflowWrap: "break-word",
                             }}
                         >
                             <input
                                 accept="audio/*"
-                                id="edit-audio-upload-button"
+                                id="audio-upload-button"
                                 type="file"
                                 style={{ display: "none" }}
                                 onChange={handleAudioChange}
                             />
-                            <label htmlFor="edit-audio-upload-button">
+                            <label htmlFor="audio-upload-button">
                                 <Button
                                     variant="outlined"
                                     component="span"
                                     fullWidth
                                     startIcon={<Audiotrack />}
                                 >
-                                    Cambiar audio
+                                    Subir audio
                                 </Button>
                             </label>
 
@@ -196,14 +214,13 @@ const EditSongDialog = ({ open, onClose, onSave, song }) => {
                                     }}
                                 >
                                     <Typography variant="caption" noWrap>
-                                        {audioFile ? audioFile.name : song.audioFileName || "Audio actual"}
+                                        {audioFile ? audioFile.name : "Audio actual"}
                                     </Typography>
                                     <IconButton
                                         onClick={() => {
                                             setAudioFile(null);
                                             setAudioPreview(null);
                                         }}
-                                        sx={{ backgroundColor: "rgba(255,255,255,0.7)" }}
                                     >
                                         <CloseIcon />
                                     </IconButton>
@@ -211,33 +228,34 @@ const EditSongDialog = ({ open, onClose, onSave, song }) => {
                             )}
                         </Box>
 
-                        {/* Image upload */}
+                        {/* Imagen */}
                         <Box
                             sx={{
                                 border: 1,
                                 borderColor: "divider",
                                 borderRadius: 2,
                                 p: 2,
-                                flex: 1,
+                                width: 400,
+                                minWidth: 400,
+                                maxWidth: 400,
                                 textAlign: "center",
-                                position: "relative",
                             }}
                         >
                             <input
                                 accept="image/*"
-                                id="edit-image-upload-button"
+                                id="image-upload-button"
                                 type="file"
                                 style={{ display: "none" }}
                                 onChange={handleImageChange}
                             />
-                            <label htmlFor="edit-image-upload-button">
+                            <label htmlFor="image-upload-button">
                                 <Button
                                     variant="outlined"
                                     component="span"
                                     fullWidth
                                     startIcon={<PhotoCamera />}
                                 >
-                                    Cambiar imagen
+                                    Subir imagen
                                 </Button>
                             </label>
 

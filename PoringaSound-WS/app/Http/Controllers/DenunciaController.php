@@ -8,11 +8,12 @@ use Illuminate\Support\Facades\Auth;
 
 class DenunciaController extends Controller
 {
-    public function getDenuncias()
+    public function getDenuncias(Request $request)
     {
         $this->authorize('admin-only');
 
-        $denuncias = Denuncia::with(['usuario', 'denunciable'])->get();
+        $perPage = $request->get('per_page', 10);
+        $denuncias = Denuncia::with(['usuario', 'denunciable'])->paginate($perPage);
 
         return response()->json($denuncias);
     }
@@ -62,4 +63,3 @@ class DenunciaController extends Controller
         return response()->json(['message' => 'Denuncia rechazada.']);
     }
 }
-

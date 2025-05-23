@@ -1,7 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import LanguageSwitcher from "./components/LanguageSwitcher";
-import SearchBar from "./components/SearchBar";
 import MenuDrawer from "./components/MenuDrawer";
 import { Button } from "@mui/material";
 import AuthModal from "../Auth/AuthModal";

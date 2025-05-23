@@ -17,7 +17,7 @@ import { usePage } from "../../context/PageContext";
 const RegisterForm = ({ onClose, switchToLogin }) => {
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
-  const [image, setImage] = useState(null);
+  const [imagenPerfil, setImagenPerfil] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -28,7 +28,7 @@ const RegisterForm = ({ onClose, switchToLogin }) => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setImage(file);
+      setImagenPerfil(file);
       setImagePreview(URL.createObjectURL(file));
     }
   };
@@ -44,8 +44,8 @@ const RegisterForm = ({ onClose, switchToLogin }) => {
       formData.append('email', email);
       formData.append('password', password);
       if (imagenPerfil) formData.append('imagen_perfil', imagenPerfil);
-      const { token, user } = await register(formData);
-      onClose();
+      await register(formData);
+      onClose?.();
       setActivePage("home");
     } catch (error) {
       setError(error.message || 'Error al registrar');

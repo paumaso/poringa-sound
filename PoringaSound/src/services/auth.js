@@ -72,11 +72,7 @@ export const loginUser = async (email, password) => {
       throw new Error(data.message || 'Error al iniciar sesión');
     }
 
-    Cookies.set('token', data.token, {
-      expires: 1,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'Strict'
-    });
+    Cookies.set('token', data.token, { expires: 1 });
 
     sessionStorage.setItem('user', JSON.stringify(data.user));
     return { token: data.token, user: data.user };

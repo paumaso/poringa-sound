@@ -16,6 +16,7 @@ const LoginForm = ({ onClose, switchToRegister }) => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { login } = useAuth();
   const { setActivePage } = usePage();
 
   const handleSubmit = async (e) => {
@@ -24,8 +25,8 @@ const LoginForm = ({ onClose, switchToRegister }) => {
     setError(null);
 
     try {
-      const { token, user } = await loginUser(email, password);
-      onClose();
+      await login(email, password);
+      onClose?.();
       setActivePage("home");
     } catch (error) {
       setError(error.message || 'Error al iniciar sesión');

@@ -32,7 +32,6 @@ const AuthModal = ({ open, onClose, activeForm, setActiveForm }) => {
                     overflow: "hidden",
                 }}
             >
-                {/* Header */}
                 <Box
                     sx={{
                         display: "flex",

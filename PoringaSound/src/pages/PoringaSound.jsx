@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { usePage } from "../context/PageContext";
 import { useAuth } from "../context/AuthContext";
-import AdminRoute from "../components/Routes/AdminRoutes";
+import AdminRoute from "../components/Routes/AdminRoutes"
+import AdminDenuncias from "./AdminDenuncias";
 
 import Navbar from "../components/Navbar/Navbar";
 import SongDrawer from "../components/SongDrawer/SongDrawer";
@@ -61,15 +62,12 @@ const PoringaSound = () => {
                         path="/admin"
                         element={
                             <AdminRoute>
-                                {/* Aquí va el componente o página solo para admins */}
-                                <AdminPage />
+                                <AdminDenuncias />
                             </AdminRoute>
                         }
                     />
                 </Routes>
             </div>
-
-
 
             {shouldShowDrawer && (
                 <SongDrawer

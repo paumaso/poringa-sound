@@ -37,10 +37,16 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    const { user } = await loginUser(email, password);
-    setUser(user);
-    setIsAuthenticated(true);
-    sessionStorage.setItem('user', JSON.stringify(user));
+    try {
+      const data = await loginUser(email, password);
+      if (!data || !data.user) throw new Error('Respuesta inválida del servidor');
+      setUser(data.user);
+      setIsAuthenticated(true);
+      sessionStorage.setItem('user', JSON.stringify(data.user));
+    } catch (error) {
+      console.error('Error en login:', error);
+      throw error;
+    }
   };
 
   const register = async (nombre, email, password, imagenPerfil) => {

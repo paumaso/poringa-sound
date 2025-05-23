@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import ReportIcon from '@mui/icons-material/Report';
+import DenunciaButton from "../Denuncia/DenunciaButton";
 import { getToken, getUser } from "../../services/auth";
 import { comentarCancion } from "../../services/interactions";
 
@@ -159,20 +160,11 @@ const ComentsBox = ({ coments = [], songId, onNewComent }) => {
                                         </Typography>
                                     </Box>
                                 </Box>
-                                <Tooltip title="Denunciar comentario">
-                                    <IconButton
-                                        size="small"
-                                        onClick={() => {
-                                            console.log("Denunciar comentario", coment.id);
-                                        }}
-                                        sx={{
-                                            color: "text.secondary",
-                                            "&:hover": { color: "error.main" },
-                                        }}
-                                    >
-                                        <ReportIcon fontSize="small" />
-                                    </IconButton>
-                                </Tooltip>
+                                <DenunciaButton
+                                    denunciableId={coment.id}
+                                    denunciableType="comentario"
+                                    iconStyle={{ fontSize: 18 }}
+                                />
                             </Box>
                         ))
                 ) : (
