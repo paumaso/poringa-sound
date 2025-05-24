@@ -37,11 +37,6 @@ class Cancion extends Model
         return $this->belongsToMany(Album::class, 'album_cancion', 'cancion_id', 'album_id');
     }
 
-    public function listasReproduccion()
-    {
-        return $this->belongsToMany(ListaReproduccion::class, 'cancion_lista_reproduccion');
-    }
-
     public function interacciones()
     {
         return $this->hasMany(\App\Models\Interaccion::class, 'cancion_id');

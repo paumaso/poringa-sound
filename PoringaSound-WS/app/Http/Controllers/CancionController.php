@@ -16,6 +16,7 @@ class CancionController extends Controller
         $perPage = $request->query('per_page', 10);
         $queryParam = $request->query('query');
         $generoId = $request->query('genero_id');
+        $albumId = $request->query('album_id');
         $artista = $request->query('artista');
         $orden = $request->query('orden', 'nombre');
         $direccion = $request->query('direccion', 'asc');
@@ -37,6 +38,14 @@ class CancionController extends Controller
             $canciones->whereHas('user', function ($q) use ($artista) {
                 $q->where('nombre', 'like', "%$artista%");
             });
+        }
+
+        if ($albumId) {
+            $canciones->whereHas('albumes', function ($q) use ($albumId) {
+                $q->where('album_id', $albumId);
+            });
+
+            $canciones->orderBy('album_cancion.orden', 'asc');
         }
 
         if ($orden === 'nombre') {

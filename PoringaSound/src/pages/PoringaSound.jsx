@@ -22,12 +22,20 @@ const PoringaSound = () => {
 
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [currentSong, setCurrentSong] = useState(null);
+    const [currentAlbum, setCurrentAlbum] = useState(null);
 
     const hideDrawerRoutes = ["/discover", "/admin"];
     const shouldShowDrawer = !hideDrawerRoutes.includes(window.location.pathname);
 
     const handleSongClick = (song) => {
+        setCurrentAlbum(null);
         setCurrentSong(song);
+        setDrawerOpen(true);
+    };
+
+    const handleAlbumClick = (albumId) => {
+        setCurrentSong(null);
+        setCurrentAlbum(albumId);
         setDrawerOpen(true);
     };
 
@@ -44,12 +52,12 @@ const PoringaSound = () => {
                 }}
             >
                 <Routes>
-                    <Route path="/" element={<Home onSongClick={handleSongClick} />} />
+                    <Route path="/" element={<Home onSongClick={handleSongClick} onAlbumClick={handleAlbumClick} />} />
                     {isAuthenticated && (
                         <Route path="/discover" element={<Discover />} />
                     )}
                     {isAuthenticated && (
-                        <Route path="/account" element={<Account onSongClick={handleSongClick} />} />
+                        <Route path="/account" element={<Account onSongClick={handleSongClick} onAlbumClick={handleAlbumClick} />} />
                     )}
                     <Route path="/song/:id" element={<SongDetails onSongClick={handleSongClick} />} />
                     <Route path="/album/:id" element={<AlbumDetails onSongClick={handleSongClick} />} />
@@ -74,6 +82,7 @@ const PoringaSound = () => {
                     open={drawerOpen}
                     onDrawerToggle={setDrawerOpen}
                     songId={currentSong?.id}
+                    album={currentAlbum}
                 />
             )}
         </div>

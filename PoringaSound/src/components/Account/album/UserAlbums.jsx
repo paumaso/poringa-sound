@@ -29,7 +29,7 @@ import Portada from "../../LazyImages/Portada";
 import { fetchAlbumsByUserId, fetchDeleteAlbum } from "../../../services/albums";
 import EditAlbumDialog from "./EditAlbumDialog";
 
-const UserAlbums = ({ userId, reloadAlbums, onAlbumsUpdated }) => {
+const UserAlbums = ({ userId, reloadAlbums, onAlbumsUpdated, onAlbumClick }) => {
     const apiUrl = import.meta.env.VITE_STORAGE_URL;
     const navigate = useNavigate();
     const nodeRefs = useRef({});
@@ -193,7 +193,7 @@ const UserAlbums = ({ userId, reloadAlbums, onAlbumsUpdated }) => {
                                                             alt={album.titulo}
                                                             width="100%"
                                                             height="100%"
-                                                            hover={false}
+                                                            onClick={() => onAlbumClick && onAlbumClick(album)}
                                                         />
                                                     </Box>
                                                 </ListItemAvatar>

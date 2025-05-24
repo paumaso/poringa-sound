@@ -30,6 +30,8 @@ import OrdenSelect from "../../Filters/OrdenSelect";
 import DireccionSelect from "../../Filters/DireccionSelect";
 import PaginationBar from "../../Filters/PaginationBar";
 
+import Toolbar from "../../Filters/Toolbar";
+
 const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
   const apiUrl = import.meta.env.VITE_STORAGE_URL;
   const navigate = useNavigate();
@@ -123,26 +125,23 @@ const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
   return (
     <Box sx={{ p: 1, position: "relative" }}>
       <Box display="flex" gap={2} mb={2} alignItems="center" flexWrap="wrap">
-        <Search
-          value={search}
-          onChange={e => { setSearch(e.target.value); setPage(1); }}
-          placeholder="Buscar canción"
-          sx={{ minWidth: 180, maxWidth: 220, bgcolor: "#fff", borderRadius: 2, boxShadow: 1 }}
-        />
-        <GeneroSelect
-          value={generoId}
-          onChange={e => { setGeneroId(e.target.value); setPage(1); }}
-          sx={{ minWidth: 140, bgcolor: "#fff", borderRadius: 2, boxShadow: 1 }}
-        />
-        <OrdenSelect
-          value={orden}
-          onChange={e => { setOrden(e.target.value); setPage(1); }}
-          sx={{ minWidth: 140, bgcolor: "#fff", borderRadius: 2, boxShadow: 1 }}
-        />
-        <DireccionSelect
-          value={direccion}
-          onChange={e => { setDireccion(e.target.value); setPage(1); }}
-          sx={{ minWidth: 120, bgcolor: "#fff", borderRadius: 2, boxShadow: 1 }}
+        <Toolbar
+          page={page}
+          totalPages={totalPages}
+          onPrevPage={() => setPage(page - 1)}
+          onNextPage={() => setPage(page + 1)}
+          showSearch={true}
+          showGenero={true}
+          showOrden={true}
+          showDireccion={true}
+          searchValue={search}
+          onSearchChange={e => { setSearch(e.target.value); setPage(1); }}
+          generoValue={generoId}
+          onGeneroChange={e => { setGeneroId(e.target.value); setPage(1); }}
+          ordenValue={orden}
+          onOrdenChange={e => { setOrden(e.target.value); setPage(1); }}
+          direccionValue={direccion}
+          onDireccionChange={e => { setDireccion(e.target.value); setPage(1); }}
         />
       </Box>
 
@@ -253,12 +252,6 @@ const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
           </TransitionGroup>
         </List>
       )}
-
-      <PaginationBar
-        page={page}
-        totalPages={totalPages}
-        onPageChange={setPage}
-      />
 
       {selectedSong && (
         <EditSongDialog

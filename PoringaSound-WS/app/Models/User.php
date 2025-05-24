@@ -34,12 +34,7 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
-
-    public function listasReproduccion()
-    {
-        return $this->hasMany(ListaReproduccion::class);
-    }
-
+    
     public function interacciones()
     {
         return $this->hasMany(Interaccion::class);

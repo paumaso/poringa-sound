@@ -26,7 +26,7 @@ import NewSongDialog from "../components/Account/song/NewSongDialog.jsx";
 import NewAlbumDialog from "../components/Account/album/NewAlbumDialog.jsx";
 import EditAccountDialog from "../components/Account/EditeAcountDialog.jsx";
 
-const Account = ({ onSongClick }) => {
+const Account = ({ onSongClick, onAlbumClick }) => {
     const { user, setUser } = useAuth();
     const apiUrl = import.meta.env.VITE_STORAGE_URL;
 
@@ -168,6 +168,7 @@ const Account = ({ onSongClick }) => {
                         userId={user?.id}
                         reloadAlbums={reloadAlbums}
                         onAlbumsUpdated={() => setReloadAlbums(false)}
+                        onAlbumClick={onAlbumClick}
                     />
                 )}
             </Box>

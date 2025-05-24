@@ -10,6 +10,7 @@ import {
 import Portada from "../../LazyImages/Portada";
 import LikeButton from "../../Interacciones/LikeButton";
 import ComentsBox from "../../Interacciones/ComentsBox";
+import DenunciaButton from "../../Denuncia/DenunciaButton";
 import { fetchSongById } from "../../../services/songs";
 import { useParams } from "react-router-dom";
 
@@ -96,7 +97,7 @@ const SongDetails = ({ onSongClick }) => {
                     onClick={() => onSongClick?.(song)}
                 />
 
-                <Box sx={{ flex: 1, minWidth: 220, textAlign: "center" }}>
+                <Box sx={{ flex: 1, minWidth: 220, textAlign: "left" }}>
                     <Box
                         sx={{
                             display: "flex",
@@ -108,11 +109,10 @@ const SongDetails = ({ onSongClick }) => {
                         <Typography variant="h4" sx={{ wordBreak: "break-word", flex: 1 }}>
                             {song.titulo}
                         </Typography>
-                        <LikeButton
-                            songId={song.id}
-                            initialLiked={song.has_liked}
-                            initialLikeCount={song.total_likes}
-                        />
+
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                            <DenunciaButton cancionId={song.id} />
+                        </Box>
                     </Box>
                     <Typography variant="subtitle1">
                         <strong>Artista:</strong> {song.user?.nombre}
@@ -128,7 +128,7 @@ const SongDetails = ({ onSongClick }) => {
                         <strong>Estado:</strong>{" "}
                         {song.active ? "Activa" : "Inactiva"}
                     </Typography>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 2, justifyContent: "center" }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                         <Typography variant="subtitle1">
                             <strong>Puntuación media:</strong>
                         </Typography>

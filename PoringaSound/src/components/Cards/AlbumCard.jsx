@@ -3,7 +3,7 @@ import Portada from "../LazyImages/Portada";
 import { useNavigate } from "react-router-dom";
 import InfoButton from "../Filters/InfoButton";
 
-const AlbumCard = ({ album, apiUrl }) => {
+const AlbumCard = ({ album, apiUrl, onAlbumClick }) => {
     const navigate = useNavigate();
     const theme = useTheme();
 
@@ -13,7 +13,6 @@ const AlbumCard = ({ album, apiUrl }) => {
     return (
         <Paper
             elevation={3}
-            onClick={() => navigate(`/album/${album.id}`)} 
             sx={{
                 width: { xs: 120, sm: 140, md: 160 },
                 height: "auto",
@@ -41,7 +40,7 @@ const AlbumCard = ({ album, apiUrl }) => {
                     alt={album.titulo}
                     width="100%"
                     height="100%"
-                    hover={false}
+                    onClick={() => onAlbumClick && onAlbumClick(album.id)}
                     style={{ objectFit: "cover" }}
                 />
             </Box>

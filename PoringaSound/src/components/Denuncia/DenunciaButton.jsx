@@ -17,7 +17,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { getToken } from "../../services/auth";
 import { createDenuncia } from "../../services/denuncias";
 
-const DenunciaButton = ({ denunciableId, denunciableType, iconStyle = {} }) => {
+const DenunciaButton = ({ cancionId, iconStyle = {} }) => {
   const isAuthenticated = !!getToken();
   if (!isAuthenticated) return null;
 
@@ -39,8 +39,7 @@ const DenunciaButton = ({ denunciableId, denunciableType, iconStyle = {} }) => {
 
     try {
       await createDenuncia({
-        denunciable_id: denunciableId,
-        denunciable_type: denunciableType,
+        cancion_id: cancionId,
         motivo,
       });
       handleClose();

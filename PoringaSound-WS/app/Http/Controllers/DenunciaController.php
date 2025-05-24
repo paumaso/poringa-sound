@@ -26,6 +26,7 @@ class DenunciaController extends Controller
 
         $map = [
             'cancion' => \App\Models\Cancion::class,
+            'album' => \App\Models\Album::class,
             'comentario' => \App\Models\Interaccion::class,
         ];
 
@@ -36,7 +37,7 @@ class DenunciaController extends Controller
         }
 
         $denuncia = Denuncia::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'denunciable_id' => $request->denunciable_id,
             'denunciable_type' => $map[$tipo],
             'motivo' => $request->motivo,
@@ -51,7 +52,9 @@ class DenunciaController extends Controller
         $denuncia = Denuncia::findOrFail($id);
         $denunciado = $denuncia->denunciable;
 
-        $denunciado->delete();
+        if ($denunciado) {
+            $denunciado->delete();
+        }
 
         $denuncia->estado = 'aceptada';
         $denuncia->save();

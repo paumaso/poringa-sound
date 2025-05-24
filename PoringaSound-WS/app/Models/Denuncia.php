@@ -11,8 +11,7 @@ class Denuncia extends Model
 
     protected $fillable = [
         'user_id',
-        'denunciable_id',
-        'denunciable_type',
+        'cancion_id',
         'motivo',
         'estado',
     ];
@@ -22,8 +21,8 @@ class Denuncia extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function denunciable()
+    public function cancion()
     {
-        return $this->morphTo();
+        return $this->belongsTo(Cancion::class, 'cancion_id');
     }
 }

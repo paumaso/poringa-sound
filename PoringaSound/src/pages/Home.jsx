@@ -15,6 +15,7 @@ import SongCard from "../components/Cards/SongCard";
 import AlbumCard from "../components/Cards/AlbumCard";
 import ArtistCard from "../components/Cards/ArtistCard";
 
+// --- Estilos ---
 const scrollContainerStyles = {
     display: "flex",
     overflowX: "auto",
@@ -74,7 +75,7 @@ const itemBoxStyles = {
 };
 
 // --- Componente principal ---
-const Home = ({ onSongClick, onDetailsClick }) => {
+const Home = ({ onSongClick, onAlbumClick, onDetailsClick }) => {
     const [canciones, setCanciones] = useState([]);
     const [albums, setAlbums] = useState([]);
     const [artistas, setArtistas] = useState([]);
@@ -92,6 +93,7 @@ const Home = ({ onSongClick, onDetailsClick }) => {
     const navigate = useNavigate();
     const scrollByAmount = 300;
 
+    // --- Scroll helpers ---
     const smoothScroll = (element, target, duration = 400) => {
         const start = element.scrollLeft;
         const change = target - start;
@@ -121,10 +123,10 @@ const Home = ({ onSongClick, onDetailsClick }) => {
         }
     };
 
+    // --- Fetchers ---
     const fetchCanciones = async () => {
         setLoading(true);
         try {
-            const token = getToken();
             const data = await fetchAllSongs({ page, perPage: 12, orden: "interacciones", direccion: "desc" });
             setCanciones(data?.canciones?.data ?? data?.data ?? []);
             setTotalPages(data?.last_page ?? 1);
@@ -162,7 +164,18 @@ const Home = ({ onSongClick, onDetailsClick }) => {
         fetchArtistas();
     }, [page]);
 
-    const renderSection = (title, items, loading, CardComponent, scrollRef, scrollLeft, scrollRight) => (
+    // --- Render helpers ---
+    const renderSection = ({
+        title,
+        items,
+        loading,
+        CardComponent,
+        scrollRef,
+        onCardClick,
+        onDetailsClick,
+        scrollLeft,
+        scrollRight,
+    }) => (
         <Box position="relative" width="100%" mb={4} px={{ xs: 1, sm: 3 }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" px={1} mt={3} mb={2}>
                 <Typography variant="h5" fontWeight={500}>
@@ -195,10 +208,10 @@ const Home = ({ onSongClick, onDetailsClick }) => {
                     items.map((item) => (
                         <Box key={item.id} sx={itemBoxStyles}>
                             <CardComponent
-                                {...(title === 'Canciones'
+                                {...(title === "Canciones"
                                     ? { cancion: item, onSongClick, onDetailsClick }
-                                    : title === 'Álbumes'
-                                        ? { album: item }
+                                    : title === "Álbumes"
+                                        ? { album: item, onAlbumClick }
                                         : { artist: item })}
                                 apiUrl={apiUrl}
                             />
@@ -212,19 +225,39 @@ const Home = ({ onSongClick, onDetailsClick }) => {
         </Box>
     );
 
+    // --- Render ---
     return (
         <Box width="100%">
-            {renderSection("Canciones", canciones, loading, SongCard, scrollRefSongs,
-                () => scrollHandlers(scrollRefSongs, "left"),
-                () => scrollHandlers(scrollRefSongs, "right"))}
-
-            {renderSection("Álbumes", albums, albumsLoading, AlbumCard, scrollRefAlbums,
-                () => scrollHandlers(scrollRefAlbums, "left"),
-                () => scrollHandlers(scrollRefAlbums, "right"))}
-
-            {renderSection("Artistas", artistas, artistasLoading, ArtistCard, scrollRefArtists,
-                () => scrollHandlers(scrollRefArtists, "left"),
-                () => scrollHandlers(scrollRefArtists, "right"))}
+            {renderSection({
+                title: "Canciones",
+                items: canciones,
+                loading,
+                CardComponent: SongCard,
+                scrollRef: scrollRefSongs,
+                onCardClick: onSongClick,
+                onDetailsClick,
+                scrollLeft: () => scrollHandlers(scrollRefSongs, "left"),
+                scrollRight: () => scrollHandlers(scrollRefSongs, "right"),
+            })}
+            {renderSection({
+                title: "Álbumes",
+                items: albums,
+                loading: albumsLoading,
+                CardComponent: AlbumCard,
+                scrollRef: scrollRefAlbums,
+                onCardClick: onAlbumClick,
+                scrollLeft: () => scrollHandlers(scrollRefAlbums, "left"),
+                scrollRight: () => scrollHandlers(scrollRefAlbums, "right"),
+            })}
+            {renderSection({
+                title: "Artistas",
+                items: artistas,
+                loading: artistasLoading,
+                CardComponent: ArtistCard,
+                scrollRef: scrollRefArtists,
+                scrollLeft: () => scrollHandlers(scrollRefArtists, "left"),
+                scrollRight: () => scrollHandlers(scrollRefArtists, "right"),
+            })}
         </Box>
     );
 };

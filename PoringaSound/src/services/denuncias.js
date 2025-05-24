@@ -1,7 +1,7 @@
 import { getToken } from "./auth";
 const API_URL = import.meta.env.VITE_API_URL;
 
-export const createDenuncia = async ({ denunciable_id, denunciable_type, motivo }) => {
+export const createDenuncia = async ({ cancion_id, motivo }) => {
   try {
     const token = getToken();
     const response = await fetch(`${API_URL}/denuncias`, {
@@ -10,9 +10,8 @@ export const createDenuncia = async ({ denunciable_id, denunciable_type, motivo 
         Authorization: `Bearer ${token}`,
         Accept: "application/json",
         "Content-Type": "application/json",
-
       },
-      body: JSON.stringify({ denunciable_id, denunciable_type, motivo }),
+      body: JSON.stringify({ cancion_id, motivo }),
     });
 
     const data = await response.json();

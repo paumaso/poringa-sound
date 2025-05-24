@@ -5,7 +5,6 @@ import { AuthProvider } from './context/AuthContext'
 import PoringaSound from './pages/PoringaSound';
 import { PageProvider } from './context/PageContext'
 
-import { Button } from '@mui/material';
 
 function App() {
   return (
