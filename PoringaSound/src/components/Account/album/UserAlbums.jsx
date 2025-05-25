@@ -29,6 +29,9 @@ import Portada from "../../LazyImages/Portada";
 import { fetchAlbumsByUserId, fetchDeleteAlbum } from "../../../services/albums";
 import EditAlbumDialog from "./EditAlbumDialog";
 
+import Toolbar from "../../Filters/Toolbar";
+
+
 const UserAlbums = ({ userId, reloadAlbums, onAlbumsUpdated, onAlbumClick }) => {
     const apiUrl = import.meta.env.VITE_STORAGE_URL;
     const navigate = useNavigate();
@@ -42,6 +45,7 @@ const UserAlbums = ({ userId, reloadAlbums, onAlbumsUpdated, onAlbumClick }) => 
     const [perPage] = useState(6);
     const [totalPages, setTotalPages] = useState(1);
     const [search, setSearch] = useState("");
+    const [direccion, setDireccion] = useState("asc");
 
     const [albumToDelete, setAlbumToDelete] = useState(null);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -126,6 +130,12 @@ const UserAlbums = ({ userId, reloadAlbums, onAlbumsUpdated, onAlbumClick }) => 
         setExpandedAlbumId(expandedAlbumId === albumId ? null : albumId);
     };
 
+    const handleResetFilters = () => {
+        setSearch("");
+        setDireccion("asc");
+        setPage(1);
+    };
+
     if (error) {
         return <Box p={3}><Typography color="error">{error}</Typography></Box>;
     }
@@ -133,11 +143,18 @@ const UserAlbums = ({ userId, reloadAlbums, onAlbumsUpdated, onAlbumClick }) => 
     return (
         <Box sx={{ p: 2 }}>
             <Box display="flex" gap={2} mb={2} alignItems="center">
-                <Search
-                    value={search}
-                    onChange={e => { setSearch(e.target.value); setPage(1); }}
-                    placeholder="Buscar álbum"
-                    sx={{ minWidth: 180, maxWidth: 220, bgcolor: "#fff", borderRadius: 2, boxShadow: 1 }}
+                <Toolbar
+                    page={page}
+                    totalPages={totalPages}
+                    onPrevPage={() => setPage(page - 1)}
+                    onNextPage={() => setPage(page + 1)}
+                    showSearch={true}
+                    showDireccion={true}
+                    searchValue={search}
+                    onSearchChange={e => { setSearch(e.target.value); setPage(1); }}
+                    direccionValue={direccion}
+                    onDireccionChange={e => { setDireccion(e.target.value); setPage(1); }}
+                    onResetFilters={handleResetFilters}
                 />
             </Box>
 
@@ -269,12 +286,6 @@ const UserAlbums = ({ userId, reloadAlbums, onAlbumsUpdated, onAlbumClick }) => 
                     </TransitionGroup>
                 </List>
             )}
-
-            <PaginationBar
-                page={page}
-                totalPages={totalPages}
-                onPageChange={setPage}
-            />
 
             <DeleteDialog
                 open={deleteDialogOpen}

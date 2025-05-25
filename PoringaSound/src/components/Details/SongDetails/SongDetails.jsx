@@ -84,20 +84,35 @@ const SongDetails = ({ onSongClick }) => {
                 <Portada
                     src={`${apiUrl}${song.portada}`}
                     alt={song.titulo}
-                    width={200}
-                    height={200}
+                    width={240}
+                    height={240}
                     hover={false}
                     style={{
                         borderRadius: 12,
                         objectFit: "cover",
                         boxShadow: "0 4px 24px 0 rgba(0,0,0,0.08)",
-                        maxWidth: 200,
+                        width: "100%",
+                        height: "100%",
+                        aspectRatio: "1 / 1",
+                        maxWidth: 320,
                         minWidth: 140,
+                        maxHeight: 320,
+                        minHeight: 140,
+                    }}
+                    sx={{
+                        width: { xs: 260, sm: 200, md: 220, lg: 240 },
+                        height: { xs: 260, sm: 200, md: 220, lg: 240 },
+                        maxWidth: { xs: 320, sm: 200, md: 220, lg: 240 },
+                        maxHeight: { xs: 320, sm: 200, md: 220, lg: 240 },
+                        minWidth: 140,
+                        minHeight: 140,
+                        aspectRatio: "1 / 1",
+                        margin: "0 auto"
                     }}
                     onClick={() => onSongClick?.(song)}
                 />
 
-                <Box sx={{ flex: 1, minWidth: 220, textAlign: "left" }}>
+                <Box sx={{ flex: 1, minWidth: 220, textAlign: "left", m: 2 }}>
                     <Box
                         sx={{
                             display: "flex",

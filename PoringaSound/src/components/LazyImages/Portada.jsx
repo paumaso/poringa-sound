@@ -5,6 +5,18 @@ import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 
+const isValidSrc = (src) => {
+    if (!src || typeof src !== "string") return false;
+    const s = src.trim().toLowerCase();
+    return (
+        s !== "" &&
+        s !== "null" &&
+        s !== "undefined" &&
+        !s.endsWith("/null") &&
+        !s.endsWith("/undefined")
+    );
+};
+
 const Portada = ({
     src,
     alt,
@@ -16,61 +28,38 @@ const Portada = ({
     hover = true,
 }) => {
     const [isHovered, setIsHovered] = useState(false);
+    const hasImage = isValidSrc(src);
 
-    const hasImage = !!src;
-    const showHover = hover && isHovered;
-
-    return (
+     return (
         <Box
             sx={{
                 width,
                 height,
                 position: "relative",
                 overflow: "hidden",
-                cursor: hover && onClick ? "pointer" : "default",
-                backgroundColor: !hasImage ? "#eee" : undefined,
-                pointerEvents: hover ? "auto" : "none",
+                cursor: onClick ? "pointer" : "default",
+                backgroundColor: !hasImage ? "#e0e0e0" : undefined,
+                borderRadius: 2,
                 ...style,
             }}
             onMouseEnter={hover ? () => setIsHovered(true) : undefined}
             onMouseLeave={hover ? () => setIsHovered(false) : undefined}
-            onClick={hover ? onClick : undefined}
+            onClick={onClick}
         >
             {hasImage ? (
-                <>
-                    <LazyLoadImage
-                        src={src}
-                        alt={alt}
-                        width="100%"
-                        height="100%"
-                        effect={effect}
-                        style={{
-                            objectFit: "cover",
-                            width: "100%",
-                            height: "100%",
-                            display: "block",
-                        }}
-                    />
-                    {showHover && (
-                        <Box
-                            sx={{
-                                position: "absolute",
-                                top: 0,
-                                left: 0,
-                                width: "100%",
-                                height: "100%",
-                                backgroundColor: "rgba(0,0,0,0.4)",
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                transition: "opacity 0.3s ease",
-                                opacity: 1,
-                            }}
-                        >
-                            <PlayCircleIcon sx={{ color: "white", fontSize: 48, cursor: "pointer" }} />
-                        </Box>
-                    )}
-                </>
+                <LazyLoadImage
+                    src={src}
+                    alt={alt}
+                    width="100%"
+                    height="100%"
+                    effect={effect}
+                    style={{
+                        objectFit: "cover",
+                        width: "100%",
+                        height: "100%",
+                        display: "block",
+                    }}
+                />
             ) : (
                 <Box
                     sx={{
@@ -82,6 +71,25 @@ const Portada = ({
                     }}
                 >
                     <MusicNoteIcon sx={{ color: "#9e9e9e", fontSize: 48 }} />
+                </Box>
+            )}
+            {hover && (
+                <Box
+                    sx={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        backgroundColor: isHovered ? "rgba(0,0,0,0.4)" : "rgba(0,0,0,0.08)",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        transition: "opacity 0.3s, background-color 0.3s",
+                        opacity: isHovered ? 1 : 0,
+                    }}
+                >
+                    <PlayCircleIcon sx={{ color: "white", fontSize: 48, cursor: "pointer" }} />
                 </Box>
             )}
         </Box>

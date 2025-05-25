@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Box, IconButton, Tooltip, Typography, Drawer, Stack, Button } from "@mui/material";
+import { Box, IconButton, Tooltip, Typography, Drawer, Stack } from "@mui/material";
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import Search from "./Serch";
 import GeneroSelect from "./GenerosSelect";
 import OrdenSelect from "./OrdenSelect";
@@ -14,12 +15,10 @@ const Toolbar = ({
   onPrevPage,
   onNextPage,
   sx = {},
-  // Props para mostrar/ocultar filtros
-  showSearch = true,
-  showGenero = true,
-  showOrden = true,
-  showDireccion = true,
-  // Valores y handlers de filtros
+  showSearch = false,
+  showGenero = false,
+  showOrden = false,
+  showDireccion = false,
   searchValue,
   onSearchChange,
   generoValue,
@@ -28,24 +27,47 @@ const Toolbar = ({
   onOrdenChange,
   direccionValue,
   onDireccionChange,
+  onResetFilters,
 }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const filtros = (
-    <Stack direction="column" spacing={2} sx={{ p: 2 }}>
-      {showSearch && (
-        <Search value={searchValue} onChange={onSearchChange} placeholder="Buscar..." />
-      )}
-      {showGenero && (
-        <GeneroSelect value={generoValue} onChange={onGeneroChange} />
-      )}
-      {showOrden && (
-        <OrdenSelect value={ordenValue} onChange={onOrdenChange} />
-      )}
-      {showDireccion && (
-        <DireccionSelect value={direccionValue} onChange={onDireccionChange} />
-      )}
-    </Stack>
+    <Box sx={{ width: { xs: 280, sm: 340 }, p: 2, height: "100%", display: "flex", flexDirection: "column" }}>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
+        <Typography variant="h6" sx={{ flex: 1, textAlign: "left" }}>
+          Filtros
+        </Typography>
+        <Tooltip title="Restablecer filtros">
+          <IconButton
+            onClick={() => {
+              onResetFilters && onResetFilters();
+            }}
+            sx={{
+              color: "text.secondary",
+              "&:hover": {
+                color: "primary.main",
+              },
+            }}
+          >
+            <RestartAltIcon />
+          </IconButton>
+        </Tooltip>
+      </Box>
+      <Stack direction="column" spacing={2} sx={{ flex: 1, overflowY: "auto" }}>
+        {showSearch && (
+          <Search value={searchValue} onChange={onSearchChange} placeholder="Buscar..." />
+        )}
+        {showGenero && (
+          <GeneroSelect value={generoValue} onChange={onGeneroChange} />
+        )}
+        {showOrden && (
+          <OrdenSelect value={ordenValue} onChange={onOrdenChange} />
+        )}
+        {showDireccion && (
+          <DireccionSelect value={direccionValue} onChange={onDireccionChange} />
+        )}
+      </Stack>
+    </Box>
   );
 
   return (
@@ -58,7 +80,7 @@ const Toolbar = ({
         ...sx,
       }}
     >
-      {/* Botón de filtros */}
+
       <Tooltip title="Filtros">
         <IconButton
           onClick={() => setDrawerOpen(true)}
@@ -73,26 +95,19 @@ const Toolbar = ({
       </Tooltip>
 
       <Drawer
-        anchor="bottom"
+        anchor="right"
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        PaperProps={{ sx: { borderRadius: "16px 16px 0 0", zIndex: 20000 } }}
+        PaperProps={{
+          sx: {
+            borderRadius: { xs: 0, sm: "16px 0 0 16px" },
+            zIndex: 20000,
+            width: { xs: 280, sm: 340 },
+            maxWidth: "90vw",
+          }
+        }}
       >
         {filtros}
-        <Box sx={{ p: 2, textAlign: "right" }}>
-          <Button
-            onClick={() => setDrawerOpen(false)}
-            sx={{
-              color: "white",
-              bgcolor: "#1976d2",
-              "&:hover": {
-                bgcolor: "#115293",
-              },
-            }}
-          >
-            Aplicar
-          </Button>
-        </Box>
       </Drawer>
 
       {/* Paginación */}

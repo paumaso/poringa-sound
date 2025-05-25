@@ -63,7 +63,7 @@ const PoringaSound = () => {
                     <Route path="/album/:id" element={<AlbumDetails onSongClick={handleSongClick} />} />
                     <Route path="/artist/:id" element={<ArtistDetails onSongClick={handleSongClick} />} />
                     <Route path="/songs" element={<AllSongs onSongClick={handleSongClick} />} />
-                    <Route path="/albums" element={<AllAlbums />} />
+                    <Route path="/albums" element={<AllAlbums onAlbumClick={handleAlbumClick}/>} />
                     <Route path="/artists" element={<AllArtistas />}></Route>
 
                     <Route

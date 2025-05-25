@@ -34,7 +34,7 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
-    
+
     public function interacciones()
     {
         return $this->hasMany(Interaccion::class);
@@ -43,5 +43,10 @@ class User extends Authenticatable
     public function canciones()
     {
         return $this->hasMany(Cancion::class);
+    }
+
+    public function albums()
+    {
+        return $this->hasMany(\App\Models\Album::class, 'user_id');
     }
 }

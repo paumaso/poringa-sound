@@ -41,11 +41,15 @@ class CancionController extends Controller
         }
 
         if ($albumId) {
-            $canciones->whereHas('albumes', function ($q) use ($albumId) {
-                $q->where('album_id', $albumId);
-            });
-
-            $canciones->orderBy('album_cancion.orden', 'asc');
+            $canciones->orderByRaw("
+        CASE 
+            WHEN EXISTS (
+                SELECT 1 FROM album_cancion 
+                WHERE album_cancion.cancion_id = canciones.id 
+                AND album_cancion.album_id = ?
+            ) THEN 0 ELSE 1 END,
+        COALESCE((SELECT album_cancion.orden FROM album_cancion WHERE album_cancion.cancion_id = canciones.id AND album_cancion.album_id = ?), 99999) ASC
+    ", [$albumId, $albumId]);
         }
 
         if ($orden === 'nombre') {

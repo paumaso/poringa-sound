@@ -23,14 +23,14 @@ import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import AlbumIcon from '@mui/icons-material/Album';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import TravelExploreIcon from '@mui/icons-material/TravelExplore';
-
+import ReportIcon from '@mui/icons-material/Report';
 import logo from "../../../assets/logo.png";
 
 export default function MenuDrawer({ onOpenAuthModal }) {
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
     const [open, setOpen] = React.useState(false);
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, user } = useAuth();
 
 
     const toggleDrawer = (newOpen) => () => {
@@ -56,6 +56,17 @@ export default function MenuDrawer({ onOpenAuthModal }) {
                         <ListItemText primary="Home" />
                     </ListItemButton>
                 </ListItem>
+
+                {isAuthenticated && user?.tipo === "admin" && (
+                    <ListItem disablePadding>
+                        <ListItemButton onClick={() => navigate("/admin")}>
+                            <ListItemIcon>
+                                <ReportIcon />
+                            </ListItemIcon>
+                            <ListItemText primary={t("Gestionar denuncias")} />
+                        </ListItemButton>
+                    </ListItem>
+                )}
 
                 <ListItem disablePadding>
                     {isAuthenticated ? (

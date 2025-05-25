@@ -85,7 +85,7 @@ const ComentsBox = ({ coments = [], songId, onNewComent }) => {
             <Avatar
               src={user?.imagen_perfil ? apiUrl + user.imagen_perfil : undefined}
               alt={user?.nombre}
-              sx={{bgcolor: "primary.main"}}
+              sx={{ bgcolor: "primary.main" }}
             >
               {!user?.imagen_perfil && getInitials(user?.nombre)}
             </Avatar>
@@ -98,6 +98,12 @@ const ComentsBox = ({ coments = [], songId, onNewComent }) => {
               value={comentario}
               onChange={(e) => setComentario(e.target.value)}
               disabled={sending}
+              onKeyDown={e => {
+                if (e.key === "Enter" && !e.shiftKey && comentario.trim()) {
+                  e.preventDefault();
+                  handleSend();
+                }
+              }}
             />
           </Box>
 

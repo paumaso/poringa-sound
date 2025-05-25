@@ -51,6 +51,8 @@ class AuthController extends Controller
     public function getUserById(Request $request, $id)
     {
         $perPage = $request->query('per_page', 10);
+        $albumsPerPage = $request->query('albums_per_page', $perPage);
+
         $user = User::find($id);
 
         if (!$user) {
@@ -62,8 +64,15 @@ class AuthController extends Controller
             ->with('user')
             ->paginate($perPage);
 
-        $user->canciones = $canciones;
-        return response()->json($user, 200);
+        $albums = $user->albums()
+            ->with('canciones')
+            ->paginate($albumsPerPage);
+
+        $userData = $user->toArray();
+        $userData['canciones'] = $canciones;
+        $userData['albums'] = $albums;
+
+        return response()->json($userData, 200);
     }
 
     public function register(Request $request)

@@ -23,13 +23,6 @@ import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import EditSongDialog from "./EditSongDialog";
 import DeleteDialog from "../DeleteDialog";
 
-// Importa tus filtros personalizados
-import Search from "../../Filters/Serch";
-import GeneroSelect from "../../Filters/GenerosSelect";
-import OrdenSelect from "../../Filters/OrdenSelect";
-import DireccionSelect from "../../Filters/DireccionSelect";
-import PaginationBar from "../../Filters/PaginationBar";
-
 import Toolbar from "../../Filters/Toolbar";
 
 const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
@@ -114,6 +107,14 @@ const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
     navigate(`/song/${song.id}`);
   };
 
+  const handleResetFilters = () => {
+    setGeneroId("");
+    setSearch("");
+    setOrden("nombre");
+    setDireccion("asc");
+    setPage(1);
+  };
+
   if (error) {
     return (
       <Box p={3}>
@@ -142,6 +143,7 @@ const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
           onOrdenChange={e => { setOrden(e.target.value); setPage(1); }}
           direccionValue={direccion}
           onDireccionChange={e => { setDireccion(e.target.value); setPage(1); }}
+          onResetFilters={handleResetFilters}
         />
       </Box>
 

@@ -10,10 +10,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import SongCard from "../components/Cards/SongCard";
-import Search from "../components/Filters/Serch";
-import GeneroSelect from "../components/Filters/GenerosSelect";
-import DireccionSelect from "../components/Filters/DireccionSelect";
-import OrdenSelect from "../components/Filters/OrdenSelect";
+import Toolbar from "../components/Filters/Toolbar";
 import PaginationBar from "../components/Filters/PaginationBar";
 import { fetchAllSongs } from "../services/songs";
 
@@ -60,89 +57,56 @@ const AllSongs = ({ onSongClick, onDetailsClick }) => {
     setPage(1);
   };
 
+  const handleResetFilters = () => {
+  setFilters({
+    query: "",
+    artista: "",
+    genero_id: "",
+    orden: "nombre",
+    direccion: "asc",
+  });
+  setPage(1);
+};
+
   return (
-    <Box sx={{ px: { xs: 1, md: 4 }, py: 4, maxWidth: 2000, mx: "auto" }}>
-      {/* Barra de filtros scrollable */}
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 2,
-          pb: 3,
-          pt: 1,
-          px: { xs: 0, md: 1 },
-          overflowX: "auto",
-          bgcolor: "#fafbfc",
-          borderRadius: 3,
-          boxShadow: "0 1px 8px 0 rgba(0,0,0,0.04)",
-          mb: 3,
-          scrollbarWidth: "none",
-          "&::-webkit-scrollbar": { display: "none" },
-        }}
-      >
-        <Search
-          value={filters.query}
-          onChange={(e) => handleFilterChange("query", e.target.value)}
-          placeholder="Buscar canción"
-          sx={{
-            minWidth: 160,
-            maxWidth: 220,
-            bgcolor: "#fff",
-            borderRadius: 2,
-            boxShadow: 1,
-            flexShrink: 0,
-          }}
-        />
-        <Search
-          value={filters.artista}
-          onChange={(e) => handleFilterChange("artista", e.target.value)}
-          placeholder="Buscar artista"
-          sx={{
-            minWidth: 140,
-            maxWidth: 200,
-            bgcolor: "#fff",
-            borderRadius: 2,
-            boxShadow: 1,
-            flexShrink: 0,
-          }}
-        />
-        <GeneroSelect
-          value={filters.genero_id}
-          onChange={(e) => handleFilterChange("genero_id", e.target.value)}
-          sx={{
-            minWidth: 120,
-            bgcolor: "#fff",
-            borderRadius: 2,
-            boxShadow: 1,
-            flexShrink: 0,
-          }}
-        />
-        <OrdenSelect
-          value={filters.orden}
-          onChange={(e) => handleFilterChange("orden", e.target.value)}
-          sx={{
-            minWidth: 120,
-            bgcolor: "#fff",
-            borderRadius: 2,
-            boxShadow: 1,
-            flexShrink: 0,
-          }}
-        />
-        <DireccionSelect
-          value={filters.direccion}
-          onChange={(e) => handleFilterChange("direccion", e.target.value)}
-          sx={{
-            minWidth: 120,
-            bgcolor: "#fff",
-            borderRadius: 2,
-            boxShadow: 1,
-            flexShrink: 0,
-          }}
+    <Box sx={{ px: { xs: 1, md: 4 }, py: 4, mx: "auto" }}>
+      <Box sx={{
+        display: "flex",
+        alignItems: "center",
+        gap: 2,
+        pb: 3,
+        pt: 1,
+        px: { xs: 0, md: 1 },
+        overflowX: "auto",
+        bgcolor: "#fafbfc",
+        borderRadius: 3,
+        boxShadow: "0 1px 8px 0 rgba(0,0,0,0.04)",
+        mb: 3,
+        scrollbarWidth: "none",
+        "&::-webkit-scrollbar": { display: "none" },
+      }}>
+        <Toolbar
+          page={page}
+          totalPages={pagination.last_page || 1}
+          onPrevPage={() => setPage(page - 1)}
+          onNextPage={() => setPage(page + 1)}
+          showSearch={true}
+          showGenero={true}
+          showOrden={true}
+          showDireccion={true}
+          searchValue={filters.query}
+          onSearchChange={e => handleFilterChange("query", e.target.value)}
+          generoValue={filters.genero_id}
+          onGeneroChange={e => handleFilterChange("genero_id", e.target.value)}
+          ordenValue={filters.orden}
+          onOrdenChange={e => handleFilterChange("orden", e.target.value)}
+          direccionValue={filters.direccion}
+          onDireccionChange={e => handleFilterChange("direccion", e.target.value)}
+          onResetFilters={handleResetFilters}
         />
       </Box>
 
-      {/* Grid canciones */}
-      <Box sx={{ width: "100%" }}>
+      <Box sx={{ width: "100%", px: { xs: 0, md: 4 }, py: 2 }}>
         {loading ? (
           <Box
             sx={{
@@ -206,15 +170,6 @@ const AllSongs = ({ onSongClick, onDetailsClick }) => {
             </Grid>
           </Fade>
         )}
-
-        {/* Paginación */}
-        <Box sx={{ mt: 4, display: "flex", justifyContent: "center" }}>
-          <PaginationBar
-            page={page}
-            totalPages={pagination.last_page || 1}
-            onPageChange={setPage}
-          />
-        </Box>
       </Box>
     </Box>
   );

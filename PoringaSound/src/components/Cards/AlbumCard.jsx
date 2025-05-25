@@ -1,18 +1,17 @@
-import { Paper, Box, Typography, Stack, Avatar, useTheme } from "@mui/material";
+import { Paper, Box, Typography, Stack, Avatar, Chip } from "@mui/material";
+import AlbumIcon from "@mui/icons-material/Album";
 import Portada from "../LazyImages/Portada";
 import { useNavigate } from "react-router-dom";
-import InfoButton from "../Filters/InfoButton";
 
 const AlbumCard = ({ album, apiUrl, onAlbumClick }) => {
     const navigate = useNavigate();
-    const theme = useTheme();
-
-    const avatarSrc = album.user?.imagen_perfil ? `${apiUrl}${album.user.imagen_perfil}` : null;
-    const artistInitial = album.user?.nombre?.charAt(0).toUpperCase() || "?";
+    const artist = album.user;
+    const avatarSrc = artist?.imagen_perfil ? `${apiUrl}${artist.imagen_perfil}` : null;
+    const artistInitial = artist?.nombre?.charAt(0).toUpperCase() || "?";
 
     return (
         <Paper
-            elevation={3}
+            elevation={4}
             sx={{
                 width: { xs: 120, sm: 140, md: 160 },
                 height: "auto",
@@ -20,33 +19,57 @@ const AlbumCard = ({ album, apiUrl, onAlbumClick }) => {
                 flexDirection: "column",
                 borderRadius: 2,
                 overflow: "hidden",
+                bgcolor: "#f0f4ff",
+                position: "relative",
                 cursor: "pointer",
                 transition: "transform 0.2s ease",
                 "&:hover": {
-                    transform: "scale(1.02)",
+                    transform: "scale(1.04)",
+                    boxShadow: 4,
                 },
             }}
         >
+            <Chip
+                icon={<AlbumIcon sx={{ color: "primary.main" }} />}
+                label="Álbum"
+                size="small"
+                sx={{
+                    position: "absolute",
+                    top: 8,
+                    left: 8,
+                    bgcolor: "white",
+                    color: "primary.main",
+                    fontWeight: 700,
+                    zIndex: 2,
+                }}
+            />
+
+            {/* Portada */}
             <Box
                 sx={{
                     width: "100%",
                     aspectRatio: "1 / 1",
                     position: "relative",
-                    backgroundColor: "#eee",
+                    cursor: "pointer",
                 }}
+                onClick={() => onAlbumClick && onAlbumClick(album.id)}
             >
                 <Portada
                     src={`${apiUrl}${album.portada}`}
                     alt={album.titulo}
                     width="100%"
                     height="100%"
-                    onClick={() => onAlbumClick && onAlbumClick(album.id)}
-                    style={{ objectFit: "cover" }}
+                    hover={true}
+                    style={{
+                        objectFit: "cover",
+                        borderRadius: 0,
+                    }}
                 />
             </Box>
 
             <Box sx={{ px: 1, py: 0.75, flexGrow: 1 }}>
                 <Typography
+                    onClick={() => navigate(`/album/${album.id}`)}
                     variant="subtitle1"
                     sx={{
                         fontWeight: 500,
@@ -56,32 +79,34 @@ const AlbumCard = ({ album, apiUrl, onAlbumClick }) => {
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
+                        cursor: "pointer",
+                        "&:hover": { color: "primary.main", textDecoration: "underline" }
                     }}
                 >
-                    {album.titulo}
+                    {album?.titulo || "Álbum sin título"}
                 </Typography>
 
                 <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0 }}>
-                    {avatarSrc ? (
-                        <Avatar
-                            src={avatarSrc}
-                            alt={album.user?.nombre}
-                            sx={{ width: 26, height: 26 }}
-                        />
-                    ) : (
-                        <Avatar
-                            sx={{
-                                width: 26,
-                                height: 26,
-                                bgcolor: theme.palette.primary.main,
-                                fontSize: "0.75rem",
-                                fontWeight: 600,
-                            }}
-                        >
-                            {artistInitial}
-                        </Avatar>
-                    )}
-
+                    <Avatar
+                        src={avatarSrc}
+                        alt={artist?.nombre}
+                        sx={{
+                            width: 26,
+                            height: 26,
+                            bgcolor: "primary.main",
+                            fontSize: "0.75rem",
+                            fontWeight: 600,
+                            cursor: "pointer",
+                            transition: "transform 0.18s cubic-bezier(.4,2,.6,1)",
+                            "&:hover": {
+                                transform: "scale(1.18)",
+                                boxShadow: 2,
+                            },
+                        }}
+                        onClick={() => navigate(`/artist/${artist?.id}`)}
+                    >
+                        {artistInitial}
+                    </Avatar>
                     <Typography
                         variant="body2"
                         color="text.secondary"
@@ -93,16 +118,10 @@ const AlbumCard = ({ album, apiUrl, onAlbumClick }) => {
                             minWidth: 0,
                             flexGrow: 1,
                         }}
+                        onClick={() => navigate(`/artist/${artist?.id}`)}
                     >
-                        {album.user?.nombre || "Autor desconocido"}
+                        {artist?.nombre || "Artista desconocido"}
                     </Typography>
-
-                    <InfoButton
-                        onClick={() => navigate(`/album/${album.id}`)}
-                        label="Detalles del álbum"
-                        color="primary"
-                        size="small"
-                    />
                 </Stack>
             </Box>
         </Paper>

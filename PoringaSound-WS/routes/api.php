@@ -25,7 +25,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Rutas de autenticación
     Route::post('logout', [AuthController::class, 'logout']);
     Route::get('me', [AuthController::class, 'getMe']);
-    
+
     // user
     Route::prefix('user')->group(function () {
         Route::post('/{id}', [AuthController::class, 'updateUser']);
@@ -67,6 +67,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::middleware('admin-only')->group(function () {
             Route::get('/', [DenunciaController::class, 'getDenuncias']);
+            Route::get('/pendientes', [DenunciaController::class, 'getDenunciasPendientes']);
             Route::post('/{id}/aceptar', [DenunciaController::class, 'aceptarDenuncia']);
             Route::post('/{id}/rechazar', [DenunciaController::class, 'rechazarDenuncia']);
         });

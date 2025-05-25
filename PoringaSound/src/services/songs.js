@@ -12,7 +12,7 @@ const handleResponseError = async (response) => {
     return response.json();
 };
 
-export const fetchAllSongs = async ({ page = 1, perPage = 10, query = "", genero_id = "", artista = "", orden = "nombre", direccion = "asc" } = {}) => {
+export const fetchAllSongs = async ({ page = 1, perPage = 10, query = "", genero_id = "", artista = "", album_id = "", orden = "nombre", direccion = "asc" } = {}) => {
     try {
         const token = getToken();
         const params = new URLSearchParams();
@@ -21,9 +21,10 @@ export const fetchAllSongs = async ({ page = 1, perPage = 10, query = "", genero
         if (query) params.append("query", query);
         if (genero_id) params.append("genero_id", genero_id);
         if (artista) params.append("artista", artista);
+        if (album_id) params.append("album_id", album_id);
         if (orden) params.append("orden", orden);
         if (direccion) params.append("direccion", direccion);
-
+        console.log(params.toString())
         const response = await fetch(
             `${API_URL}/public/canciones/all?${params.toString()}`,
             {

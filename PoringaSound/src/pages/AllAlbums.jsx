@@ -9,10 +9,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import AlbumCard from "../components/Cards/AlbumCard";
-import Search from "../components/Filters/Serch";
-import GeneroSelect from "../components/Filters/GenerosSelect";
-import OrdenSelect from "../components/Filters/OrdenSelect";
-import DireccionSelect from "../components/Filters/DireccionSelect";
+import Toolbar from "../components/Filters/Toolbar";
 import PaginationBar from "../components/Filters/PaginationBar";
 import { fetchAllAlbums } from "../services/albums";
 
@@ -59,6 +56,17 @@ const AllAlbums = ({ onAlbumClick }) => {
     setPage(1);
   };
 
+  const handleResetFilters = () => {
+  setFilters({
+    titulo: "",
+    artista: "",
+    genero_id: "",
+    orden: "titulo",
+    direccion: "asc",
+  });
+  setPage(1);
+};
+
   return (
     <Box sx={{ px: { xs: 1, md: 4 }, py: 4, maxWidth: 2000, mx: "auto" }}>
       <Box
@@ -78,42 +86,22 @@ const AllAlbums = ({ onAlbumClick }) => {
           "&::-webkit-scrollbar": { display: "none" },
         }}
       >
-        <Search
-          value={filters.titulo}
-          onChange={(e) => handleFilterChange("titulo", e.target.value)}
-          placeholder="Buscar álbum"
-          sx={{
-            minWidth: 160,
-            maxWidth: 220,
-            bgcolor: "#fff",
-            borderRadius: 2,
-            boxShadow: 1,
-            flexShrink: 0,
-          }}
-        />
-        <Search
-          value={filters.artista}
-          onChange={(e) => handleFilterChange("artista", e.target.value)}
-          placeholder="Buscar artista"
-          sx={{
-            minWidth: 140,
-            maxWidth: 200,
-            bgcolor: "#fff",
-            borderRadius: 2,
-            boxShadow: 1,
-            flexShrink: 0,
-          }}
-        />
-        <DireccionSelect
-          value={filters.direccion}
-          onChange={(e) => handleFilterChange("direccion", e.target.value)}
-          sx={{
-            minWidth: 120,
-            bgcolor: "#fff",
-            borderRadius: 2,
-            boxShadow: 1,
-            flexShrink: 0,
-          }}
+        <Toolbar
+          page={page}
+          totalPages={pagination.last_page || 1}
+          onPrevPage={() => setPage(page - 1)}
+          onNextPage={() => setPage(page + 1)}
+          showSearch={true}
+          showGenero={false}
+          showOrden={true}
+          showDireccion={true}
+          searchValue={filters.titulo}
+          onSearchChange={e => handleFilterChange("titulo", e.target.value)}
+          ordenValue={filters.orden}
+          onOrdenChange={e => handleFilterChange("orden", e.target.value)}
+          direccionValue={filters.direccion}
+          onDireccionChange={e => handleFilterChange("direccion", e.target.value)}
+          onResetFilters={handleResetFilters}
         />
       </Box>
 
@@ -180,14 +168,6 @@ const AllAlbums = ({ onAlbumClick }) => {
             </Grid>
           </Fade>
         )}
-
-        <Box sx={{ mt: 4, display: "flex", justifyContent: "center" }}>
-          <PaginationBar
-            page={page}
-            totalPages={pagination.last_page || 1}
-            onPageChange={setPage}
-          />
-        </Box>
       </Box>
     </Box>
   );

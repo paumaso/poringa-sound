@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 import LikeButton from "../../Interacciones/LikeButton";
 import RatingSong from "../../Interacciones/RatingSong";
-import ComentsBox from "../../Interacciones/ComentsBox";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import SkipNextIcon from "@mui/icons-material/SkipNext";
@@ -23,10 +22,6 @@ import { fetchSongById, fetchAllSongs } from "../../../services/songs";
 const AudioPlayer = ({
     initialSongId,
     filters = {},
-    songsList = null,
-    onNext,
-    onPrev,
-    albumMode = false
 }) => {
     const apiUrl = import.meta.env.VITE_STORAGE_URL;
     const audioRef = useRef(null);
@@ -34,133 +29,64 @@ const AudioPlayer = ({
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
+    const [total, setTotal] = useState(0);
 
-    const [songsPage, setSongsPage] = useState(songsList || []);
-    const [page, setPage] = useState(1);
-    const perPage = 10;
-
-    const [currentIndex, setCurrentIndex] = useState(0);
     const [song, setSong] = useState(null);
+    const [page, setPage] = useState(1);
+    const perPage = 1;
 
     useEffect(() => {
-        if (songsList) {
-            setSongsPage(songsList);
-            setPage(1);
-        }
-    }, [songsList]);
-
-    const loadSongsPage = async (pageToLoad) => {
-        if (songsList) return;
-        try {
+        const cargar = async () => {
             setLoading(true);
-            const data = await fetchAllSongs({ page: pageToLoad, perPage, ...filters });
-            setSongsPage(data.canciones?.data || []);
-            setPage(pageToLoad);
-        } catch (error) {
-            console.error("Error al cargar canciones:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const loadSongByIndex = async (index) => {
-        if (!songsPage.length || index < 0 || index >= songsPage.length) return;
-        if (songsList) {
-            setSong(songsPage[index]);
-            setCurrentIndex(index);
-            setCurrentTime(0);
-            setIsPlaying(false);
-            setLoading(false);
-            return;
-        }
-        const songId = songsPage[index].id;
-        try {
-            setLoading(true);
-            const data = await fetchSongById(songId);
-            setSong(data);
-            setCurrentIndex(index);
-            setCurrentTime(0);
-            setIsPlaying(false);
-        } catch (error) {
-            console.error("Error al cargar canción:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        if (!songsList) {
-            loadSongsPage(1);
-        }
-    }, [JSON.stringify(filters)]);
-
-
-    useEffect(() => {
-        if (songsPage.length === 0) return;
-
-        if (initialSongId) {
-            const idx = songsPage.findIndex((s) => s.id === initialSongId);
-            if (idx !== -1) {
-                if (!song || song.id !== initialSongId) {
-                    loadSongByIndex(idx);
-                }
-                return;
-            }
-        }
-        if (!song) {
-            loadSongByIndex(0);
-        }
-    }, [songsPage, initialSongId]);
-
-    const nextSong = async () => {
-        if (albumMode && onNext) {
-            onNext();
-            return;
-        }
-        if (currentIndex + 1 < songsPage.length) {
-            loadSongByIndex(currentIndex + 1);
-        } else {
-            const nextPage = page + 1;
-            const data = await fetchAllSongs({ page: nextPage, perPage, ...filters });
-            const nextSongs = data.canciones?.data || [];
-            if (nextSongs.length > 0) {
-                setSongsPage(nextSongs);
-                setPage(nextPage);
-                loadSongByIndex(0);
-            } else {
-                const firstPageData = await fetchAllSongs({ page: 1, perPage, ...filters });
-                const firstSongs = firstPageData.canciones?.data || [];
-                if (firstSongs.length > 0) {
-                    setSongsPage(firstSongs);
-                    setPage(1);
-                    loadSongByIndex(0);
-                }
-            }
-        }
-    };
-
-    const prevSong = async () => {
-        if (albumMode && onPrev) {
-            onPrev();
-            return;
-        }
-        if (currentIndex > 0) {
-            loadSongByIndex(currentIndex - 1);
-        } else if (page > 1) {
-            const prevPage = page - 1;
             try {
-                setLoading(true);
-                const data = await fetchAllSongs({ page: prevPage, perPage, ...filters });
-                if (data.canciones && data.canciones.data.length > 0) {
-                    setSongsPage(data.canciones?.data || []);
-                    setPage(prevPage);
-                    loadSongByIndex(data.canciones.data.length - 1);
-                }
+                const data = await fetchAllSongs({ page: 1, perPage, ...filters });
+                const canciones = data.canciones?.data || [];
+                setSong(canciones[0] || null);
+                setPage(1);
+                setTotal(data.canciones?.total || canciones.length);
             } catch (error) {
-                console.error("Error al cargar página anterior:", error);
+                setSong(null);
             } finally {
                 setLoading(false);
             }
+        };
+        cargar();
+    }, [initialSongId, JSON.stringify(filters)]);
+
+    const nextSong = async () => {
+        setLoading(true);
+        try {
+            let nextPage = page + 1;
+            if (nextPage > total) nextPage = 1;
+            const data = await fetchAllSongs({ page: nextPage, perPage, ...filters });
+            const nextSongs = data.canciones?.data || [];
+            if (nextSongs.length > 0) {
+                setSong(nextSongs[0]);
+                setPage(nextPage);
+                setCurrentTime(0);
+                setIsPlaying(false);
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Navegación anterior
+    const prevSong = async () => {
+        if (page <= 1) return;
+        setLoading(true);
+        try {
+            const prevPage = page - 1;
+            const data = await fetchAllSongs({ page: prevPage, perPage, ...filters });
+            const prevSongs = data.canciones?.data || [];
+            if (prevSongs.length > 0) {
+                setSong(prevSongs[0]);
+                setPage(prevPage);
+                setCurrentTime(0);
+                setIsPlaying(false);
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -306,9 +232,11 @@ const AudioPlayer = ({
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <Tooltip title="Anterior canción">
-                    <IconButton onClick={prevSong}>
-                        <SkipPreviousIcon />
-                    </IconButton>
+                    <span>
+                        <IconButton onClick={prevSong} disabled={page <= 1}>
+                            <SkipPreviousIcon />
+                        </IconButton>
+                    </span>
                 </Tooltip>
 
                 <Tooltip title="Retroceder 10 segundos">
@@ -333,9 +261,11 @@ const AudioPlayer = ({
                 </Tooltip>
 
                 <Tooltip title="Siguiente canción">
-                    <IconButton onClick={nextSong}>
-                        <SkipNextIcon />
-                    </IconButton>
+                    <span>
+                        <IconButton onClick={nextSong}>
+                            <SkipNextIcon />
+                        </IconButton>
+                    </span>
                 </Tooltip>
             </Box>
         </Box>

@@ -9,9 +9,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import ArtistCard from "../components/Cards/ArtistCard";
-import Search from "../components/Filters/Serch";
-import OrdenSelect from "../components/Filters/OrdenSelect";
-import DireccionSelect from "../components/Filters/DireccionSelect";
+import Toolbar from "../components/Filters/Toolbar";
 import PaginationBar from "../components/Filters/PaginationBar";
 import { fetchUsersWithActiveSongs } from "../services/auth";
 
@@ -57,6 +55,16 @@ const AllArtistas = () => {
     setPage(1);
   };
 
+  const handleResetFilters = () => {
+    setFilters({
+      query: "",
+      orden: "nombre",
+      direccion: "asc",
+      tipo: "",
+    });
+    setPage(1);
+  };
+
   return (
     <Box sx={{ px: { xs: 1, md: 4 }, py: 4, maxWidth: 2000, mx: "auto" }}>
       {/* Barra de filtros scrollable */}
@@ -77,40 +85,18 @@ const AllArtistas = () => {
           "&::-webkit-scrollbar": { display: "none" },
         }}
       >
-        <Search
-          value={filters.query}
-          onChange={(e) => handleFilterChange("query", e.target.value)}
-          placeholder="Buscar artista"
-          sx={{
-            minWidth: 160,
-            maxWidth: 220,
-            bgcolor: "#fff",
-            borderRadius: 2,
-            boxShadow: 1,
-            flexShrink: 0,
-          }}
-        />
-        <OrdenSelect
-          value={filters.orden}
-          onChange={(e) => handleFilterChange("orden", e.target.value)}
-          sx={{
-            minWidth: 120,
-            bgcolor: "#fff",
-            borderRadius: 2,
-            boxShadow: 1,
-            flexShrink: 0,
-          }}
-        />
-        <DireccionSelect
-          value={filters.direccion}
-          onChange={(e) => handleFilterChange("direccion", e.target.value)}
-          sx={{
-            minWidth: 120,
-            bgcolor: "#fff",
-            borderRadius: 2,
-            boxShadow: 1,
-            flexShrink: 0,
-          }}
+        <Toolbar
+          page={page}
+          totalPages={pagination.last_page || 1}
+          onPrevPage={() => setPage(page - 1)}
+          onNextPage={() => setPage(page + 1)}
+          showSearch={true}
+          showDireccion={true}
+          searchValue={filters.query}
+          onSearchChange={e => handleFilterChange("query", e.target.value)}
+          direccionValue={filters.direccion}
+          onDireccionChange={e => handleFilterChange("direccion", e.target.value)}
+          onResetFilters={handleResetFilters}
         />
       </Box>
 
@@ -177,15 +163,6 @@ const AllArtistas = () => {
             </Grid>
           </Fade>
         )}
-
-        {/* Paginación */}
-        <Box sx={{ mt: 4, display: "flex", justifyContent: "center" }}>
-          <PaginationBar
-            page={page}
-            totalPages={pagination.last_page || 1}
-            onPageChange={setPage}
-          />
-        </Box>
       </Box>
     </Box>
   );

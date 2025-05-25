@@ -16,14 +16,11 @@ class CreateDenunciasTable extends Migration
         Schema::create('denuncias', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->unsignedBigInteger('denunciable_id');
-            $table->string('denunciable_type');
+            $table->foreignId('cancion_id')->constrained('canciones')->onDelete('cascade');
             $table->text('motivo');
-            $table->enum('estado', ['pendiente', 'revisado'])->default('pendiente');
+            $table->enum('estado', ['pendiente', 'aceptado', 'denegado'])->default('pendiente');
             $table->timestamps();
-            $table->index(['denunciable_id', 'denunciable_type']);
         });
-
     }
 
     /**

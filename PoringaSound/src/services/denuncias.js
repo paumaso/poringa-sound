@@ -40,6 +40,24 @@ export const fetchDenuncias = async (page = 1, perPage = 10) => {
   }
 };
 
+export const fetchDenunciasPendientes = async (page = 1, perPage = 10) => {
+  try {
+    const token = getToken();
+    const response = await fetch(`${API_URL}/denuncias/pendientes?page=${page}&per_page=${perPage}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || "Error al obtener denuncias pendientes");
+    return data;
+  } catch (error) {
+    throw new Error(error.message || "Error al obtener denuncias pendientes");
+  }
+};
+
 export const aceptarDenuncia = async (id) => {
   try {
     const token = getToken();

@@ -2,7 +2,6 @@ import React from "react";
 import { Box, Tooltip, Typography, useTheme } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-
 const ArtistCard = ({ artist, apiUrl }) => {
     const theme = useTheme();
     const navigate = useNavigate();
@@ -13,18 +12,22 @@ const ArtistCard = ({ artist, apiUrl }) => {
         <Box
             onClick={() => navigate(`/artist/${artist.id}`)}
             sx={{
-                cursor: "default",
+                cursor: "pointer",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                width: 100,
+                width: 120,
+                minHeight: 160,
                 textAlign: "center",
-                p: 1,
-                borderRadius: 2,
-                transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                p: 2,
+                borderRadius: 3,
+                background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
+                boxShadow: "0 2px 12px 0 rgba(0,0,0,0.07)",
+                transition: "transform 0.25s, box-shadow 0.25s, background 0.25s",
                 "&:hover": {
-                    transform: "scale(1.05)",
-                    boxShadow: 3,
+                    transform: "scale(1.07)",
+                    boxShadow: 6,
+                    background: "linear-gradient(135deg, #e3f0ff 0%, #b6e0fe 100%)",
                 },
             }}
         >
@@ -37,10 +40,17 @@ const ArtistCard = ({ artist, apiUrl }) => {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    fontSize: "1.75rem",
-                    fontWeight: 600,
+                    fontSize: "2rem",
+                    fontWeight: 700,
                     color: imageUrl ? "inherit" : "#fff",
                     backgroundColor: imageUrl ? "transparent" : theme.palette.primary.main,
+                    boxShadow: 2,
+                    mb: 1,
+                    transition: "box-shadow 0.25s, border-color 0.25s",
+                    "&:hover": {
+                        transform: "scale(1.07)",
+                        boxShadow: 4,
+                    },
                 }}
             >
                 {imageUrl ? (
@@ -63,14 +73,16 @@ const ArtistCard = ({ artist, apiUrl }) => {
 
             <Tooltip title={artist.nombre} arrow>
                 <Typography
-                    variant="caption"
+                    variant="subtitle1"
                     noWrap
                     sx={{
                         mt: 1,
                         maxWidth: "100%",
-                        fontWeight: 500,
-                        fontSize: "0.75rem",
+                        fontWeight: 600,
+                        fontSize: "1rem",
                         color: "text.primary",
+                        letterSpacing: 0.2,
+                        textShadow: "0 1px 2px rgba(0,0,0,0.06)",
                     }}
                 >
                     {artist.nombre}

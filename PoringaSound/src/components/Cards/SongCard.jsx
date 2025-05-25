@@ -71,31 +71,34 @@ const SongCard = ({ cancion, apiUrl, onSongClick, onDetailsClick }) => {
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
+                        cursor: "pointer",
+                        "&:hover": { color: "primary.main", textDecoration: "underline" }
                     }}
                 >
                     {cancion?.titulo || "Título desconocido"}
                 </Typography>
 
                 <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0 }}>
-                    {avatarSrc ? (
-                        <Avatar
-                            src={avatarSrc}
-                            alt={cancion.user?.nombre}
-                            sx={{ width: 26, height: 26 }}
-                        />
-                    ) : (
-                        <Avatar
-                            sx={{
-                                width: 26,
-                                height: 26,
-                                bgcolor: theme.palette.primary.main,
-                                fontSize: "0.75rem",
-                                fontWeight: 600,
-                            }}
-                        >
-                            {artistInitial}
-                        </Avatar>
-                    )}
+                    <Avatar
+                        src={avatarSrc}
+                        alt={cancion.user?.nombre}
+                        sx={{
+                            width: 26,
+                            height: 26,
+                            bgcolor: theme.palette.primary.main,
+                            fontSize: "0.75rem",
+                            fontWeight: 600,
+                            cursor: "pointer",
+                            transition: "transform 0.18s cubic-bezier(.4,2,.6,1)",
+                            "&:hover": {
+                                transform: "scale(1.18)",
+                                boxShadow: 2,
+                            },
+                        }}
+                        onClick={() => navigate(`/artist/${cancion.user?.id}`)}
+                    >
+                        {artistInitial}
+                    </Avatar>
 
                     <Typography
                         variant="body2"
@@ -108,16 +111,11 @@ const SongCard = ({ cancion, apiUrl, onSongClick, onDetailsClick }) => {
                             minWidth: 0,
                             flexGrow: 1,
                         }}
+                        onClick={() => navigate(`/artist/${cancion.user?.id}`)}
+
                     >
                         {cancion?.user?.nombre || "Artista desconocido"}
                     </Typography>
-
-                    <InfoButton
-                        onClick={() => navigate(`/song/${cancion.id}`)}
-                        label="Detalles de la canción"
-                        color="primary"
-                        size="small"
-                    />
                 </Stack>
             </Box>
         </Paper>

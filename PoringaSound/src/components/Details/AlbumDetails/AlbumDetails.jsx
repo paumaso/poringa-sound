@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
     Box,
     Typography,
@@ -9,15 +9,19 @@ import {
     Stack,
     IconButton,
     Fade,
+    Grid,
 } from "@mui/material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import Portada from "../../LazyImages/Portada";
 import { fetchAlbumById } from "../../../services/albums";
 import SongCard from "../../Cards/SongCard";
+import { TransitionGroup, CSSTransition } from "react-transition-group";
+import "./AlbumDetailsAnimations.css";
 
 const AlbumDetails = ({ onSongClick, onDetailsClick }) => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [album, setAlbum] = useState(null);
     const [songs, setSongs] = useState([]);
     const [pagination, setPagination] = useState(null);
@@ -43,10 +47,8 @@ const AlbumDetails = ({ onSongClick, onDetailsClick }) => {
             }
         };
         if (id) loadData();
-        // eslint-disable-next-line
     }, [id]);
 
-    // Solo recarga canciones al cambiar de página
     useEffect(() => {
         if (!album) return;
         const loadSongs = async () => {
@@ -83,6 +85,8 @@ const AlbumDetails = ({ onSongClick, onDetailsClick }) => {
         );
     }
 
+    const artistInitial = album.user?.nombre?.charAt(0).toUpperCase() || "?";
+
     return (
         <Box
             sx={{
@@ -94,18 +98,20 @@ const AlbumDetails = ({ onSongClick, onDetailsClick }) => {
                 minHeight: "85vh",
                 display: "flex",
                 flexDirection: "column",
-                alignItems: "center",
+                alignItems: "stretch",
             }}
         >
-            <Box sx={{
-                display: "flex",
-                gap: 4,
-                flexWrap: "wrap",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "100%",
-                mb: 3
-            }}>
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: { xs: "column", md: "row" },
+                    gap: 4,
+                    alignItems: { xs: "center", md: "flex-start" },
+                    justifyContent: "flex-start",
+                    width: "100%",
+                    mb: 3,
+                }}
+            >
                 <Portada
                     src={`${apiUrl}${album.portada}`}
                     alt={album.titulo}
@@ -121,25 +127,54 @@ const AlbumDetails = ({ onSongClick, onDetailsClick }) => {
                     }}
                 />
 
-                <Box sx={{ flex: 1, minWidth: 220, textAlign: "center" }}>
-                    <Typography variant="h4" sx={{ wordBreak: "break-word", mb: 1 }}>
+                <Box
+                    sx={{
+                        flex: 1,
+                        minWidth: 220,
+                        textAlign: { xs: "center", md: "left" },
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "flex-start",
+                        alignItems: { xs: "center", md: "flex-start" },
+                    }}
+                >
+                    <Typography variant="h4" sx={{ wordBreak: "break-word", mb: 1, fontWeight: 700 }}>
                         {album.titulo}
                     </Typography>
-                    <Stack direction="row" alignItems="center" spacing={2} justifyContent="center" mb={1}>
+                    <Stack
+                        direction="row"
+                        alignItems="center"
+                        spacing={2}
+                        justifyContent={{ xs: "center", md: "flex-start" }}
+                        mb={1}
+                        sx={{ width: "100%" }}
+                    >
                         <Avatar
                             src={album.user?.imagen_perfil ? `${apiUrl}${album.user.imagen_perfil}` : undefined}
                             alt={album.user?.nombre}
-                            sx={{ width: 44, height: 44, boxShadow: 1 }}
-                        />
+                            sx={{
+                                width: 44,
+                                height: 44,
+                                boxShadow: 1,
+                                bgcolor: !album.user?.imagen_perfil ? "primary.main" : undefined,
+                                color: "#fff",
+                                fontWeight: 700,
+                                fontSize: "1.3rem",
+                                cursor: "pointer",
+                            }}
+                            onClick={() => navigate(`/artist/${album.user?.id}`)}
+                        >
+                            {!album.user?.imagen_perfil && artistInitial}
+                        </Avatar>
                         <Typography variant="subtitle1">
                             <strong>Autor:</strong> {album.user?.nombre}
                         </Typography>
                     </Stack>
-                    <Typography variant="subtitle2" color="text.secondary">
+                    <Typography variant="subtitle2" color="text.secondary" sx={{ textAlign: { xs: "center", md: "left" } }}>
                         <strong>Fecha de creación:</strong>{" "}
                         {album.created_at ? new Date(album.created_at).toLocaleDateString() : "Desconocida"}
                     </Typography>
-                    <Typography variant="subtitle2" color="text.secondary">
+                    <Typography variant="subtitle2" color="text.secondary" sx={{ textAlign: { xs: "center", md: "left" } }}>
                         <strong>Canciones:</strong> {pagination?.total || songs.length}
                     </Typography>
                 </Box>
@@ -147,7 +182,9 @@ const AlbumDetails = ({ onSongClick, onDetailsClick }) => {
 
             <Divider sx={{ my: 4, width: "100%" }} />
 
-            <Typography variant="h6" mb={2} align="center">Canciones del álbum</Typography>
+            <Typography variant="h6" mb={2} align="left" sx={{ fontWeight: 600 }}>
+                Canciones del álbum
+            </Typography>
             <Box
                 sx={{
                     width: "100%",
@@ -158,7 +195,7 @@ const AlbumDetails = ({ onSongClick, onDetailsClick }) => {
                     p: 3,
                     display: "flex",
                     flexDirection: "column",
-                    alignItems: "center",
+                    alignItems: "stretch",
                     justifyContent: "center",
                 }}
             >
@@ -168,21 +205,28 @@ const AlbumDetails = ({ onSongClick, onDetailsClick }) => {
                     </Box>
                 </Fade>
                 {!songsLoading && (
-                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, justifyContent: "center", width: "100%" }}>
+                    <TransitionGroup component={Grid} container spacing={2} justifyContent="flex-start">
                         {songs.length === 0 ? (
-                            <Typography variant="body1">Este álbum no tiene canciones.</Typography>
+                            <Grid item xs={12}>
+                                <Typography variant="body1" align="center">
+                                    Este álbum no tiene canciones.
+                                </Typography>
+                            </Grid>
                         ) : (
                             songs.map((cancion) => (
-                                <SongCard
-                                    key={cancion.id}
-                                    cancion={cancion}
-                                    apiUrl={apiUrl}
-                                    onSongClick={onSongClick}
-                                    onDetailsClick={onDetailsClick}
-                                />
+                                <CSSTransition key={cancion.id} timeout={250} classNames="song-fade">
+                                    <Grid item xs={12} sm={6} md={4} lg={3}>
+                                        <SongCard
+                                            cancion={cancion}
+                                            apiUrl={apiUrl}
+                                            onSongClick={onSongClick}
+                                            onDetailsClick={onDetailsClick}
+                                        />
+                                    </Grid>
+                                </CSSTransition>
                             ))
                         )}
-                    </Box>
+                    </TransitionGroup>
                 )}
             </Box>
 

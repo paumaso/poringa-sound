@@ -178,16 +178,37 @@ const Home = ({ onSongClick, onAlbumClick, onDetailsClick }) => {
     }) => (
         <Box position="relative" width="100%" mb={4} px={{ xs: 1, sm: 3 }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" px={1} mt={3} mb={2}>
-                <Typography variant="h5" fontWeight={500}>
+                <Typography
+                    variant="h5"
+                    fontWeight={500}
+                    sx={{
+                        color: "black",
+                        cursor: "pointer",
+                        transition: "color 0.2s",
+                        "&:hover": {
+                            color: "primary.main",
+                            textDecoration: "underline",
+                        },
+                    }}
+                    onClick={() => {
+                        if (title === "Canciones") navigate("/songs");
+                        else if (title === "Álbumes") navigate("/albums");
+                        else if (title === "Artistas") navigate("/artists");
+                    }}
+                >
                     {title}
                 </Typography>
                 <Typography
                     variant="body2"
+                    fontWeight={500}
                     sx={{
+                        color: "black",
                         cursor: "pointer",
-                        fontWeight: 500,
-                        color: "primary.main",
-                        '&:hover': { textDecoration: "underline" },
+                        transition: "color 0.2s",
+                        "&:hover": {
+                            color: "primary.main",
+                            textDecoration: "underline",
+                        },
                     }}
                     onClick={() => {
                         if (title === "Canciones") navigate("/songs");
@@ -225,7 +246,6 @@ const Home = ({ onSongClick, onAlbumClick, onDetailsClick }) => {
         </Box>
     );
 
-    // --- Render ---
     return (
         <Box width="100%">
             {renderSection({

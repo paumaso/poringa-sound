@@ -61,6 +61,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setIsAuthenticated(false);
     sessionStorage.removeItem('user');
+    window.location.reload();
   };
 
   return (
