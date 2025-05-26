@@ -376,10 +376,10 @@ class CancionController extends Controller
     {
         $request->validate([
             'titulo' => 'required|string|max:255',
-            'archivo' => 'nullable|file',
+            'archivo' => 'nullable|file|mimes:mp3', 
             'genero_id' => 'nullable|exists:generos,id',
             'active' => 'nullable|boolean',
-            'portada' => 'nullable|image',
+            'portada' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp',
         ]);
     }
 

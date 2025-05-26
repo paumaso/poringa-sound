@@ -71,7 +71,6 @@ const AudioPlayer = ({
         }
     };
 
-    // Navegación anterior
     const prevSong = async () => {
         if (page <= 1) return;
         setLoading(true);
