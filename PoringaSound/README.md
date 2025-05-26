@@ -1,33 +1,45 @@
-# 🎧 Frontend - Plataforma Musical
+# 🎧 **Frontend - Plataforma Musical**
 
-Aquest és el frontend de la plataforma de música interactiva. Està desenvolupat amb **React** i utilitza **Vite** com a bundler.
+Aquest és el **frontend** de la plataforma de música interactiva. Està desenvolupat amb **React** i utilitza **Vite** com a bundler per a una experiència de desenvolupament ràpida i moderna.
 
 ---
 
-## 🚀 Tecnologies
+## 🚀 Tecnologies Utilitzades
 
-- React
-- Vite
-- TailwindCSS (opcional)
-- Axios
-- React Router
+🛠️ Eines i llibreries:
+
+* ⚛️ **React**
+* ⚡ **Vite**
+* 🎨 **TailwindCSS**
+* 🔗 **Axios**
+* 🧭 **React Router**
 
 ---
 
 ## 📦 Requisits
 
-- Node.js (v18+ recomanat)
-- npm
+Abans de començar, assegura't de tenir instal·lat:
+
+* 🟢 **Node.js**
+* 📦 **npm**
 
 ---
 
 ## 🛠️ Instal·lació
 
+Clona el repositori i instal·la les dependències:
+
 ```bash
-cd frontend
+cd ProingaSound
 npm install
+```
 
 ---
 
-## 🚀 Ejecucion
+## 🚀 Execució del Projecte
+
+Inicia el servidor de desenvolupament:
+
+```bash
 npm run dev
+```

@@ -1,41 +1,37 @@
-
----
-
-## ✅ `backend/README.md`
-
-```markdown
 # 🎧 Backend - Plataforma Musical
 
-Aquest és el backend de la plataforma musical, desenvolupat amb **Laravel**.
+## 🚀 Tecnologies utilitzades
+
+- **PHP 8.1+**
+- **Laravel 11**
+- **MySQL** o **SQLite**
+- **Composer**
 
 ---
 
-## 🚀 Tecnologies
+## 📋 Requisits previs
 
-- PHP 8.1+
-- Laravel 11
-- MySQL / SQLite
-- Composer
-
----
-
-## 📦 Requisits
+Abans d'iniciar, assegura't de tenir instal·lat:
 
 - PHP >= 8.1
 - Composer
-- Base de dades (MySQL recomanat)
+- Un servidor de base de dades (MySQL recomanat)
 
 ---
 
-## 🛠️ Instal·lació
+## ⚙️ Instal·lació
+
+1. Clona el repositori i entra al directori:
 
 ```bash
-cd backend
+cd PringaSound-WS
+
 composer install
+
 cp .env.example .env
 php artisan key:generate
 
-Configura .env
+    Configura la connexió a la base de dades al fitxer .env:
 
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -44,7 +40,39 @@ DB_DATABASE=musica
 DB_USERNAME=root
 DB_PASSWORD=
 
----
+    Executa les migracions per crear les taules a la base de dades:
 
-## 🚀 Ejecucion
+php artisan migrate
+
+🚀 Execució
+
+Inicia el servidor de desenvolupament amb:
+
 php artisan serve
+
+El backend estarà disponible a:
+➡️ http://127.0.0.1:8000
+🧪 Endpoints i funcionalitats
+
+A mesura que desenvolupis els controladors i rutes, afegeix aquí la documentació de la teva API.
+
+    GET /api/cancons – Llista de cançons
+
+    POST /api/register – Registre d’usuari
+
+    POST /api/login – Inici de sessió
+
+    ...
+
+🔐 Autenticació
+
+Aquesta aplicació utilitza Laravel Sanctum / Passport / Token JWT (indica quin si és el cas) per protegir les rutes privades dels usuaris.
+🧹 Altres comandes útils
+
+php artisan migrate:fresh --seed 
+php artisan db:seed 
+php artisan route:list 
+
+📄 Llicència
+
+Projecte acadèmic – ús educatiu.
