@@ -38,6 +38,24 @@ const RegisterForm = ({ onClose, switchToLogin }) => {
     setLoading(true);
     setError(null);
 
+    if (!nombre || !email || !password) {
+      setError("Por favor, completa todos los campos.");
+      setLoading(false);
+      return;
+    }
+
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setError("Por favor, ingresa un correo electrónico válido.");
+      setLoading(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("La contraseña debe tener al menos 6 caracteres.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append('nombre', nombre);

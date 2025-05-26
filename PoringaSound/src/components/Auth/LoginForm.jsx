@@ -24,6 +24,18 @@ const LoginForm = ({ onClose, switchToRegister }) => {
     setLoading(true);
     setError(null);
 
+    if (!email || !password) {
+      setError("Por favor, completa todos los campos.");
+      setLoading(false);
+      return;
+    }
+
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setError("Por favor, ingresa un correo electrónico válido.");
+      setLoading(false);
+      return;
+    }
+
     try {
       await login(email, password);
       onClose?.();
