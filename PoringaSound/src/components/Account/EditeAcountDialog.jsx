@@ -126,17 +126,6 @@ const EditAccountDialog = ({ open, onClose, user, onSave }) => {
                         onChange={(e) => setEmail(e.target.value)}
                     />
 
-                    <TextField
-                        label="New password"
-                        type="password"
-                        fullWidth
-                        margin="normal"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Leave blank to keep current"
-                        autoComplete="new-password"
-                    />
-
                     <Button
                         type="submit"
                         variant="contained"

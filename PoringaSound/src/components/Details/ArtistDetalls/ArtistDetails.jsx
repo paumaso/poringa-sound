@@ -196,7 +196,6 @@ const ArtistDetails = ({ onSongClick, onAlbumClick, onDetailsClick }) => {
 
             <Divider sx={{ my: 4, width: "100%" }} />
 
-            {/* Tabs para canciones y álbumes */}
             <Tabs
                 value={tab}
                 onChange={(_, v) => setTab(v)}
@@ -283,7 +282,7 @@ const ArtistDetails = ({ onSongClick, onAlbumClick, onDetailsClick }) => {
                                 )}
                             </TransitionGroup>
                         )}
-                        {/* Paginación canciones */}
+
                         <Box
                             sx={{
                                 mt: 4,

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
-import { usePage } from "../context/PageContext";
+import { useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import AdminRoute from "../components/Routes/AdminRoutes"
 import AdminDenuncias from "./AdminDenuncias";
@@ -19,13 +19,14 @@ import AllArtistas from "./AllArtistas";
 
 const PoringaSound = () => {
     const { isAuthenticated, user } = useAuth();
+    const location = useLocation();
 
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [currentSong, setCurrentSong] = useState(null);
     const [currentAlbum, setCurrentAlbum] = useState(null);
 
     const hideDrawerRoutes = ["/discover", "/admin"];
-    const shouldShowDrawer = !hideDrawerRoutes.includes(window.location.pathname);
+    const shouldShowDrawer = !hideDrawerRoutes.includes(location.pathname);
 
     const handleSongClick = (song) => {
         setCurrentAlbum(null);
@@ -60,11 +61,11 @@ const PoringaSound = () => {
                         <Route path="/account" element={<Account onSongClick={handleSongClick} onAlbumClick={handleAlbumClick} />} />
                     )}
                     <Route path="/song/:id" element={<SongDetails onSongClick={handleSongClick} />} />
-                    <Route path="/album/:id" element={<AlbumDetails onSongClick={handleSongClick} />} />
-                    <Route path="/artist/:id" element={<ArtistDetails onSongClick={handleSongClick} />} />
+                    <Route path="/album/:id" element={<AlbumDetails onSongClick={handleSongClick} onAlbumClick={handleAlbumClick} />} />
+                    <Route path="/artist/:id" element={<ArtistDetails onSongClick={handleSongClick} onAlbumClick={handleAlbumClick} />} />
                     <Route path="/songs" element={<AllSongs onSongClick={handleSongClick} />} />
-                    <Route path="/albums" element={<AllAlbums onAlbumClick={handleAlbumClick}/>} />
-                    <Route path="/artists" element={<AllArtistas />}></Route>
+                    <Route path="/albums" element={<AllAlbums onAlbumClick={handleAlbumClick} />} />
+                    <Route path="/artists" element={<AllArtistas onSongClick={handleSongClick} onAlbumClick={handleAlbumClick} />}></Route>
 
                     <Route
                         path="/admin"

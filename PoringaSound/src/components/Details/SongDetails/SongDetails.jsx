@@ -26,7 +26,6 @@ const SongDetails = ({ onSongClick }) => {
             try {
                 const data = await fetchSongById(id);
                 setSong(data);
-                onSongClick?.(data);
                 setComents(data.comentarios || []);
             } catch (err) {
                 console.error("Error al cargar la canción:", err);
@@ -86,7 +85,6 @@ const SongDetails = ({ onSongClick }) => {
                     alt={song.titulo}
                     width={240}
                     height={240}
-                    hover={false}
                     style={{
                         borderRadius: 12,
                         objectFit: "cover",

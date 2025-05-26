@@ -10,6 +10,7 @@ import { Pause, PlayArrow, MusicNote } from "@mui/icons-material";
 import Portada from "../LazyImages/Portada";
 import LikeButton from "../Interacciones/LikeButton";
 import RatingSong from "../Interacciones/RatingSong";
+import { useNavigate } from "react-router-dom";
 
 const SongCard = ({ song, isActive, onDetailsClick }) => {
     const apiUrl = import.meta.env.VITE_STORAGE_URL;
@@ -17,6 +18,8 @@ const SongCard = ({ song, isActive, onDetailsClick }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
+    const navigate = useNavigate();
+
 
     useEffect(() => {
         if (!isActive) {
@@ -99,6 +102,13 @@ const SongCard = ({ song, isActive, onDetailsClick }) => {
                         style={{
                             borderRadius: 4,
                             objectFit: "cover",
+                            width: "100%",
+                            aspectRatio: "1 / 1",
+                        }}
+                        sx={{
+                            maxWidth: { xs: 180, sm: 240, md: 360 },
+                            maxHeight: { xs: 180, sm: 240, md: 360 },
+                            aspectRatio: "1 / 1",
                         }}
                     />
 
@@ -114,12 +124,13 @@ const SongCard = ({ song, isActive, onDetailsClick }) => {
                         <Box>
                             <Typography variant="h6" color="text.primary" sx={{
                                 cursor: "pointer",
-                                transition: "0.5s",
+                                transition: "0.3s",
                                 "&:hover": {
+                                    color: "primary.main",
                                     textDecoration: "underline",
                                 },
                             }}
-                                onClick={() => onDetailsClick?.(song?.id)}
+                                onClick={() => navigate(`/song/${song.id}`)}
                             >
                                 {song.titulo}
                             </Typography>

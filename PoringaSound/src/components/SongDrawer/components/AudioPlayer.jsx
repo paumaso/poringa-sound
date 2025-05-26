@@ -18,6 +18,7 @@ import Replay10Icon from '@mui/icons-material/Replay10';
 import VolumeControl from "./VolumenControler";
 import Portada from "../../LazyImages/Portada";
 import { fetchSongById, fetchAllSongs } from "../../../services/songs";
+import { useNavigate } from "react-router-dom";
 
 const AudioPlayer = ({
     initialSongId,
@@ -31,9 +32,31 @@ const AudioPlayer = ({
     const [duration, setDuration] = useState(0);
     const [total, setTotal] = useState(0);
 
+    const navigate = useNavigate();
+
     const [song, setSong] = useState(null);
     const [page, setPage] = useState(1);
     const perPage = 1;
+
+    useEffect(() => {
+        const cargarCancion = async () => {
+            setLoading(true);
+            try {
+                if (initialSongId) {
+                    const data = await fetchSongById(initialSongId);
+                    setSong(data);
+                    setCurrentTime(0);
+                    setIsPlaying(false);
+                }
+            } catch (error) {
+                console.error("Error al cargar la canción:", error);
+                setSong(null);
+            } finally {
+                setLoading(false);
+            }
+        };
+        cargarCancion();
+    }, [initialSongId]);
 
     useEffect(() => {
         const cargar = async () => {
@@ -51,7 +74,7 @@ const AudioPlayer = ({
             }
         };
         cargar();
-    }, [initialSongId, JSON.stringify(filters)]);
+    }, [JSON.stringify(filters)]);
 
     const nextSong = async () => {
         setLoading(true);
@@ -179,7 +202,17 @@ const AudioPlayer = ({
                 }}
             >
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, flex: 1, minWidth: 0 }}>
-                    <Typography variant="h6" noWrap>
+                    <Typography variant="h6" noWrap
+                        sx={{
+                            cursor: "pointer",
+                            transition: "0.3s",
+                            "&:hover": {
+                                color: "primary.main",
+                                textDecoration: "underline",
+                            },
+                        }}
+                        onClick={() => navigate(`/song/${song.id}`)}
+                    >
                         {song.titulo || "Sin título"}
                     </Typography>
                 </Box>

@@ -19,7 +19,7 @@ import SongCard from "../../Cards/SongCard";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
 import "./AlbumDetailsAnimations.css";
 
-const AlbumDetails = ({ onSongClick, onDetailsClick }) => {
+const AlbumDetails = ({ onSongClick, onAlbumClick }) => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [album, setAlbum] = useState(null);
@@ -117,7 +117,6 @@ const AlbumDetails = ({ onSongClick, onDetailsClick }) => {
                     alt={album.titulo}
                     width={200}
                     height={200}
-                    hover={false}
                     style={{
                         borderRadius: 12,
                         objectFit: "cover",
@@ -125,6 +124,7 @@ const AlbumDetails = ({ onSongClick, onDetailsClick }) => {
                         maxWidth: 200,
                         minWidth: 140,
                     }}
+                    onClick={() => onAlbumClick && onAlbumClick(album.id)}
                 />
 
                 <Box
@@ -220,7 +220,6 @@ const AlbumDetails = ({ onSongClick, onDetailsClick }) => {
                                             cancion={cancion}
                                             apiUrl={apiUrl}
                                             onSongClick={onSongClick}
-                                            onDetailsClick={onDetailsClick}
                                         />
                                     </Grid>
                                 </CSSTransition>

@@ -15,7 +15,6 @@ import SongCard from "../components/Cards/SongCard";
 import AlbumCard from "../components/Cards/AlbumCard";
 import ArtistCard from "../components/Cards/ArtistCard";
 
-// --- Estilos ---
 const scrollContainerStyles = {
     display: "flex",
     overflowX: "auto",
@@ -74,7 +73,6 @@ const itemBoxStyles = {
     width: { xs: 140, sm: 160, md: 180 },
 };
 
-// --- Componente principal ---
 const Home = ({ onSongClick, onAlbumClick, onDetailsClick }) => {
     const [canciones, setCanciones] = useState([]);
     const [albums, setAlbums] = useState([]);
@@ -93,7 +91,6 @@ const Home = ({ onSongClick, onAlbumClick, onDetailsClick }) => {
     const navigate = useNavigate();
     const scrollByAmount = 300;
 
-    // --- Scroll helpers ---
     const smoothScroll = (element, target, duration = 400) => {
         const start = element.scrollLeft;
         const change = target - start;
@@ -123,7 +120,6 @@ const Home = ({ onSongClick, onAlbumClick, onDetailsClick }) => {
         }
     };
 
-    // --- Fetchers ---
     const fetchCanciones = async () => {
         setLoading(true);
         try {
@@ -164,7 +160,6 @@ const Home = ({ onSongClick, onAlbumClick, onDetailsClick }) => {
         fetchArtistas();
     }, [page]);
 
-    // --- Render helpers ---
     const renderSection = ({
         title,
         items,
@@ -176,7 +171,7 @@ const Home = ({ onSongClick, onAlbumClick, onDetailsClick }) => {
         scrollLeft,
         scrollRight,
     }) => (
-        <Box position="relative" width="100%" mb={4} px={{ xs: 1, sm: 3 }}>
+        <Box position="relative" width="100%" mb={2} px={{ xs: 1, sm: 3 }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" px={1} mt={3} mb={2}>
                 <Typography
                     variant="h5"

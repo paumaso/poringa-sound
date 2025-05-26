@@ -24,7 +24,6 @@ export const fetchAllSongs = async ({ page = 1, perPage = 10, query = "", genero
         if (album_id) params.append("album_id", album_id);
         if (orden) params.append("orden", orden);
         if (direccion) params.append("direccion", direccion);
-        console.log(params.toString())
         const response = await fetch(
             `${API_URL}/public/canciones/all?${params.toString()}`,
             {

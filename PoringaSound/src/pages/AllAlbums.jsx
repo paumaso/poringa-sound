@@ -93,7 +93,7 @@ const AllAlbums = ({ onAlbumClick }) => {
           onNextPage={() => setPage(page + 1)}
           showSearch={true}
           showGenero={false}
-          showOrden={true}
+          showOrden={false}
           showDireccion={true}
           searchValue={filters.titulo}
           onSearchChange={e => handleFilterChange("titulo", e.target.value)}

@@ -67,6 +67,17 @@ const NewSongDialog = ({ open, onClose, onSave }) => {
         setLoading(true);
         setError(null);
 
+        if (!title.trim()) {
+            setError("El título es obligatorio.");
+            setLoading(false);
+            return;
+        }
+        if (!audioFile) {
+            setError("Debes subir un archivo de audio.");
+            setLoading(false);
+            return;
+        }
+
         try {
             const formData = new FormData();
             formData.append("titulo", title);
@@ -185,7 +196,6 @@ const NewSongDialog = ({ open, onClose, onSave }) => {
                                 type="file"
                                 style={{ display: "none" }}
                                 onChange={handleAudioChange}
-                                required
                             />
                             <label htmlFor="audio-upload-button">
                                 <Button

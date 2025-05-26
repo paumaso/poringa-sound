@@ -7,12 +7,9 @@ import {
     useTheme,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { getToken } from "../../services/auth";
 import Portada from "../LazyImages/Portada";
-import InfoButton from "../Filters/InfoButton";
 
-const SongCard = ({ cancion, apiUrl, onSongClick, onDetailsClick }) => {
-    const isAuthenticated = !!getToken();
+const SongCard = ({ cancion, apiUrl, onSongClick }) => {
     const navigate = useNavigate();
     const theme = useTheme();
 

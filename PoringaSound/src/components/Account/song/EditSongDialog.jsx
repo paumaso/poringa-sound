@@ -55,7 +55,6 @@ const EditSongDialog = ({ open, onClose, onSave, song }) => {
             setImagePreview(song.portadaUrl || null);
             setError(null);
         } else {
-            // Si no hay canción, limpiar formulario
             resetForm();
         }
     }, [song]);
