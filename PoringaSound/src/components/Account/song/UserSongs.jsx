@@ -181,7 +181,7 @@ const UserSongs = ({ userId, onSongClick, reloadSongs, onSongsUpdated }) => {
                   nodeRef={ref}
                 >
                   <ListItem ref={ref} key={song.id} sx={{ alignItems: "flex-start" }}>
-                    <ListItemAvatar onClick={() => onSongClick(song)}>
+                    <ListItemAvatar onClick={() => onSongClick(song.id)}>
                       <Box
                         sx={{
                           position: "relative",

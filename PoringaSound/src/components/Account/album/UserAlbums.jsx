@@ -210,7 +210,7 @@ const UserAlbums = ({ userId, reloadAlbums, onAlbumsUpdated, onAlbumClick }) => 
                                                             alt={album.titulo}
                                                             width="100%"
                                                             height="100%"
-                                                            onClick={() => onAlbumClick && onAlbumClick(album)}
+                                                            onClick={() => onAlbumClick && onAlbumClick(album.id)}
                                                         />
                                                     </Box>
                                                 </ListItemAvatar>

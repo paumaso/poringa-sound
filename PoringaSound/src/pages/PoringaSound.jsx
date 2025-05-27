@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -27,6 +27,12 @@ const PoringaSound = () => {
 
     const hideDrawerRoutes = ["/discover", "/admin"];
     const shouldShowDrawer = !hideDrawerRoutes.includes(location.pathname);
+
+    useEffect(() => {
+        if (!shouldShowDrawer && drawerOpen) {
+            setDrawerOpen(false);
+        }
+    }, [shouldShowDrawer, drawerOpen]);
 
     const handleSongClick = (song) => {
         setCurrentAlbum(null);
