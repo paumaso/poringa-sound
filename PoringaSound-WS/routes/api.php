@@ -20,6 +20,10 @@ Route::get('public/canciones/{id}', [CancionController::class, 'getCancionById']
 Route::get('public/albums/{id}', [AlbumController::class, 'getAlbumById']);
 Route::get('public/artistas/{id}', [AuthController::class, 'getUserById']);
 
+Route::prefix('generos')->group(function () {
+    Route::get('/', [GenerosController::class, 'getAllGeneros']);
+});
+
 // Rutas protegidas por autenticación
 Route::middleware('auth:sanctum')->group(function () {
     // Rutas de autenticación
@@ -71,9 +75,5 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/{id}/aceptar', [DenunciaController::class, 'aceptarDenuncia']);
             Route::post('/{id}/rechazar', [DenunciaController::class, 'rechazarDenuncia']);
         });
-    });
-
-    Route::prefix('generos')->group(function () {
-        Route::get('/', [GenerosController::class, 'getAllGeneros']);
     });
 });
