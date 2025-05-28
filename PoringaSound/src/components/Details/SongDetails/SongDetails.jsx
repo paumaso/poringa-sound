@@ -124,6 +124,11 @@ const SongDetails = ({ onSongClick }) => {
                         </Typography>
 
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                            <LikeButton
+                                songId={song.id}
+                                initialLiked={song.liked_by_user}
+                                initialLikeCount={song.total_likes}
+                            />
                             <DenunciaButton cancionId={song.id} />
                         </Box>
                     </Box>
@@ -136,10 +141,6 @@ const SongDetails = ({ onSongClick }) => {
                     <Typography variant="subtitle1">
                         <strong>Fecha de subida:</strong>{" "}
                         {new Date(song.created_at).toLocaleDateString()}
-                    </Typography>
-                    <Typography variant="subtitle1">
-                        <strong>Estado:</strong>{" "}
-                        {song.active ? "Activa" : "Inactiva"}
                     </Typography>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                         <Typography variant="subtitle1">

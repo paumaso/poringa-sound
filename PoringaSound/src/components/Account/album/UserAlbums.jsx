@@ -119,7 +119,7 @@ const UserAlbums = ({ userId, reloadAlbums, onAlbumsUpdated, onAlbumClick }) => 
     };
 
     const handleView = (album) => {
-        alert(`Ver detalles del álbum: ${album.titulo}`);
+    navigate(`/album/${album.id}`);
     };
 
     const handleSongView = (song) => {

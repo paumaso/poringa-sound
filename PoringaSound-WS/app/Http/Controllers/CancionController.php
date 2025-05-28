@@ -64,7 +64,7 @@ class CancionController extends Controller
         } elseif ($orden === 'likes') {
             $canciones->withCount(['interacciones as likes_count' => function ($q) {
                 $q->where('tipo', 'like');
-            }])->orderBy('likes_count', $direccion);
+            }])->orderBy('likes_count', 'desc'); // Siempre descendente
         } elseif ($orden === 'interacciones') {
             $canciones->withCount(['interacciones as interacciones_count'])
                 ->orderBy('interacciones_count', $direccion);
@@ -376,7 +376,7 @@ class CancionController extends Controller
     {
         $request->validate([
             'titulo' => 'required|string|max:255',
-            'archivo' => 'nullable|file|mimes:mp3', 
+            'archivo' => 'nullable|file|mimes:mp3',
             'genero_id' => 'nullable|exists:generos,id',
             'active' => 'nullable|boolean',
             'portada' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp',
